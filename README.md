@@ -42,8 +42,10 @@ if (auth.pending == false && auth.granted == true) {
 ```
 
 #### Handling Errors
-
 If any request runs into an error a `RequestError` will be thrown with more details on what went wrong.
+
+#### Dependencies
+This library uses the Apache Commons HttpClient and OAuth-Signpost libraries, which are included as JARs in the "lib" directory.  Please add these JARs to your classpath when using our library.
 
 #### Try it out
 Check out `com.toopher.ToopherAPIDemo.java` for an example program that walks you through the whole process!  A runnable jar for the demo can be built and executed as follows:

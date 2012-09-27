@@ -3,10 +3,29 @@ package com.toopher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Provides information about the status of a pairing request
+ * 
+ */
 public class PairingStatus {
+    /**
+     * The unique id for the pairing request
+     */
     public String id;
+
+    /**
+     * The unique id for the user associated with the pairing request
+     */
     public String userId;
+
+    /**
+     * The descriptive name for the user associated with the pairing request
+     */
     public String userName;
+
+    /**
+     * Indicates if the pairing has been enabled by the user
+     */
     public boolean enabled;
 
     @Override

@@ -3,13 +3,44 @@ package com.toopher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Provide information about the status of an authentication request
+ * 
+ */
 public class AuthenticationStatus {
+    /**
+     * The unique id for the authentication request
+     */
     public String id;
+
+    /**
+     * Indicates if the request is still pending
+     */
     public boolean pending;
+
+    /**
+     * Indicates if the request was granted
+     */
     public boolean granted;
+
+    /**
+     * Indicates if the request was automated
+     */
     public boolean automated;
+
+    /**
+     * Indicates the reason (if any) for the request's outcome
+     */
     public String reason;
+
+    /**
+     * The unique id for the terminal associated with the request
+     */
     public String terminalId;
+
+    /**
+     * The descriptive name for the terminal associated with the request
+     */
     public String terminalName;
 
     @Override

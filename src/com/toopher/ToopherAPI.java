@@ -5,6 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -101,6 +102,7 @@ public class ToopherAPI {
 	    }
     }
 
+    
     /**
      * Create a pairing
      * 
@@ -113,14 +115,31 @@ public class ToopherAPI {
      *             Thrown when an exceptional condition is encountered
      */
     public PairingStatus pair(String pairingPhrase, String userName) throws RequestError {
+        return this.pair(pairingPhrase, userName, null);
+    }
+    
+    /**
+     * Create a pairing
+     * 
+     * @param pairingPhrase
+     *            The pairing phrase supplied by the user
+     * @param userName
+     *            A user-facing descriptive name for the user (displayed in requests)
+     * @param extras
+     *            An optional Map of extra parameters to provide to the API
+     * @return A PairingStatus object
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered
+     */
+    public PairingStatus pair(String pairingPhrase, String userName, Map<String, String> extras) throws RequestError {
         final String endpoint = "pairings/create";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("pairing_phrase", pairingPhrase));
         params.add(new BasicNameValuePair("user_name", userName));
-
+        
         try {
-            JSONObject json = post(endpoint, params);
+            JSONObject json = post(endpoint, params, extras);
             return new PairingStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
@@ -159,11 +178,11 @@ public class ToopherAPI {
      *             Thrown when an exceptional condition is encountered
      */
     public AuthenticationStatus authenticate(String pairingId, String terminalName) throws RequestError {
-        return authenticate(pairingId, terminalName, null);
+        return authenticate(pairingId, terminalName, null, null);
     }
-
+    
     /**
-     * Initiate an authentication request
+     * Initiate a login authentication request
      * 
      * @param pairingId
      *            The pairing id indicating to whom the request should be sent
@@ -175,8 +194,27 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
+    public AuthenticationStatus authenticate(String pairingId, String terminalName, String actionName) throws RequestError {
+        return authenticate(pairingId, terminalName, actionName, null);
+    }
+
+    /**
+     * Initiate an authentication request
+     * 
+     * @param pairingId
+     *            The pairing id indicating to whom the request should be sent
+     * @param terminalName
+     *            The user-facing descriptive name for the terminal from which the request originates
+     * @param actionName
+     *            The user-facing descriptive name for the action which is being authenticated
+     * @param extras
+     *            An optional Map of extra parameters to provide to the API
+     * @return An AuthenticationStatus object
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered
+     */
     public AuthenticationStatus authenticate(String pairingId, String terminalName,
-                                             String actionName) throws RequestError {
+                                             String actionName, Map<String, String> extras) throws RequestError {
         final String endpoint = "authentication_requests/initiate";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -187,7 +225,7 @@ public class ToopherAPI {
         }
 
         try {
-            JSONObject json = post(endpoint, params);
+            JSONObject json = post(endpoint, params, extras);
             return new AuthenticationStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
@@ -219,8 +257,13 @@ public class ToopherAPI {
     	return request(new HttpGet(), endpoint);
     }
 
-    private JSONObject post(String endpoint, List<NameValuePair> params) throws Exception {
+    private JSONObject post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws Exception {
         HttpPost post = new HttpPost();
+        if (extras != null && extras.size() > 0) {
+        	for (Map.Entry<String, String> e : extras.entrySet()){
+        		params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
+        	}
+        }
         if (params != null && params.size() > 0) {
             post.setEntity(new UrlEncodedFormEntity(params));
         }

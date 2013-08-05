@@ -7,7 +7,7 @@ import org.json.JSONObject;
  * Provides information about the status of a pairing request
  * 
  */
-public class PairingStatus {
+public class PairingStatus extends ApiResponseObject {
     /**
      * The unique id for the pairing request
      */
@@ -34,16 +34,15 @@ public class PairingStatus {
                              userId, userName, enabled);
     }
 
-    static PairingStatus fromJSON(JSONObject json) throws JSONException {
-        PairingStatus ps = new PairingStatus();
-        ps.id = json.getString("id");
+    public PairingStatus (JSONObject json) throws JSONException {
+    	super(json);
+        
+    	this.id = json.getString("id");
 
         JSONObject user = json.getJSONObject("user");
-        ps.userId = user.getString("id");
-        ps.userName = user.getString("name");
+        this.userId = user.getString("id");
+        this.userName = user.getString("name");
 
-        ps.enabled = json.getBoolean("enabled");
-
-        return ps;
+        this.enabled = json.getBoolean("enabled");
     }
 }

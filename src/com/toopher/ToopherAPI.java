@@ -2,6 +2,7 @@ package com.toopher;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -47,11 +49,56 @@ public class ToopherAPI {
      *            The consumer secret for a requester (obtained from the developer portal)
      */
     public ToopherAPI(String consumerKey, String consumerSecret) {
-        httpClient = new DefaultHttpClient();
+    	this(consumerKey, consumerSecret, null);
+    }
+   
+    
+    /**
+     * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
+     * 
+     * @param consumerKey
+     *            The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret
+     *            The consumer secret for a requester (obtained from the developer portal)
+     * @param uriScheme
+     *            The uri scheme ( http or https )
+     * @param uriHost
+     *            The uri host ( api.toopher.com )
+     * @param uriScheme
+     *            The uri base ( /v1/ )
+     * @throws URISyntaxException 
+     */
+    public ToopherAPI(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
+    	this(consumerKey, consumerSecret, new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build());
+    }
+    
+    /**
+     * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
+     * 
+     * @param consumerKey
+     *            The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret
+     *            The consumer secret for a requester (obtained from the developer portal)
+     * @param uri
+     *            The alternate URI
+     */
+    public ToopherAPI(String consumerKey, String consumerSecret, URI uri) {
+    	httpClient = new DefaultHttpClient();
         HttpProtocolParams.setUserAgent(httpClient.getParams(),
                                         String.format("ToopherJava/%s", VERSION));
 
         consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+        if (uri == null){
+            this.uriScheme = ToopherAPI.DEFAULT_URI_SCHEME;
+        	this.uriHost = ToopherAPI.DEFAULT_URI_HOST;
+        	this.uriPort = ToopherAPI.DEFAULT_URI_PORT;
+        	this.uriBase = ToopherAPI.DEFAULT_URI_BASE;
+    	} else {
+	        this.uriScheme = uri.getScheme();
+	    	this.uriHost = uri.getHost();
+	    	this.uriPort = uri.getPort();
+	    	this.uriBase = uri.getPath();
+	    }
     }
 
     /**
@@ -74,7 +121,7 @@ public class ToopherAPI {
 
         try {
             JSONObject json = post(endpoint, params);
-            return PairingStatus.fromJSON(json);
+            return new PairingStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -94,7 +141,7 @@ public class ToopherAPI {
 
         try {
             JSONObject json = get(endpoint);
-            return PairingStatus.fromJSON(json);
+            return new PairingStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -141,7 +188,7 @@ public class ToopherAPI {
 
         try {
             JSONObject json = post(endpoint, params);
-            return AuthenticationStatus.fromJSON(json);
+            return new AuthenticationStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -162,31 +209,30 @@ public class ToopherAPI {
 
         try {
             JSONObject json = get(endpoint);
-            return AuthenticationStatus.fromJSON(json);
+            return new AuthenticationStatus(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
     }
 
     private JSONObject get(String endpoint) throws Exception {
-        URI uri = new URIBuilder().setScheme(URI_SCHEME).setHost(URI_HOST)
-                                  .setPath(URI_BASE + endpoint).build();
-        HttpGet get = new HttpGet(uri);
-        consumer.sign(get);
-        return httpClient.execute(get, jsonHandler);
+    	return request(new HttpGet(), endpoint);
     }
 
     private JSONObject post(String endpoint, List<NameValuePair> params) throws Exception {
-        URI uri = new URIBuilder().setScheme(URI_SCHEME).setHost(URI_HOST)
-                                  .setPath(URI_BASE + endpoint).build();
-        HttpPost post = new HttpPost(uri);
+        HttpPost post = new HttpPost();
         if (params != null && params.size() > 0) {
             post.setEntity(new UrlEncodedFormEntity(params));
         }
-
-        consumer.sign(post);
-
-        return httpClient.execute(post, jsonHandler);
+        return request(post, endpoint);
+    }
+    
+    private JSONObject request(HttpRequestBase httpRequest, String endpoint) throws Exception {
+    	httpRequest.setURI(new URIBuilder().setScheme(this.uriScheme).setHost(this.uriHost)
+    			.setPort(this.uriPort)
+                .setPath(this.uriBase + endpoint).build());
+    	consumer.sign(httpRequest);
+    	return httpClient.execute(httpRequest, jsonHandler);
     }
 
     private static ResponseHandler<JSONObject> jsonHandler = new ResponseHandler<JSONObject>() {
@@ -211,10 +257,15 @@ public class ToopherAPI {
         }
     };
 
-    private static final String URI_SCHEME = "https";
-    private static final String URI_HOST = "toopher-api.appspot.com";
-    private static final String URI_BASE = "/v1/";
+    private static final String DEFAULT_URI_SCHEME = "https";
+    private static final String DEFAULT_URI_HOST = "api.toopher.com";
+    private static final String DEFAULT_URI_BASE = "/v1/";
+    private static final int DEFAULT_URI_PORT = 443;
 
     private final HttpClient httpClient;
     private final OAuthConsumer consumer;
+    private final String uriScheme;
+    private final String uriHost;
+    private final int uriPort;
+    private final String uriBase;
 }

@@ -2,13 +2,15 @@ package com.toopher;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.Map;
 
 /**
  * Provide information about the status of an authentication request
  * 
  */
-public class AuthenticationStatus {
-    /**
+public class AuthenticationStatus extends ApiResponseObject {
+
+	/**
      * The unique id for the authentication request
      */
     public String id;
@@ -42,6 +44,22 @@ public class AuthenticationStatus {
      * The descriptive name for the terminal associated with the request
      */
     public String terminalName;
+    
+    
+    public AuthenticationStatus(JSONObject json) throws JSONException{
+		super(json);
+		
+		this.id = json.getString("id");
+        this.pending = json.getBoolean("pending");
+        this.granted = json.getBoolean("granted");
+        this.automated = json.getBoolean("automated");
+        this.reason = json.getString("reason");
+
+        JSONObject terminal = json.getJSONObject("terminal");
+        this.terminalId = terminal.getString("id");
+        this.terminalName = terminal.getString("name");
+
+	}
 
     @Override
     public String toString() {
@@ -49,18 +67,4 @@ public class AuthenticationStatus {
                              id, pending, granted, automated, reason, terminalId, terminalName);
     }
 
-    static AuthenticationStatus fromJSON(JSONObject json) throws JSONException {
-        AuthenticationStatus as = new AuthenticationStatus();
-        as.id = json.getString("id");
-        as.pending = json.getBoolean("pending");
-        as.granted = json.getBoolean("granted");
-        as.automated = json.getBoolean("automated");
-        as.reason = json.getString("reason");
-
-        JSONObject terminal = json.getJSONObject("terminal");
-        as.terminalId = terminal.getString("id");
-        as.terminalName = terminal.getString("name");
-
-        return as;
-    }
 }

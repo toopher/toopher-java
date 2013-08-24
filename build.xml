@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project default="create_run_jar" name="Create Runnable Jar for Project ToopherJava">
-	<property name="src" location="src"/>
-	<property name="build" location="bin"/>
+    <property name="src" location="src"/>
+    <property name="build" location="bin"/>
 
-	<property name="demo_jar" value="ToopherJavaDemo.jar"/>
-	
-	<path id="build-classpath">
-		<fileset dir="lib">
-		    <include name="*.jar"/>
-    	</fileset>
-	</path>
+    <property name="demo_jar" value="ToopherJavaDemo.jar"/>
 
-	<target name="init">
-		<mkdir dir="${build}"/>
-	</target>
-	
-	<target name="compile" depends="init">
-		<javac srcdir="${src}" destdir="${build}" classpathref="build-classpath" includeantruntime="false"/>
-	</target>
-	
+    <path id="build-classpath">
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init">
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}" classpathref="build-classpath" includeantruntime="false"/>
+    </target>
+
     <target name="create_run_jar" depends="compile">
         <jar jarfile="${demo_jar}" filesetmanifest="mergewithoutmain">
             <manifest>
@@ -41,11 +41,11 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/json.org.jar"/>
         </jar>
     </target>
-	
-	<target name="clean">
-		<delete dir="${build}" />
-	</target>
 
-	<target name="test" depends="compile">
-	</target>
+    <target name="clean">
+        <delete dir="${build}" />
+    </target>
+
+    <target name="test" depends="compile">
+    </target>
 </project>

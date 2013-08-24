@@ -45,4 +45,7 @@
 	<target name="clean">
 		<delete dir="${build}" />
 	</target>
+
+	<target name="test" depends="compile">
+	</target>
 </project>

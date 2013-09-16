@@ -1,5 +1,8 @@
 #ToopherJava
 
+[![Build
+Status](https://travis-ci.org/toopher/toopher-java.png?branch=master)](https://travis-ci.org/toopher/toopher-java)
+
 #### Introduction
 ToopherJava is a Toopher API library that simplifies the task of interfacing with the Toopher API from Java code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
 

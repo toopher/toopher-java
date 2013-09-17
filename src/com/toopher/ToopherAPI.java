@@ -283,6 +283,9 @@ public class ToopherAPI {
     }
     
     private JSONObject request(HttpRequestBase httpRequest, String endpoint) throws Exception {
+        httpRequest.addHeader("User-Agent", String.format("Toopher-Java/%s (Java %s)",
+                ToopherAPI.VERSION, System.getProperty("java.version")));
+
     	httpRequest.setURI(new URIBuilder().setScheme(this.uriScheme).setHost(this.uriHost)
     			.setPort(this.uriPort)
                 .setPath(this.uriBase + endpoint).build());

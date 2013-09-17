@@ -36,6 +36,18 @@ import org.json.JSONTokener;
  * 
  */
 public class ToopherAPI {
+    private static final String DEFAULT_URI_SCHEME = "https";
+    private static final String DEFAULT_URI_HOST = "api.toopher.com";
+    private static final String DEFAULT_URI_BASE = "/v1/";
+    private static final int DEFAULT_URI_PORT = 443;
+
+    private final HttpClient httpClient;
+    private final OAuthConsumer consumer;
+    private final String uriScheme;
+    private final String uriHost;
+    private final int uriPort;
+    private final String uriBase;
+
     /**
      * The ToopherJava binding library version
      */
@@ -300,15 +312,9 @@ public class ToopherAPI {
         }
     };
 
-    private static final String DEFAULT_URI_SCHEME = "https";
-    private static final String DEFAULT_URI_HOST = "api.toopher.com";
-    private static final String DEFAULT_URI_BASE = "/v1/";
-    private static final int DEFAULT_URI_PORT = 443;
+    public static String getBaseURL() {
+        return String.format("%s://%s%s", DEFAULT_URI_SCHEME,
+                             DEFAULT_URI_HOST, DEFAULT_URI_BASE);
+    }
 
-    private final HttpClient httpClient;
-    private final OAuthConsumer consumer;
-    private final String uriScheme;
-    private final String uriHost;
-    private final int uriPort;
-    private final String uriBase;
 }

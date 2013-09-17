@@ -54,5 +54,5 @@ This library uses the Apache Commons HttpClient and OAuth-Signpost libraries, wh
 Check out `com.toopher.ToopherAPIDemo.java` for an example program that walks you through the whole process!  A runnable jar for the demo can be built and executed as follows:
 ```shell
 $ ant
-$ java -jar ToopherJavaDemo.jar
+$ java -jar dist/toopher-1.0.0.jar
 ```

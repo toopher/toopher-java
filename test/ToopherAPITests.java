@@ -25,7 +25,5 @@ public class ToopherAPITests extends TestCase {
 
     public void testVersion() {
         assertNotNull("Version is not null.", ToopherAPI.VERSION);
-        assertTrue("True is not true.", true);
     }
-
 }

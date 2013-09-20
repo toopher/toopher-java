@@ -7,7 +7,7 @@
     <conf name="test" extends="build" visibility="private"/>
   </configurations>
   <dependencies>
-    <dependency org="oauth.signpost" name="signpost-core" rev="1.2.1.2" conf="build->default"/>
+    <dependency org="oauth.signpost" name="signpost-commonshttp4" rev="1.2.1.2" conf="build->default"/>
     <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.2.1" conf="build->default"/>
     <dependency org="org.json" name="json" rev="20090211" conf="build->default"/>
     <dependency org="junit" name="junit" rev="4.11" conf="test->default"/>

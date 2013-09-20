@@ -1,7 +1,9 @@
 <?xml version="1.0"?>
-<project name="Toopher" default="jar">
+<project name="Toopher" default="jar"
+  xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!-- Project-specific configuration -->
+  <property name="main.class" value="com.toopher.ToopherAPIDemo"/>
   <property name="base.name" value="toopher-1.0.0"/>
 
   <!-- Standard Directory Layout -->
@@ -10,14 +12,16 @@
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
 
-  <path id="build.classpath">
-    <fileset dir="lib">
-      <include name="*.jar" />
-    </fileset>
-  </path>
-
   <!-- Targets -->
-  <target name="compile" description="Compile all sources.">
+  <target name="resolve" description="Retrieve dependencies with Ivy.">
+    <ivy:resolve log="download-only"/>
+    <ivy:cachepath conf="build" pathid="build.classpath"/>
+    <ivy:cachepath conf="default" pathid="runtime.classpath"/>
+    <ivy:cachefileset conf="default" setid="runtime.fileset"/>
+    <ivy:cachepath conf="test" pathid="test.classpath"/>
+  </target>
+
+  <target name="compile" depends="resolve" description="Compile all sources.">
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${build.dir}/classes"/>
     <javac srcdir="${src.dir}" destdir="${build.dir}/classes"
@@ -32,19 +36,15 @@
 
   <target name="jar" depends="compile"
           description="Generate the jarfile distributable.">
-    <manifestclasspath property="manifest.classpath" jarfile="${dist.dir}/${base.name}.jar">
-      <classpath refid="build.classpath" />
-    </manifestclasspath>
     <jar destfile="${dist.dir}/${base.name}.jar"
          basedir="${build.dir}/classes">
       <manifest>
-        <attribute name="Main-Class" value="com.toopher.ToopherAPIDemo"/>
-        <attribute name="Class-Path" value="${manifest.classpath}"/>
+        <attribute name="Main-Class" value="${main.class}"/>
       </manifest>
     </jar>
     <jar destfile="${dist.dir}/${base.name}-all.jar"
          basedir="${build.dir}/classes">
-      <path refid="build.classpath"/>
+      <zipgroupfileset refid="runtime.fileset"/>
       <manifest>
         <attribute name="Main-Class" value="${main.class}"/>
       </manifest>
@@ -56,7 +56,6 @@
     <delete dir="${dist.dir}"/>
   </target>
 
-  <!-- Unit testing (JUnit) -->
   <target name="test-compile" depends="compile">
     <mkdir dir="${build.dir}/test"/>
     <javac srcdir="${test.dir}" destdir="${build.dir}/test"
@@ -64,23 +63,21 @@
            classpath="${build.dir}/classes" includeantruntime="no">
       <compilerarg value="-Xlint"/>
       <classpath refid="build.classpath"/>
+      <classpath refid="test.classpath"/>
     </javac>
     <copy todir="${build.dir}/test">
       <fileset dir="${test.dir}" excludes="**/*.java"/>
     </copy>
-    <!-- Test coverage -->
   </target>
 
   <target name="test" depends="test-compile" description="Run the unit tests.">
     <junit fork="yes">
       <classpath>
-        <path refid="build.classpath"/>
         <pathelement path="${build.dir}/instrumented"/>
         <pathelement path="${build.dir}/classes"/>
         <pathelement path="${build.dir}/test"/>
+        <path refid="test.classpath"/>
       </classpath>
-      <sysproperty key="net.sourceforge.cobertura.datafile"
-                   file="${build.dir}/cobertura.ser"/>
       <batchtest>
         <formatter type="brief" usefile="false"/>
         <fileset dir="${build.dir}/test"/>

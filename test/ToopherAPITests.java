@@ -1,20 +1,37 @@
-import com.toopher.ToopherAPI;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import junit.framework.*;
+package com.toopher.test;
 
-public class ToopherAPITests extends TestCase {
-    private boolean isValidURL(String url) {
+import com.toopher.*;
+import org.junit.*;
+import java.net.*;
+
+import static org.junit.Assert.*;
+
+public class ToopherAPITests {
+    @Test
+    public void testCreatePairing() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200,
+                "{'id':'1','enabled':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        PairingStatus pairing = toopherApi.pair("awkward turtle", "some user");
+
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
+    }
+
+    private URI createURI(String url) {
         try {
-            new URL(url).toURI();
+            return new URL(url).toURI();
         } catch (MalformedURLException e) {
-            return false;
+            return null;
         } catch (URISyntaxException e) {
-            return false;
+            return null;
         }
+    }
 
-        return true;
+    private boolean isValidURL(String url) {
+        return createURI(url) != null;
     }
 
     public void testBaseURL() {

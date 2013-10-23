@@ -253,6 +253,32 @@ public class ToopherAPI {
         }
     }
 
+    /**
+     * Associates a per-user "Friendly Name" to a given terminal
+     * 
+     * @param userName
+     *            The pairing id indicating to whom the request should be sent
+     * @param terminalName
+     *            The user-facing descriptive name for the terminal from which the request originates
+     * @param terminalNameExtra
+     *            The requester-specific key that uniquely identifies this terminal.  Can be shared
+     *            across multiple users.  The combination of userName and terminalNameExtra should
+     *            be unique for a requester
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered, or the 
+     */
+    public void assignUserFriendlyNameToTerminal(String userName, String terminalName, String terminalNameExtra) throws RequestError {
+        final String endpoint = "user_terminals/create";
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("user_name", userName));
+        params.add(new BasicNameValuePair("name", terminalName));
+        params.add(new BasicNameValuePair("name_extra", terminalNameExtra));
+
+        post(endpoint, params, null);
+    }
+
+
     private JSONObject get(String endpoint) throws RequestError {
     	return request(new HttpGet(), endpoint);
     }

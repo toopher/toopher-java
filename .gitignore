@@ -3,5 +3,6 @@
 
 ### /Users/egrim/.gitignore-boilerplates/Java.gitignore
 
+*.swp
 *.class
 

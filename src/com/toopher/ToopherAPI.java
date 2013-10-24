@@ -253,6 +253,19 @@ public class ToopherAPI {
         }
     }
 
+    public AuthenticationStatus getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {
+        final String endpoint = String.format("authentication_requests/%s/otp_auth", authenticationRequestId);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("otp", OTP));
+        JSONObject json = post(endpoint, params, null);
+        try {
+            return new AuthenticationStatus(json);
+        } catch (Exception e) {
+            throw new RequestError(e);
+        }
+    }
+
+
     /**
      * Associates a per-user "Friendly Name" to a given terminal
      * 

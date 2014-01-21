@@ -1,13 +1,12 @@
 package com.toopher;
 
-import java.io.IOException;
-
 import org.apache.http.client.ClientProtocolException;
 import org.json.JSONException;
 
+import java.io.IOException;
+
 /**
  * Request errors from API calls
- * 
  */
 public class RequestError extends Exception {
 

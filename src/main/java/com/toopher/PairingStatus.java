@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 /**
  * Provides information about the status of a pairing request
- * 
  */
 public class PairingStatus extends ApiResponseObject {
     /**
@@ -31,13 +30,13 @@ public class PairingStatus extends ApiResponseObject {
     @Override
     public String toString() {
         return String.format("[PairingStatus: id=%s; userId=%s; userName=%s, enabled=%b]", id,
-                             userId, userName, enabled);
+                userId, userName, enabled);
     }
 
-    public PairingStatus (JSONObject json) throws JSONException {
-    	super(json);
-        
-    	this.id = json.getString("id");
+    public PairingStatus(JSONObject json) throws JSONException {
+        super(json);
+
+        this.id = json.getString("id");
 
         JSONObject user = json.getJSONObject("user");
         this.userId = user.getString("id");

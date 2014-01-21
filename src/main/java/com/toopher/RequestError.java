@@ -7,7 +7,6 @@ import org.json.JSONException;
 
 /**
  * Request errors from API calls
- * 
  */
 public class RequestError extends Exception {
 

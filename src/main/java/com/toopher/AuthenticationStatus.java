@@ -3,8 +3,6 @@ package com.toopher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Map;
-
 /**
  * Provide information about the status of an authentication request
  */

@@ -1,16 +1,13 @@
 package com.toopher;
 
-//import com.toopher.ToopherAPI;
+import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import junit.framework.*;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestToopherAPI {
     private boolean isValidURL(String url) {

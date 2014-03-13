@@ -39,11 +39,11 @@ For the simple case of authenticating a user at login, the `loginIframeUrl` help
     String pairIframeUrl = iframeApi.pairIframeUrl(userName, resetEmail)
 
 ## Validating postback data from Authentication Iframe and parsing API errors
+In this example, `data` is a `Map<String, String>` of the form data POSTed to your server from the Toopher Authentication Iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
 
-    // data is a Map<String, String> of the form parameters POSTed to your server from the Toopher Authentication Iframe
     Map<String, String> validatedData = iframeApi.validate(data);
     if (validatedData == null) {
-        // signature was invalid.  User is not authenticated
+        // signature was invalid.  User should not authenticated
     } else if (validatedData.containsKey("error_code")) {
         // check for API errors
         String errorCode = validatedData.get("error_code");
@@ -55,7 +55,7 @@ For the simple case of authenticating a user at login, the `loginIframeUrl` help
         } else if (errorCode.equals(ToopherIframe.USER_OPT_OUT)) {
             // User has been marked as "Opt-Out" in the Toopher API
             //
-            // If your service allows opt-out, the user should be granted access
+            // If your service allows opt-out, the user should be granted access.
             //
         } else if (errorCode.equals(ToopherIframe.USER_UNKNOWN)) {
             // User has never authenticated with Toopher on this server

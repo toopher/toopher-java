@@ -1,2 +1,12 @@
+/bin
+/out
 build
 dist
+*.swp
+ToopherJavaDemo.jar
+
+# intellij
+.idea
+*.iml
+
+.DS_Store

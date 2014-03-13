@@ -26,11 +26,21 @@ Toopher-Iframe generates two distinct types of Iframe request:
 # Examples
 
 ## Generating a Iframe URL for Authenitcation
+Every Toopher Authentication session should include a unique `sessionToken` - a randomized `String` that is included in the signed request to the Toopher API and returned in the signed response from the Toopher-Iframe.  To guard against potential replay attacks, your code should validate that the returned `sessionToken` is the same one used to create the request.
+
+Creating a random session token and storing it in the server-side session using the Java Servlet API:
+
+    private static final SecureRandom secureRandom = new SecureRandom();
+    
+    // simple way to generate a randomized string.  
+    String sessionToken = new BigInteger(20 * 8, secureRandom).toString(32);
+    request.getSession().setAttribute("ToopherSessionToken", sessionToken);
+
 The Toopher Authentication API provides the requester a rich set of controls over authentication parameters.
 
     String authIframeUrl = iframeApi.authIframeUrl(userName, resetEmail, actionName, automationAllowed, challengeRequired, sessionToken, requesterMetadata, ttl);
 
-For the simple case of authenticating a user at login, the `loginIframeUrl` helper method is available:
+For the simple case of authenticating a user at login, a `loginIframeUrl` helper method is available:
 
     String loginIframeUrl = iframeApi.loginIframeUrl(userName, resetEmail, sessionToken)
 
@@ -41,7 +51,8 @@ For the simple case of authenticating a user at login, the `loginIframeUrl` help
 ## Validating postback data from Authentication Iframe and parsing API errors
 In this example, `data` is a `Map<String, String>` of the form data POSTed to your server from the Toopher Authentication Iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
 
-    Map<String, String> validatedData = iframeApi.validate(data);
+    String sessionToken = (String)request.getSession().getAttribute("ToopherSessionToken");
+    Map<String, String> validatedData = iframeApi.validate(data, sessionToken);
     if (validatedData == null) {
         // signature was invalid.  User should not authenticated
     } else if (validatedData.containsKey("error_code")) {

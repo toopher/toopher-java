@@ -207,7 +207,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, long ttl) {
+    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) {
         try {
             List<String> missingKeys = new ArrayList<String>();
             if (!data.containsKey("toopher_sig")) {
@@ -215,6 +215,9 @@ public final class ToopherIframe {
             }
             if (!data.containsKey("timestamp")) {
                 missingKeys.add("timestamp");
+            }
+            if (!data.containsKey("session_token")) {
+                missingKeys.add("session_token");
             }
             if (missingKeys.size() > 0) {
                 for (String missingKey : missingKeys) {
@@ -237,7 +240,8 @@ public final class ToopherIframe {
             }
 
             boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(data.get("timestamp"));
-            if(signatureValid && ttlValid) {
+            boolean sessionTokenValid = data.get("session_token").equals(sessionToken);
+            if(signatureValid && ttlValid && sessionTokenValid) {
                 return data;
             } else {
                 return null;
@@ -256,8 +260,8 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data) {
-        return validate(data, DEFAULT_TTL);
+    public Map<String, String> validate(Map<String, String> data, String sessionToken) {
+        return validate(data, sessionToken, DEFAULT_TTL);
     }
 
 

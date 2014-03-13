@@ -19,8 +19,8 @@ Toopher-Iframe generates two distinct types of Iframe request:
 
 ### Step 2: Toopher-Iframe postback validation
 1. Toopher-Iframe results posted back to server
-1. Server calls `ToopherIframe.validate()` to verify that result is valid.  `.validate()` returns a `Map` of trusted data if the signature is valid, or `null` if the signature is invalid.
-1. If the result from `.validate()` is not null, the server should check for possible errors returned by the API in the `error_code` map entry
+1. Server calls `ToopherIframe.validate()` to verify that result is valid.  `.validate()` returns a `Map` of trusted data if the signature is valid, or throws a `SignatureValidationError` if the signature is invalid.
+1. The server should check for possible errors returned by the API in the `error_code` map entry
 1. If no errors were returned, the result of the authentication is in the `granted` map entry
 
 ### Iframe HTML markup
@@ -64,33 +64,40 @@ For the simple case of authenticating a user at login, a `loginIframeUrl` helper
 In this example, `data` is a `Map<String, String>` of the form data POSTed to your server from the Toopher Authentication Iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
 
     String sessionToken = (String)request.getSession().getAttribute("ToopherSessionToken");
-    Map<String, String> validatedData = iframeApi.validate(data, sessionToken);
-    if (validatedData == null) {
-        // signature was invalid.  User should not authenticated
-    } else if (validatedData.containsKey("error_code")) {
-        // check for API errors
-        String errorCode = validatedData.get("error_code");
-        if (errorCode.equals(ToopherIframe.PAIRING_DEACTIVATED)) {
-            // User deleted the pairing on their mobile device.
-            // 
-            // Your server should display a Toopher Pairing Iframe so their account can be re-paired
-            //
-        } else if (errorCode.equals(ToopherIframe.USER_OPT_OUT)) {
-            // User has been marked as "Opt-Out" in the Toopher API
-            //
-            // If your service allows opt-out, the user should be granted access.
-            //
-        } else if (errorCode.equals(ToopherIframe.USER_UNKNOWN)) {
-            // User has never authenticated with Toopher on this server
-            //
-            // Your server should display a Toopher Pairing Iframe so their account can be paired
-            //
-        }
-    } else {
-        // signature is valid, and no api errors.  check authentication result
-        boolean authPending = validatedData.get("pending").toLowerCase().equals("true");
-        boolean authGranted = validatedData.get("granted").toLowerCase().equals("true");
+    Map<String, String> validatedData = null;
+    try {
+        validatedData = iframeApi.validate(data, sessionToken);
+        if (validatedData.containsKey("error_code")) {
+            // check for API errors
+            String errorCode = validatedData.get("error_code");
+            if (errorCode.equals(ToopherIframe.PAIRING_DEACTIVATED)) {
+                // User deleted the pairing on their mobile device.
+                // 
+                // Your server should display a Toopher Pairing Iframe so their account can be re-paired
+                //
+            } else if (errorCode.equals(ToopherIframe.USER_OPT_OUT)) {
+                // User has been marked as "Opt-Out" in the Toopher API
+                //
+                // If your service allows opt-out, the user should be granted access.
+                //
+            } else if (errorCode.equals(ToopherIframe.USER_UNKNOWN)) {
+                // User has never authenticated with Toopher on this server
+                //
+                // Your server should display a Toopher Pairing Iframe so their account can be paired
+                //
+            }
+        } else {
+            // signature is valid, and no api errors.  check authentication result
+            boolean authPending = validatedData.get("pending").toLowerCase().equals("true");
+            boolean authGranted = validatedData.get("granted").toLowerCase().equals("true");
 
-        // authenticationResult is the ultimate result of Toopher second-factor authentication
-        boolean authenticationResult = authGranted && !authPending;
+            // authenticationResult is the ultimate result of Toopher second-factor authentication
+            boolean authenticationResult = authGranted && !authPending;
+        }
+    } catch (ToopherIframe.SignatureValidationError e) {
+        // signature was invalid.  User should not authenticated
+        // 
+        // e.getMessage() will return more information about what specifically
+        // went wrong (incorrect session token, expired TTL, invalid signature)
+        // 
     }

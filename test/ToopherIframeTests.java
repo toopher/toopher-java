@@ -16,7 +16,7 @@ public class ToopherIframeTests extends TestCase {
         this.iframeApi = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET);
     }
 
-    public void testValidateGoodSignatureIsSuccessful() {
+    public void testValidateGoodSignatureIsSuccessful(){
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
@@ -25,10 +25,14 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNotNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            assertNotNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        } catch (ToopherIframe.SignatureValidationError e) {
+            fail();
+        }
     }
 
-    public void testValidateBadSignatureReturnsNull() {
+    public void testValidateBadSignatureFails(){
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
@@ -36,11 +40,15 @@ public class ToopherIframeTests extends TestCase {
         data.put("toopher_sig", "invalid");
 
         ToopherIframe.setDateOverride(TEST_DATE);
-
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("Computed signature does not match"));
+        }
     }
 
-    public void testValidateExpiredSignatureReturnsNull() {
+    public void testValidateExpiredSignatureFails() {
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
@@ -50,10 +58,15 @@ public class ToopherIframeTests extends TestCase {
         // set ToopherIframe reference clock 6 seconds ahead
         ToopherIframe.setDateOverride(new Date(TEST_DATE.getTime() + (1000 * 6)));
 
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("TTL Expired"));
+        }
     }
 
-    public void testValidateMissingTimestampReturnsNull() {
+    public void testValidateMissingTimestampFails() {
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("session_token", SESSION_TOKEN);
@@ -61,21 +74,30 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("Missing required keys: timestamp"));
+        }
     }
 
-    public void testValidateMissingSignatureReturnsNull() {
+    public void testValidateMissingSignatureFails() {
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("session_token", SESSION_TOKEN);
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
 
         ToopherIframe.setDateOverride(TEST_DATE);
-
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("Missing required keys: toopher_sig"));
+        }
     }
 
-    public void testInvalidSessionTokenReturnsNull() {
+    public void testInvalidSessionTokenFails() {
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
@@ -83,19 +105,27 @@ public class ToopherIframeTests extends TestCase {
         data.put("toopher_sig", "6d2c7GlQssGmeYYGpcf+V/kirOI=");
 
         ToopherIframe.setDateOverride(TEST_DATE);
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("Session token does not match expected value"));
+        }
+}
 
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
-    }
-
-    public void testMissingSessionTokenReturnsNull() {
+    public void testMissingSessionTokenFails() {
         Map<String, String> data = new HashMap<String, String>();
         data.put("foo", "bar");
         data.put("timestamp", String.valueOf(TEST_DATE.getTime() / 1000));
         data.put("toopher_sig", "6d2c7GlQssGmeYYGpcf+V/kirOI=");
 
         ToopherIframe.setDateOverride(TEST_DATE);
-
-        assertNull(iframeApi.validate(data, SESSION_TOKEN, 5));
+        try {
+            iframeApi.validate(data, SESSION_TOKEN, 5);
+            fail();
+        } catch (ToopherIframe.SignatureValidationError e) {
+            assertTrue(e.getMessage().contains("Missing required keys: session_token"));
+        }
     }
 
 

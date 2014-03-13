@@ -30,6 +30,15 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public final class ToopherIframe {
+    public class SignatureValidationError extends Exception {
+        public SignatureValidationError(String message) {
+            super(message);
+        }
+        public SignatureValidationError(String message, Exception cause) {
+            super(message, cause);
+        }
+    }
+
     private static final String IFRAME_VERSION = "2";
 
     /**
@@ -207,7 +216,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) {
+    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) throws SignatureValidationError {
         try {
             List<String> missingKeys = new ArrayList<String>();
             if (!data.containsKey("toopher_sig")) {
@@ -220,10 +229,19 @@ public final class ToopherIframe {
                 missingKeys.add("session_token");
             }
             if (missingKeys.size() > 0) {
+                String errorMessage = "Missing required keys: ";
+                String separator = "";
                 for (String missingKey : missingKeys) {
-                    logger.debug("Missing required key: " + missingKey);
+                    errorMessage = errorMessage + separator + missingKey;
+                    separator = ",";
                 }
-                return null;
+                logger.debug(errorMessage);
+                throw new SignatureValidationError(errorMessage);
+            }
+
+            boolean sessionTokenValid = data.get("session_token").equals(sessionToken);
+            if (!sessionTokenValid) {
+                throw new SignatureValidationError("Session token does not match expected value");
             }
 
             String maybeSig = data.get("toopher_sig");
@@ -238,17 +256,22 @@ public final class ToopherIframe {
                 logger.debug("error while calculating signature", e);
                 signatureValid = false;
             }
+            if (!signatureValid) {
+                throw new SignatureValidationError("Computed signature does not match");
+            }
 
             boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(data.get("timestamp"));
-            boolean sessionTokenValid = data.get("session_token").equals(sessionToken);
-            if(signatureValid && ttlValid && sessionTokenValid) {
-                return data;
-            } else {
-                return null;
+            if (!ttlValid) {
+                throw new SignatureValidationError("TTL Expired");
             }
+
+
+            return data;
+        } catch (SignatureValidationError s) {
+            throw s;
         } catch (Exception e) {
             logger.debug("Exception while validating toopher signature", e);
-            return null;
+            throw new SignatureValidationError("Exception while validating toopher signature", e);
         }
     }
 
@@ -260,7 +283,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken) {
+    public Map<String, String> validate(Map<String, String> data, String sessionToken) throws SignatureValidationError {
         return validate(data, sessionToken, DEFAULT_TTL);
     }
 

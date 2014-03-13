@@ -5,8 +5,15 @@ import java.util.HashMap;
 import junit.framework.*;
 
 public class ToopherIframeTests extends TestCase {
+    static private final String TOOPHER_CONSUMER_KEY = "abcdefg";
     static private final String TOOPHER_CONSUMER_SECRET = "hijklmnop";
     static private final Date TEST_DATE = new Date(1000000);
+
+    private ToopherIframe iframeApi;
+
+    public void setUp() {
+        this.iframeApi = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET);
+    }
 
     public void testValidateGoodSignatureIsSuccessful() {
         Map<String, String> data = new HashMap<String, String>();
@@ -16,7 +23,7 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNotNull(ToopherIframe.validate(TOOPHER_CONSUMER_SECRET, data, 5));
+        assertNotNull(iframeApi.validate(data, 5));
     }
 
     public void testValidateBadSignatureReturnsNull() {
@@ -27,7 +34,7 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNull(ToopherIframe.validate(TOOPHER_CONSUMER_SECRET, data, 5));
+        assertNull(iframeApi.validate(data, 5));
     }
 
     public void testValidateExpiredSignatureReturnsNull() {
@@ -39,7 +46,7 @@ public class ToopherIframeTests extends TestCase {
         // set ToopherIframe reference clock 6 seconds ahead
         ToopherIframe.setDateOverride(new Date(TEST_DATE.getTime() + (1000 * 6)));
 
-        assertNull(ToopherIframe.validate(TOOPHER_CONSUMER_SECRET, data, 5));
+        assertNull(iframeApi.validate(data, 5));
     }
 
     public void testValidateMissingTimestampReturnsNull() {
@@ -49,7 +56,7 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNull(ToopherIframe.validate(TOOPHER_CONSUMER_SECRET, data, 5));
+        assertNull(iframeApi.validate(data, 5));
     }
 
     public void testValidateMissingSignatureReturnsNull() {
@@ -59,6 +66,6 @@ public class ToopherIframeTests extends TestCase {
 
         ToopherIframe.setDateOverride(TEST_DATE);
 
-        assertNull(ToopherIframe.validate(TOOPHER_CONSUMER_SECRET, data, 5));
+        assertNull(iframeApi.validate(data, 5));
     }
 }

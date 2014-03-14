@@ -67,9 +67,11 @@ For the simple case of authenticating a user at login, a `loginIframeUrl` helper
 In this example, `data` is a `Map<String, String>` of the form data POSTed to your server from the Toopher Authentication iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
 
     String requestToken = (String)request.getSession().getAttribute("ToopherRequestToken");
-    Map<String, String> validatedData = null;
+    // invalidate the Request Token to guard against replay attacks
+    request.getSession().removeAttribute("ToopherRequestToken");
+
     try {
-        validatedData = iframeApi.validate(data, requestToken);
+        Map<String, String> validatedData = iframeApi.validate(data, requestToken);
         if (validatedData.containsKey("error_code")) {
             // check for API errors
             String errorCode = validatedData.get("error_code");

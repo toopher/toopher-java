@@ -11,7 +11,7 @@ Two distinct iframe flows are required:
 * the *Pairing* request is used to pair a user account with a particular mobile device (this is typically a one-time process)
 * the *Authentication* request to authenticate a particular action on behalf of a user
 
-## Toopher `<iframe>` Authentication Workflow
+## Authentication Workflow
 ### Primary Authentication
 We recommend using some form of primary authentication before initiating a Toopher authentication request.  Typical primary authentication methods involve verifying that the user has a valid username and password to access the resource being protected.
 
@@ -19,10 +19,7 @@ We recommend using some form of primary authentication before initiating a Tooph
 After verifying the user's primary authentication, but before Assuming the user's primary authentication checks out, the next step is to kickoff Toopher authentication.
 
 1. Generate a URI by specifying the request parameters to the library as detailed below
-2. Display a webpage to your user that embeds this URI within an `iframe` such as this:
-
-    <script src="/js/toopher-web.js"></script>
-    <iframe id="toopher_iframe" src="{{IFRAME_REQUEST_URL}}" toopher_postback="{{POSTBACK_URL}}" ></iframe>
+1. Display a webpage to your user that embeds this URI within an iframe element.  The markup requirements for the iframe element are described in the "HTML Markup" section
 
 ### Step 2: Validate the result
 1. Toopher-iframe results posted back to server
@@ -44,7 +41,7 @@ There is no difference in the markup required for a Pairing vs. an Authenticatio
 
 # Examples
 
-#### Generating an Authentication iframe URL for
+#### Generating an Authentication iframe URI
 Every Toopher Authentication session should include a unique `requestToken` - a randomized `String` that is included in the signed request to the Toopher API and returned in the signed response from the Toopher `<iframe>`.  To guard against potential replay attacks, your code should validate that the returned `requestToken` is the same one used to create the request.
 
 Creating a random request token and storing it in the server-side session using the Java Servlet API:

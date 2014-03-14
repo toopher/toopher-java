@@ -160,7 +160,7 @@ public final class ToopherIframe {
      * @param challengeRequired
      *          If set to true, the user must correctly respond to a challenge on their device
      *          before the response will be sent
-     * @param sessionToken
+     * @param requestToken
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
      * @param requesterMetadata
@@ -172,7 +172,7 @@ public final class ToopherIframe {
      * @return
      *          URI that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl) {
+    public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String requestToken, String requesterMetadata, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
@@ -180,7 +180,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("automation_allowed", automationAllowed ? "True" : "False"));
         params.add(new BasicNameValuePair("challenge_required", challengeRequired ? "True" : "False"));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("session_token", sessionToken));
+        params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
         return getOAuthUri(baseUri + "web/auth", params, consumerKey, consumerSecret);
@@ -195,18 +195,18 @@ public final class ToopherIframe {
      * @param resetEmail
      *          Email address that the user has access to.  In case the user has lost or cannot
      *          access their mobile device, Toopher will send a reset email to this address
-     * @param sessionToken
+     * @param requestToken
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
      * @return
      *          URI that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String loginUri(String userName, String resetEmail, String sessionToken) {
-        return authUri(userName, resetEmail, "Log In", true, false, sessionToken, null, DEFAULT_TTL);
+    public String loginUri(String userName, String resetEmail, String requestToken) {
+        return authUri(userName, resetEmail, "Log In", true, false, requestToken, null, DEFAULT_TTL);
     }
 
     /**
-     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
      * @param data
      *          The data returned from the Iframe

@@ -117,7 +117,7 @@ public final class ToopherIframe {
      * @return
      *          URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
-    public String pairIframeUrl(String userName, String resetEmail, long ttl) {
+    public String pairUrl(String userName, String resetEmail, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
@@ -138,8 +138,8 @@ public final class ToopherIframe {
      * @return
      *          URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
-    public String pairIframeUrl(String userName, String resetEmail) {
-        return this.pairIframeUrl(userName, resetEmail, DEFAULT_TTL);
+    public String pairUrl(String userName, String resetEmail) {
+        return this.pairUrl(userName, resetEmail, DEFAULT_TTL);
     }
 
     /**
@@ -172,7 +172,7 @@ public final class ToopherIframe {
      * @return
      *          URL that can be used to retrieve the Authentication Iframe by the user's browser
      */
-    public String authIframeUrl(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl) {
+    public String authUrl(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
@@ -201,8 +201,8 @@ public final class ToopherIframe {
      * @return
      *          URL that can be used to retrieve the Authentication Iframe by the user's browser
      */
-    public String loginIframeUrl(String userName, String resetEmail, String sessionToken) {
-        return authIframeUrl(userName, resetEmail, "Log In", true, false, sessionToken, null, DEFAULT_TTL);
+    public String loginUrl(String userName, String resetEmail, String sessionToken) {
+        return authUrl(userName, resetEmail, "Log In", true, false, sessionToken, null, DEFAULT_TTL);
     }
 
     /**

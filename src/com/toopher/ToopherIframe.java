@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Java helper library to generate Toopher Iframe requests and validate responses.
+ * Java helper library to generate Toopher iframe requests and validate responses.
  *
  * Register at https://dev.toopher.com to get your Toopher Developer API Credentials.
  *
@@ -42,11 +42,11 @@ public final class ToopherIframe {
     private static final String IFRAME_VERSION = "2";
 
     /**
-     * Default amount of time that Iframe requests are valid (seconds)
+     * Default amount of time that iframe requests are valid (seconds)
      */
     private static final long DEFAULT_TTL = 10L;
 
-    private static final String DEFAULT_BASE_URL = "https://api.toopher.com/v1/";
+    private static final String DEFAULT_BASE_URI = "https://api.toopher.com/v1/";
 
     /**
      * Error codes that may be returned by the Toopher API
@@ -72,7 +72,7 @@ public final class ToopherIframe {
         }
     }
 
-    private String baseUrl;
+    private String baseUri;
     private String consumerKey;
     private String consumerSecret;
 
@@ -84,7 +84,7 @@ public final class ToopherIframe {
      *          Your Toopher API OAuth Consumer Secret
      */
     public ToopherIframe(String consumerKey, String consumerSecret) {
-        this(consumerKey, consumerSecret, DEFAULT_BASE_URL);
+        this(consumerKey, consumerSecret, DEFAULT_BASE_URI);
     }
 
     /**
@@ -93,13 +93,13 @@ public final class ToopherIframe {
      *          Your Toopher API OAuth Consumer Key
      * @param consumerSecret
      *          Your Toopher API OAuth Consumer Secret
-     * @param baseUrl
-     *          The base url of the Toopher API to target
+     * @param baseUri
+     *          The base uri of the Toopher API to target
      */
-    public ToopherIframe(String consumerKey, String consumerSecret, String baseUrl) {
+    public ToopherIframe(String consumerKey, String consumerSecret, String baseUri) {
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
-        this.baseUrl = baseUrl;
+        this.baseUri = baseUri;
     }
 
     /**
@@ -115,15 +115,15 @@ public final class ToopherIframe {
      *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
      *          API will no longer allow the iframe to be fetched by the browser
      * @return
-     *          URL that can be used to retrieve the Pairing Iframe by the user's browser
+     *          URI that can be used to retrieve the Pairing Iframe by the user's browser
      */
-    public String pairUrl(String userName, String resetEmail, long ttl) {
+    public String pairUri(String userName, String resetEmail, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
-        return getOAuthUrl(baseUrl + "web/pair", params, consumerKey, consumerSecret);
+        return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
     }
 
     /**
@@ -136,10 +136,10 @@ public final class ToopherIframe {
      *          Email address that the user has access to.  In case the user has lost or cannot
      *          access their mobile device, Toopher will send a reset email to this address
      * @return
-     *          URL that can be used to retrieve the Pairing Iframe by the user's browser
+     *          URI that can be used to retrieve the Pairing iframe by the user's browser
      */
-    public String pairUrl(String userName, String resetEmail) {
-        return this.pairUrl(userName, resetEmail, DEFAULT_TTL);
+    public String pairUri(String userName, String resetEmail) {
+        return this.pairUri(userName, resetEmail, DEFAULT_TTL);
     }
 
     /**
@@ -170,9 +170,9 @@ public final class ToopherIframe {
      *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
      *          API will no longer allow the iframe to be fetched by the browser
      * @return
-     *          URL that can be used to retrieve the Authentication Iframe by the user's browser
+     *          URI that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String authUrl(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl) {
+    public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String sessionToken, String requesterMetadata, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
@@ -183,11 +183,11 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("session_token", sessionToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
-        return getOAuthUrl(baseUrl + "web/auth", params, consumerKey, consumerSecret);
+        return getOAuthUri(baseUri + "web/auth", params, consumerKey, consumerSecret);
     }
 
     /**
-     * Simplified interface to generate a "Log In" Iframe url, with sensible defaults
+     * Simplified interface to generate a "Log In" iframe uri, with sensible defaults
      *
      * @param userName
      *          Unique name that identifies this user.  This will be displayed to the user on
@@ -199,10 +199,10 @@ public final class ToopherIframe {
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
      * @return
-     *          URL that can be used to retrieve the Authentication Iframe by the user's browser
+     *          URI that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String loginUrl(String userName, String resetEmail, String sessionToken) {
-        return authUrl(userName, resetEmail, "Log In", true, false, sessionToken, null, DEFAULT_TTL);
+    public String loginUri(String userName, String resetEmail, String sessionToken) {
+        return authUri(userName, resetEmail, "Log In", true, false, sessionToken, null, DEFAULT_TTL);
     }
 
     /**
@@ -289,7 +289,7 @@ public final class ToopherIframe {
 
 
 
-        private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
+    private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
         TreeSet<String> sortedKeys = new TreeSet<String>(data.keySet());
         List<NameValuePair> sortedParams = new ArrayList<NameValuePair>(data.size());
         for(String key : sortedKeys) {
@@ -304,19 +304,19 @@ public final class ToopherIframe {
         return org.apache.commons.codec.binary.Base64.encodeBase64String(mac.doFinal(toSign.getBytes())).trim();
     }
 
-    private static final String getOAuthUrl(String url, List<NameValuePair> params, String key, String secret) {
+    private static final String getOAuthUri(String uri, List<NameValuePair> params, String key, String secret) {
         final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
 
         HttpParameters additionalParameters = new HttpParameters();
         additionalParameters.put("oauth_timestamp", String.valueOf(getDate().getTime() / 1000));
         consumer.setAdditionalParameters(additionalParameters);
         try {
-            return consumer.sign(url + "?" + URLEncodedUtils.format(params, "UTF-8"));
+            return consumer.sign(uri + "?" + URLEncodedUtils.format(params, "UTF-8"));
         } catch (OAuthException e) {
             try {
-                return url + "web/error.html?message=" + URLEncoder.encode(e.getMessage(), "UTF-8");
+                return uri + "web/error.html?message=" + URLEncoder.encode(e.getMessage(), "UTF-8");
             } catch (UnsupportedEncodingException f) {
-                return url + "web/error.html?message=Unknown%20Error";
+                return uri + "web/error.html?message=Unknown%20Error";
             }
         }
     }

@@ -96,9 +96,31 @@ public class ToopherAPI {
      *            The alternate URI
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri) {
-    	httpClient = new DefaultHttpClient();
-        HttpProtocolParams.setUserAgent(httpClient.getParams(),
-                                        String.format("ToopherJava/%s", VERSION));
+        this(consumerKey, consumerSecret, uri, null);
+    }
+
+
+    /**
+     * Create an API object with the supplied credentials and API URI,
+     * overriding the default HTTP client.
+     *
+     * @param consumerKey
+     *     The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret
+     *     The consumer secret for a requester (obtained from the developer portal)
+     * @param uri
+     *     The alternate URI
+     * @param httpClient
+     *     The alternate HTTP client
+     */
+    public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
+        if (httpClient == null) {
+            this.httpClient = new DefaultHttpClient();
+            HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
+                                            String.format("Toopher-Java/%s", VERSION));
+        } else {
+            this.httpClient = httpClient;
+        }
 
         consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
         if (uri == null){

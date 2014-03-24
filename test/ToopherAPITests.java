@@ -34,12 +34,14 @@ public class ToopherAPITests {
         return createURI(url) != null;
     }
 
+    @Test
     public void testBaseURL() {
         assertNotNull("Base URL is null.", ToopherAPI.getBaseURL());
         assertTrue("Base URL is not valid.",
                    isValidURL(ToopherAPI.getBaseURL()));
     }
 
+    @Test
     public void testVersion() {
         assertNotNull("Version is not null.", ToopherAPI.VERSION);
     }

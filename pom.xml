@@ -13,6 +13,12 @@
     <description>Java bindings for the Toopher web service API</description>
     <url>https://dev.toopher.com</url>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <licenses>
         <license>
             <name>The MIT License</name>

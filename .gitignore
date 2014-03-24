@@ -1,2 +1,10 @@
 build
 dist
+
+.DS_Store
+/ToopherJavaDemo.jar
+
+### /Users/egrim/.gitignore-boilerplates/Java.gitignore
+
+*.swp
+*.class

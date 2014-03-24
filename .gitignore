@@ -1,10 +1,25 @@
 build
 dist
+target
 
-.DS_Store
-/ToopherJavaDemo.jar
-
-### /Users/egrim/.gitignore-boilerplates/Java.gitignore
-
+.project
+.metadata
+bin/**
+tmp/**
+tmp/**/*
+*.tmp
+*.bak
 *.swp
+*~.nib
+local.properties
+.classpath
+.settings
+.idea
+
 *.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*

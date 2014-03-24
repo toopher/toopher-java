@@ -541,9 +541,4 @@ public class ToopherAPI {
                         statusLine.getReasonPhrase()));
         }
     }
-
-    private static final String DEFAULT_URI_SCHEME = "https";
-    private static final String DEFAULT_URI_HOST = "api.toopher.com";
-    private static final String DEFAULT_URI_BASE = "/v1/";
-    private static final int DEFAULT_URI_PORT = 443;
 }

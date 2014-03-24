@@ -29,7 +29,7 @@ This library makes it super simple to do the Toopher two-step.  Check it out:
 import com.toopher.*;
 
 // Create an API object using your credentials
-ToopherApi api = new ToopherApi("<your consumer key>", "<your consumer secret>");
+ToopherAPI api = new ToopherAPI("<your consumer key>", "<your consumer secret>");
 
 // Step 1 - Pair with their phone's Toopher app
 PairingStatus pairing = api.pair("pairing phrase", "username@yourservice.com");
@@ -39,7 +39,7 @@ AuthenticationStatus auth = api.authenticate(pairing.id, "my computer");
 
 // Once they've responded you can then check the status
 AuthenticationStatus status = api.getAuthenticationStatus(auth.id);
-if (auth.pending == false && auth.granted == true) {
+if (status.pending == false && status.granted == true) {
     // Success!
 }
 ```
@@ -49,6 +49,15 @@ If any request runs into an error a `RequestError` will be thrown with more deta
 
 #### Dependencies
 This library uses the Apache Commons HttpClient and OAuth-Signpost libraries, which are included as JARs in the "lib" directory.  Please add these JARs to your classpath when using our library.
+
+##### Maven
+Alternatively, you can consume this library using Maven:
+
+    <dependency>
+        <groupId>com.toopher</groupId>
+        <artifactId>toopher-java</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </dependency>
 
 #### Try it out
 Check out `com.toopher.ToopherAPIDemo.java` for an example program that walks you through the whole process!  A runnable jar for the demo can be built and executed as follows:

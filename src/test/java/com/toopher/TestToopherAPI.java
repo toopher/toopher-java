@@ -6,7 +6,7 @@ import java.net.*;
 
 import static org.junit.Assert.*;
 
-public class ToopherAPITests {
+public class TestToopherAPI {
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,

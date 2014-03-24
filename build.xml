@@ -30,8 +30,8 @@
   <property name="base.name" value="toopher-1.0.0"/>
 
   <!-- Standard Directory Layout -->
-  <property name="src.dir" value="src"/>
-  <property name="test.dir" value="test"/>
+  <property name="src.dir" value="src/main/java"/>
+  <property name="test.dir" value="src/test/java"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
 

@@ -40,9 +40,9 @@ public class PairingStatus extends ApiResponseObject {
     }
 
     public PairingStatus (JSONObject json) throws JSONException {
-    	super(json);
-        
-    	this.id = json.getString("id");
+        super(json);
+
+        this.id = json.getString("id");
 
         JSONObject user = json.getJSONObject("user");
         this.userId = user.getString("id");

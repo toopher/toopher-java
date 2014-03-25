@@ -28,10 +28,15 @@ public class PairingStatus extends ApiResponseObject {
      */
     public boolean enabled;
 
+    /**
+     * Indicates if the user has reacted to the pairing request
+     */
+    public boolean pending;
+
     @Override
     public String toString() {
-        return String.format("[PairingStatus: id=%s; userId=%s; userName=%s, enabled=%b]", id,
-                             userId, userName, enabled);
+        return String.format("[PairingStatus: id=%s; userId=%s; userName=%s, pending=%b, enabled=%b]", id,
+                             userId, userName, pending, enabled);
     }
 
     public PairingStatus (JSONObject json) throws JSONException {
@@ -42,7 +47,7 @@ public class PairingStatus extends ApiResponseObject {
         JSONObject user = json.getJSONObject("user");
         this.userId = user.getString("id");
         this.userName = user.getString("name");
-
+        this.enabled = json.getBoolean("pending");
         this.enabled = json.getBoolean("enabled");
     }
 }

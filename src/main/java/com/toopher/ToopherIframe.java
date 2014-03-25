@@ -72,6 +72,11 @@ public final class ToopherIframe {
         }
     }
 
+    private static String nonceOverride = null;
+    public static void setNonceOverride(String nonceOverride) {
+        ToopherIframe.nonceOverride = nonceOverride;
+    }
+
     private String baseUri;
     private String consumerKey;
     private String consumerSecret;
@@ -122,7 +127,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
+        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
     }
 
@@ -174,6 +179,11 @@ public final class ToopherIframe {
      */
     public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String requestToken, String requesterMetadata, long ttl) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
+
+        if (requesterMetadata == null) {
+            requesterMetadata = "None";
+        }
+
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("action_name", actionName));
@@ -182,7 +192,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
-        params.add(new BasicNameValuePair("expires", String.valueOf((new Date().getTime() / 1000) + ttl)));
+        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUri(baseUri + "web/auth", params, consumerKey, consumerSecret);
     }
 
@@ -309,9 +319,13 @@ public final class ToopherIframe {
 
         HttpParameters additionalParameters = new HttpParameters();
         additionalParameters.put("oauth_timestamp", String.valueOf(getDate().getTime() / 1000));
+        if (ToopherIframe.nonceOverride != null) {
+            additionalParameters.put("oauth_nonce", ToopherIframe.nonceOverride);
+        }
         consumer.setAdditionalParameters(additionalParameters);
         try {
-            return consumer.sign(uri + "?" + URLEncodedUtils.format(params, "UTF-8"));
+            String result = consumer.sign(uri + "?" + URLEncodedUtils.format(params, "UTF-8"));
+            return result;
         } catch (OAuthException e) {
             try {
                 return uri + "web/error.html?message=" + URLEncoder.encode(e.getMessage(), "UTF-8");

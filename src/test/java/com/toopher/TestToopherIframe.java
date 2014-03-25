@@ -11,7 +11,7 @@ import org.junit.*;
 import org.apache.http.client.utils.URLEncodedUtils;
 import static org.junit.Assert.*;
 
-public class ToopherIframeTests {
+public class TestToopherIframe {
     static private final String TOOPHER_CONSUMER_KEY = "abcdefg";
     static private final String TOOPHER_CONSUMER_SECRET = "hijklmnop";
     static private final String REQUEST_TOKEN = "s9s7vsb";

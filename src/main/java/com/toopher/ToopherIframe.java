@@ -275,7 +275,6 @@ public final class ToopherIframe {
                 throw new SignatureValidationError("TTL Expired");
             }
 
-
             return data;
         } catch (SignatureValidationError s) {
             throw s;

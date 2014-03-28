@@ -47,7 +47,7 @@ public class PairingStatus extends ApiResponseObject {
         JSONObject user = json.getJSONObject("user");
         this.userId = user.getString("id");
         this.userName = user.getString("name");
-        this.enabled = json.getBoolean("pending");
+        this.pending = json.getBoolean("pending");
         this.enabled = json.getBoolean("enabled");
     }
 }

@@ -18,6 +18,11 @@ public class TestToopherAPI {
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
+        
+        assertEquals(pairing.userId, "1");
+        assertEquals(pairing.userName, "some user");
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
     }
 
     private URI createURI(String url) {

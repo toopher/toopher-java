@@ -242,7 +242,7 @@ public final class ToopherIframe {
                 String errorMessage = "Missing required keys: ";
                 String separator = "";
                 for (String missingKey : missingKeys) {
-                    errorMessage = errorMessage + separator + missingKey;
+                    errorMessage = new StringBuilder().append(errorMessage).append(separator).append(missingKey).toString();
                     separator = ",";
                 }
                 logger.debug(errorMessage);

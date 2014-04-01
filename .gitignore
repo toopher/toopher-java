@@ -1,5 +1,14 @@
+/bin
+/out
 build
 dist
+ToopherJavaDemo.jar
+
+# intellij
+.idea
+*.iml
+
+.DS_Store
 target
 
 .project

@@ -239,12 +239,13 @@ public final class ToopherIframe {
                 missingKeys.add("session_token");
             }
             if (missingKeys.size() > 0) {
-                String errorMessage = "Missing required keys: ";
+                StringBuilder errorMessageBuilder = new StringBuilder("Missing required keys: ");
                 String separator = "";
                 for (String missingKey : missingKeys) {
-                    errorMessage = new StringBuilder().append(errorMessage).append(separator).append(missingKey).toString();
+                    errorMessageBuilder.append(separator).append(missingKey);
                     separator = ",";
                 }
+                String errorMessage = errorMessageBuilder.toString();
                 logger.debug(errorMessage);
                 throw new SignatureValidationError(errorMessage);
             }

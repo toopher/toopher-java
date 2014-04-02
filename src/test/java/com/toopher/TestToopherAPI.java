@@ -10,7 +10,7 @@ public class TestToopherAPI {
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
-                "{'id':'1','enabled':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
@@ -18,6 +18,11 @@ public class TestToopherAPI {
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
+        
+        assertEquals(pairing.userId, "1");
+        assertEquals(pairing.userName, "some user");
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
     }
 
     private URI createURI(String url) {

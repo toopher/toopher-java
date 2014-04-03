@@ -1,9 +1,11 @@
 package com.toopher;
 
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.TreeSet;
 import java.net.URLEncoder;
 
@@ -226,7 +228,15 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) throws SignatureValidationError {
+    public Map<String, String> validate(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
+        Map<String, String> data= new HashMap<String, String>();
+        for(String key : params.keySet()) {
+            String[] val = params.get(key);
+            if (Array.getLength(val) > 0) {
+                data.put(key, val[0]);
+            }
+        }
+
         try {
             List<String> missingKeys = new ArrayList<String>();
             if (!data.containsKey("toopher_sig")) {
@@ -293,7 +303,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken) throws SignatureValidationError {
+    public Map<String, String> validate(Map<String, String[]> data, String sessionToken) throws SignatureValidationError {
         return validate(data, sessionToken, DEFAULT_TTL);
     }
 

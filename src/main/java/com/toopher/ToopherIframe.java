@@ -1,6 +1,5 @@
 package com.toopher;
 
-import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -305,7 +304,7 @@ public final class ToopherIframe {
         Map<String, String> result = new HashMap<String, String>();
         for(String key : params.keySet()) {
             String[] val = params.get(key);
-            if (Array.getLength(val) > 0) {
+            if (val.length > 0) {
                 result.put(key, val[0]);
             }
         }

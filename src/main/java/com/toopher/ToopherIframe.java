@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.TreeSet;
 import java.net.URLEncoder;
 
@@ -218,7 +219,7 @@ public final class ToopherIframe {
     /**
      * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
-     * @param data
+     * @param params
      *          The data returned from the Iframe
      * @param ttl
      *          Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
@@ -226,7 +227,9 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) throws SignatureValidationError {
+    public Map<String, String> validate(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
+        Map<String, String> data = flattenParams(params);
+
         try {
             List<String> missingKeys = new ArrayList<String>();
             if (!data.containsKey("toopher_sig")) {
@@ -288,15 +291,25 @@ public final class ToopherIframe {
     /**
      * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
      *
-     * @param data
+     * @param params
      *          The data returned from the Iframe
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String> data, String sessionToken) throws SignatureValidationError {
-        return validate(data, sessionToken, DEFAULT_TTL);
+    public Map<String, String> validate(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
+        return validate(params, sessionToken, DEFAULT_TTL);
     }
 
+    private static Map<String, String> flattenParams(Map<String, String[]> params) {
+        Map<String, String> result = new HashMap<String, String>();
+        for(String key : params.keySet()) {
+            String[] val = params.get(key);
+            if (val.length > 0) {
+                result.put(key, val[0]);
+            }
+        }
+        return result;
+    }
 
 
     private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {

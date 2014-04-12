@@ -64,8 +64,9 @@ For the simple case of authenticating a user at login, a `loginIframeUrl` helper
     String pairIframeUrl = iframeApi.pairUri(userName, resetEmail)
 
 #### Validating postback data from Authentication iframe and parsing API errors
-In this example, `data` is a `Map<String, String>` of the form data POSTed to your server from the Toopher Authentication iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
+In this example, `data` is a `Map<String, String[]>` of the form data POSTed to your server from the Toopher Authentication iframe.  You should replace the commented blocks with code appropriate for the condition described in the comment.
 
+    Map<String, String[]> data = httpServletRequest.getParameterMap();
     String requestToken = (String)request.getSession().getAttribute("ToopherRequestToken");
     // invalidate the Request Token to guard against replay attacks
     request.getSession().removeAttribute("ToopherRequestToken");

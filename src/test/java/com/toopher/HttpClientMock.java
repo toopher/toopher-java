@@ -1,4 +1,4 @@
-package com.toopher.test;
+package com.toopher;
 
 import org.apache.http.*;
 import org.apache.http.client.*;

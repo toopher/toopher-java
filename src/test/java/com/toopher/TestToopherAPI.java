@@ -1,4 +1,4 @@
-package com.toopher.test;
+package com.toopher;
 
 import com.toopher.*;
 import org.junit.*;
@@ -19,6 +19,40 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
         
+        assertEquals(pairing.userId, "1");
+        assertEquals(pairing.userName, "some user");
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
+    }
+
+    @Test
+    public void testGetPairingStatus() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200,
+                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        PairingStatus pairing = toopherApi.getPairingStatus("1");
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
+
+        assertEquals(pairing.userId, "1");
+        assertEquals(pairing.userName, "some user");
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
+    }
+
+    @Test
+    public void testCreateQrPairing() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200,
+                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        PairingStatus pairing = toopherApi.pairWithQrCode("some user");
+
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+
         assertEquals(pairing.userId, "1");
         assertEquals(pairing.userName, "some user");
         assertTrue(pairing.pending);

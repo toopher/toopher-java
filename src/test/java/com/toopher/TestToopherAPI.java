@@ -79,8 +79,7 @@ public class TestToopherAPI {
     @Test
     public void testBaseURL() {
         assertNotNull("Base URL is null.", ToopherAPI.getBaseURL());
-        assertTrue("Base URL is not valid.",
-                   isValidURL(ToopherAPI.getBaseURL()));
+        assertTrue("Base URL is not valid.", isValidURL(ToopherAPI.getBaseURL()));
     }
 
     @Test

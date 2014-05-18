@@ -1,8 +1,11 @@
 package com.toopher;
 
-import com.toopher.*;
-import org.junit.*;
-import java.net.*;
+import org.junit.Test;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static org.junit.Assert.*;
 

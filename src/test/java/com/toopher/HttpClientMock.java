@@ -1,19 +1,24 @@
 package com.toopher;
 
-import org.apache.http.*;
-import org.apache.http.client.*;
-import org.apache.http.client.methods.*;
-import org.apache.http.client.utils.*;
-import org.apache.http.entity.*;
-import org.apache.http.impl.client.*;
-import org.apache.http.message.*;
-import org.apache.http.params.*;
-import org.apache.http.protocol.*;
-import org.junit.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.junit.Ignore;
 
-import java.io.*;
-import java.net.*;
-import java.util.concurrent.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.concurrent.Semaphore;
 
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {

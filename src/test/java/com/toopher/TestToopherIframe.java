@@ -46,7 +46,7 @@ public class TestToopherIframe {
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
         Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.authUri("jdoe", "jdoe@example.com", "Log In", true, false, REQUEST_TOKEN, null, REQUEST_TTL), Charset.forName("UTF-8")));
-        assertEquals("bpgdxhHLDwpYsbru+nz2p9pFlr4=", params.get("oauth_signature"));
+        assertEquals("PykRbVHUP2OTTjGF0GJaS5TTu54=", params.get("oauth_signature"));
     }
 
     @Test

@@ -194,7 +194,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/auth", params, consumerKey, consumerSecret);
+        return getOAuthUri(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
     }
 
     /**

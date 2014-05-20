@@ -114,7 +114,7 @@ public final class ToopherIframe {
      * @param userName
      *          Unique name that identifies this user.  This will be displayed to the user on
      *          their mobile device when they pair or authenticate
-     * @param resetEmail
+     * @param resetEmail (optional)
      *          Email address that the user has access to.  In case the user has lost or cannot
      *          access their mobile device, Toopher will send a reset email to this address
      * @param ttl
@@ -127,7 +127,9 @@ public final class ToopherIframe {
         final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail));
+        if (resetEmail != null) {
+            params.add(new BasicNameValuePair("reset_email", resetEmail));
+        }
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
     }

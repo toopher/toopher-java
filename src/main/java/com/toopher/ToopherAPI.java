@@ -218,6 +218,44 @@ public class ToopherAPI {
     }
 
     /**
+     * Create a pairing that is presented as a QR code
+     *
+     * @param userName
+     *            A user-facing descriptive name for the user (displayed in requests)
+     * @return A PairingStatus object
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered
+     */
+    public PairingStatus pairWithQrCode(String userName) throws RequestError {
+        return this.pairWithQrCode(userName, null);
+    }
+
+    /**
+     * Create a pairing that is presented as a QR code
+     *
+     * @param userName
+     *            A user-facing descriptive name for the user (displayed in requests)
+     * @param extras
+     *            An optional Map of extra parameters to provide to the API
+     * @return A PairingStatus object
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered
+     */
+    public PairingStatus pairWithQrCode(String userName, Map<String, String> extras) throws RequestError {
+        final String endpoint = "pairings/create/qr";
+
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("user_name", userName));
+
+        JSONObject json = post(endpoint, params, extras);
+        try {
+            return new PairingStatus(json);
+        } catch (Exception e) {
+            throw new RequestError(e);
+        }
+    }
+
+    /**
      * Initiate a login authentication request
      *
      * @param pairingId

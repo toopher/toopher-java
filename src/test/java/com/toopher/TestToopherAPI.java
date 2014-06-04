@@ -99,6 +99,22 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledData("extra_parameter"), extraParameter);
     }
 
+    @Test
+    public void testAuthenticateByUserName() throws InterruptedException {
+        String extraTerminalName = "terminalNameExtra";
+        String userName = "userName";
+        String actionName = "action";
+        HttpClientMock httpClient = new HttpClientMock(200, null);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+            createURI("https://api.toopher.test/v1"), httpClient);
+        try {
+            toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, null);
+        } catch(RequestError re){}
+        assertEquals(httpClient.getLastCalledData("user_name"), userName);
+        assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
+        assertEquals(httpClient.getLastCalledData("action_name"), actionName);
+    }
+
 
     @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {

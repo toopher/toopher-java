@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -62,6 +64,22 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledData("action_name"), actionName);
     }
 
+    @Test
+    public void testAuthenticateWithTerminalName() throws InterruptedException {
+        String pairingId = "pairing ID";
+        String terminalName = "my computer";
+        HttpClientMock httpClient = new HttpClientMock(200, null);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        try {
+            toopherApi.authenticate(pairingId, terminalName);
+        } catch (RequestError re){}
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
+        assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
+    }
+
+    @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));

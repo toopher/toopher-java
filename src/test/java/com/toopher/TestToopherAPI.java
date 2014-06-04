@@ -80,6 +80,27 @@ public class TestToopherAPI {
     }
 
     @Test
+    public void testAuthenticateWithExtras() throws InterruptedException {
+        String pairingId = "pairing ID";
+        String terminalName = "my computer";
+        String actionName = "action";
+        String extraParameter = "extraParam";
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("extra_parameter", extraParameter);
+        HttpClientMock httpClient = new HttpClientMock(200, null);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        try {
+            toopherApi.authenticate(pairingId, terminalName, actionName, extras);
+        } catch (RequestError re){}
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
+        assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
+        assertEquals(httpClient.getLastCalledData("extra_parameter"), extraParameter);
+    }
+
+
+    @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));

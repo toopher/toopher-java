@@ -76,48 +76,73 @@ public class TestToopherAPI {
                 createURI("https://api.toopher.test/v1"), httpClient);
         try {
             toopherApi.authenticate(pairingId, terminalName);
-        } catch (RequestError re){}
+        } catch(RequestError re){}
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
         assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
     }
 
     @Test
-    public void testAuthenticateWithExtras() throws InterruptedException {
+    public void testAuthenticateWithTerminalName() throws InterruptedException, RequestError {
+        String pairingId = "pairing ID";
+        String terminalName = "my computer";
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+            createURI("https://api.toopher.test/v1"), httpClient);
+        toopherApi.authenticate(pairingId, terminalName);
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
+        assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
+    }
+
+    @Test
+    public void testAuthenticateWithExtras() throws InterruptedException, RequestError {
         String pairingId = "pairing ID";
         String terminalName = "my computer";
         String actionName = "action";
         String extraParameter = "extraParam";
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("extra_parameter", extraParameter);
-        HttpClientMock httpClient = new HttpClientMock(200, null);
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        try {
-            toopherApi.authenticate(pairingId, terminalName, actionName, extras);
-        } catch (RequestError re){}
+        toopherApi.authenticate(pairingId, terminalName, actionName, extras);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
         assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
         assertEquals(httpClient.getLastCalledData("extra_parameter"), extraParameter);
     }
 
+
+
     @Test
-    public void testAuthenticateByUserName() throws InterruptedException {
+    public void testAuthenticateByUserNameNoExtras() throws InterruptedException, RequestError {
         String extraTerminalName = "terminalNameExtra";
         String userName = "userName";
         String actionName = "action";
-        HttpClientMock httpClient = new HttpClientMock(200, null);
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
             createURI("https://api.toopher.test/v1"), httpClient);
-        try {
             toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, null);
-        } catch(RequestError re){}
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
         assertEquals(httpClient.getLastCalledData("action_name"), actionName);
     }
 
+    @Test
+    public void testAuthenticateByUserNameWithExtras() throws InterruptedException, RequestError {
+        String extraTerminalName = "terminalNameExtra";
+        String userName = "userName";
+        String actionName = "action";
+        Map<String, String> extras = new HashMap<String, String>();
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+            toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, extras);
+        assertEquals(httpClient.getLastCalledData("user_name"), userName);
+        assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
+        assertEquals(httpClient.getLastCalledData("action_name"), actionName);
+    }
 
     @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {

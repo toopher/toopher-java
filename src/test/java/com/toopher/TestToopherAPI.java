@@ -12,6 +12,9 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class TestToopherAPI {
+
+    private static String AUTH_REQUEST_JSON = "{'id':'1', 'granted':true, 'pending':true,'automated':true, 'reason':'', 'terminal':{'id':'1','name':'some user'}}".replace("'", "\"");
+
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
@@ -48,16 +51,16 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testAuthenticateWithActionName() throws InterruptedException {
+    public void testAuthenticateWithActionName() throws InterruptedException, RequestError {
         String pairingId = "pairing ID";
         String terminalName = "my computer";
         String actionName = "action";
-        HttpClientMock httpClient = new HttpClientMock(200, null);
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        try {
+        try{
             toopherApi.authenticate(pairingId, terminalName, actionName);
-        } catch (RequestError re){}
+        } catch(RequestError re){}
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
         assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
@@ -65,7 +68,7 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testAuthenticateWithTerminalName() throws InterruptedException {
+    public void testAuthenticateThrowingRequestError() throws InterruptedException, RequestError {
         String pairingId = "pairing ID";
         String terminalName = "my computer";
         HttpClientMock httpClient = new HttpClientMock(200, null);
@@ -124,9 +127,7 @@ public class TestToopherAPI {
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
         PairingStatus pairing = toopherApi.pairWithQrCode("some user");
-
         assertEquals(httpClient.getLastCalledMethod(), "POST");
-
         assertEquals(pairing.userId, "1");
         assertEquals(pairing.userName, "some user");
         assertTrue(pairing.pending);

@@ -10,6 +10,13 @@ import java.net.URL;
 import static org.junit.Assert.*;
 
 public class TestToopherAPI {
+    private final String BASE_URI_STRING = "https://api.toopher.test/v1/";
+    private final String CONSUMER_KEY    = "key";
+    private final String CONSUMER_SECRET = "secret";
+    private final String PAIRING_ID      = "pairing_id";
+    private final String TERMINAL_NAME   = "terminal_name";
+    private final String ACTION_NAME     = "action_name";
+
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
@@ -85,5 +92,21 @@ public class TestToopherAPI {
     @Test
     public void testVersion() {
         assertNotNull("Version is not null.", ToopherAPI.VERSION);
+    }
+
+    @Test
+    public void testAuthenticationStatusFactory() throws InterruptedException, URISyntaxException {
+        HttpClientMock clientMock = new HttpClientMock(200, "{}");
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI api = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(clientMock)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            api.authenticate(PAIRING_ID, TERMINAL_NAME);
+        } catch (RequestError re) { fail(); }
     }
 }

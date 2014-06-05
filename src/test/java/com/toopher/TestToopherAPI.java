@@ -1,5 +1,6 @@
 package com.toopher;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
@@ -13,7 +14,7 @@ import static org.junit.Assert.*;
 
 public class TestToopherAPI {
 
-    private static String AUTH_REQUEST_JSON = "{'id':'1', 'granted':true, 'pending':true,'automated':true, 'reason':'', 'terminal':{'id':'1','name':'some user'}}".replace("'", "\"");
+    private static String AUTH_REQUEST_JSON = "{'id':'1', 'granted':true, 'pending':true,'automated':true, 'reason':'test', 'terminal':{'id':'1','name':'some user'}}".replace("'", "\"");
 
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
@@ -141,6 +142,22 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
         assertEquals(httpClient.getLastCalledData("action_name"), actionName);
+    }
+
+    @Test
+
+    @Test
+    public void testAssignUserFriendlyNameToTerminal() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        String userName = "some user";
+        String terminalName = "my computer";
+        String extraTerminalName = "my extra computer";
+        toopherApi.assignUserFriendlyNameToTerminal(userName, terminalName, extraTerminalName);
+        assertEquals(httpClient.getLastCalledData("user_name"), userName);
+        assertEquals(httpClient.getLastCalledData("name"), terminalName);
+        assertEquals(httpClient.getLastCalledData("name_extra"), extraTerminalName);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.toopher;
 
+import oauth.signpost.http.HttpResponse;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -217,6 +218,37 @@ public class TestToopherAPI {
     }
 
     @Test
+    public void testEnableToopherForUser() throws InterruptedException, RequestError {
+        Map<URI, String> expectedUriResponses = new HashMap<URI, String>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), "[{'id': '1'}]");
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/1"), "[{}]");
+
+        HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        toopherApi.setToopherEnabledForUser("1", false);
+        String actualResponse = httpClient.getExpectedResponse();
+        String expectedResponse = expectedUriResponses.get(httpClient.getLastCalledEndpoint());
+        assertEquals(actualResponse, expectedResponse);
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("disable_toopher_auth"), "true");
+    }
+
+    @Test
+    public void testEnableToopherForUserWhenUserNameIsNotPresent() throws InterruptedException, RequestError {
+        Map<URI, String> expectedUriResponses = new HashMap<URI, String>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), "[{'id': '1'}]");
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/1"), "[{}]");
+
+        HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        try {
+            toopherApi.setToopherEnabledForUser("", true);
+        } catch (RequestError re) {}
+    }
+
+    @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
@@ -231,7 +263,7 @@ public class TestToopherAPI {
         assertTrue(pairing.enabled);
     }
 
-    private URI createURI(String url) {
+    public URI createURI(String url) {
         try {
             return new URL(url).toURI();
         } catch (MalformedURLException e) {

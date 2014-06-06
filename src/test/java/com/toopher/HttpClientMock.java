@@ -15,23 +15,30 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.junit.Ignore;
 
+import javax.xml.ws.Response;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 
 
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {
-    private static java.net.URI lastURI;
     public HttpParams lastParams;
     public Semaphore done;
 
+    private java.net.URI lastURI;
     private HttpUriRequest lastRequest;
     private int expectedResponseStatus;
     private String expectedResponseBody;
+    private Map<URI, String> expectedUriResponses;
 
     public HttpClientMock(int responseStatus, String responseBody) throws InterruptedException {
         this.expectedResponseStatus = responseStatus;
@@ -40,7 +47,18 @@ public class HttpClientMock extends DefaultHttpClient {
         done.acquire();
     }
 
-    public String getLastCalledMethod() {
+    public HttpClientMock(Map<URI, String> responses) throws InterruptedException {
+        expectedUriResponses = new HashMap<URI, String>();
+        for(URI url : responses.keySet()){
+            expectedUriResponses.put(url, responses.get(url));
+        }
+        this.expectedResponseStatus = 200;
+        done = new Semaphore(1);
+        done.acquire();
+    }
+
+
+        public String getLastCalledMethod() {
         if (lastRequest != null) {
             return lastRequest.getMethod();
         }
@@ -56,6 +74,13 @@ public class HttpClientMock extends DefaultHttpClient {
     public URI getLastCalledEndpoint(){
         if(lastURI != null) {
             return lastURI;
+        }
+        return null;
+    }
+
+    public String getExpectedResponse(){
+        if(expectedUriResponses != null) {
+            return expectedUriResponses.get(lastURI);
         }
         return null;
     }
@@ -77,6 +102,9 @@ public class HttpClientMock extends DefaultHttpClient {
         }
         HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         BasicHttpEntity entity = new BasicHttpEntity();
+        if(expectedResponseBody == null && expectedUriResponses != null) {
+            expectedResponseBody = expectedUriResponses.get(req.getURI());
+        }
         try {
             entity.setContent(new ByteArrayInputStream(expectedResponseBody.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
@@ -93,5 +121,15 @@ public class HttpClientMock extends DefaultHttpClient {
         }
         done.release();
         return result;
+    }
+
+    public URI createURI(String url) {
+        try {
+            return new URL(url).toURI();
+        } catch (MalformedURLException e) {
+            return null;
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }

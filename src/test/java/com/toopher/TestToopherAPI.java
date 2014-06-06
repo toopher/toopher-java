@@ -178,7 +178,6 @@ public class TestToopherAPI {
 
     @Test
     public void testGetAuthenticationStatusWithOTP() throws InterruptedException, RequestError {
-        System.out.println("running");
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);

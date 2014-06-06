@@ -40,7 +40,7 @@ public class TestToopherAPI {
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         PairingStatus pairing = toopherApi.getPairingStatus("1");
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
@@ -58,7 +58,7 @@ public class TestToopherAPI {
         String actionName = "action";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         try{
             toopherApi.authenticate(pairingId, terminalName, actionName);
         } catch(RequestError re){}
@@ -74,7 +74,7 @@ public class TestToopherAPI {
         String terminalName = "my computer";
         HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         try {
             toopherApi.authenticate(pairingId, terminalName);
         } catch(RequestError re){
@@ -88,7 +88,7 @@ public class TestToopherAPI {
         String terminalName = "my computer";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-            createURI("https://api.toopher.test/v1"), httpClient);
+            createURI("https://api.toopher.test/v1/"), httpClient);
         toopherApi.authenticate(pairingId, terminalName);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
@@ -105,7 +105,7 @@ public class TestToopherAPI {
         extras.put("extra_parameter", extraParameter);
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         toopherApi.authenticate(pairingId, terminalName, actionName, extras);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
@@ -122,7 +122,7 @@ public class TestToopherAPI {
         String actionName = "action";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-            createURI("https://api.toopher.test/v1"), httpClient);
+            createURI("https://api.toopher.test/v1/"), httpClient);
             toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, null);
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
@@ -137,7 +137,7 @@ public class TestToopherAPI {
         Map<String, String> extras = new HashMap<String, String>();
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
             toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, extras);
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
@@ -145,12 +145,63 @@ public class TestToopherAPI {
     }
 
     @Test
+    public void testGetAuthenticationStatus() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        AuthenticationStatus authReq = toopherApi.getAuthenticationStatus("1");
+        assertEquals(createURI("https://api.toopher.test/v1/authentication_requests/1"), httpClient.getLastCalledEndpoint());
+        assertEquals(authReq.id, "1");
+        assertTrue(authReq.pending);
+        assertTrue(authReq.granted);
+        assertTrue(authReq.automated);
+        assertEquals(authReq.terminalName, "some user");
+        assertEquals(authReq.terminalId, "1");
+        assertEquals(authReq.reason, "test");
+    }
+
+    @Test
+    public void testGetAuthenticationStatusThrowRequestError() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        try{
+            toopherApi.getAuthenticationStatus("1");
+        } catch (RequestError re){}
+    }
+
+    @Test
+    public void testGetAuthenticationStatusWithOTP() throws InterruptedException, RequestError {
+        System.out.println("running");
+        HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        AuthenticationStatus authReq = toopherApi.getAuthenticationStatusWithOTP("1", "ImAPassword");
+        assertEquals(createURI("https://api.toopher.test/v1/authentication_requests/1/otp_auth"), httpClient.getLastCalledEndpoint());
+        assertEquals(authReq.id, "1");
+        assertTrue(authReq.pending);
+        assertTrue(authReq.granted);
+        assertTrue(authReq.automated);
+        assertEquals(authReq.terminalName, "some user");
+        assertEquals(authReq.terminalId, "1");
+        assertEquals(authReq.reason, "test");
+    }
+
+    @Test
+    public void testGetAuthenticationStatusWithOTPThrowRequestError() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        try{
+            toopherApi.getAuthenticationStatusWithOTP("1", "ImAPassword");
+        } catch (RequestError re){}
+    }
 
     @Test
     public void testAssignUserFriendlyNameToTerminal() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         String userName = "some user";
         String terminalName = "my computer";
         String extraTerminalName = "my extra computer";
@@ -166,7 +217,7 @@ public class TestToopherAPI {
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         PairingStatus pairing = toopherApi.pairWithQrCode("some user");
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(pairing.userId, "1");

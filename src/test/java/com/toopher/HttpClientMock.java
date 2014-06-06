@@ -18,10 +18,14 @@ import org.junit.Ignore;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.concurrent.Semaphore;
+
+
 
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {
+    private static java.net.URI lastURI;
     public HttpParams lastParams;
     public Semaphore done;
 
@@ -49,6 +53,12 @@ public class HttpClientMock extends DefaultHttpClient {
         }
         return null;
     }
+    public URI getLastCalledEndpoint(){
+        if(lastURI != null) {
+            return lastURI;
+        }
+        return null;
+    }
 
     @Override
     public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) {
@@ -73,7 +83,7 @@ public class HttpClientMock extends DefaultHttpClient {
             e.printStackTrace();
         }
         resp.setEntity(entity);
-
+        lastURI = req.getURI();
         T result;
         try {
             result = responseHandler.handleResponse(resp);

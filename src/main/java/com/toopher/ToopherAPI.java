@@ -594,7 +594,7 @@ public class ToopherAPI {
         }
 
         public Builder setBaseUri(String baseUri) throws URISyntaxException {
-            this.baseUri = new URI(baseUri); 
+            this.baseUri = new URI(baseUri);
             return this;
         }
 

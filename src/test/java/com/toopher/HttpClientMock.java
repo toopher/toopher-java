@@ -109,7 +109,6 @@ public class HttpClientMock extends DefaultHttpClient {
             lastParams = req.getParams();
         }
         BasicHttpEntity entity = new BasicHttpEntity();
-        System.out.println(req.getURI());
         if(expectedResponseBody == null && expectedUriResponses != null) {
             expectedResponseBody = expectedUriResponses.get(req.getURI()).getResponseBody();
             expectedResponseStatus = expectedUriResponses.get(req.getURI()).getStatusCode();

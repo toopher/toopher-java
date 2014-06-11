@@ -321,7 +321,7 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testParseRequestError() throws InterruptedException, URISyntaxException, RequestError {
+    public void testParseRequestErrorUserDisabled() throws InterruptedException, URISyntaxException, RequestError {
         Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
         expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '704', 'error_message' : 'Toopher User Disabled Error'}"));
 
@@ -340,4 +340,89 @@ public class TestToopherAPI {
         } catch(ToopherUserDisabledError toopherUserDisabledError){}
 
     }
+
+    @Test
+    public void testParseRequestErrorUnknownUser() throws InterruptedException, URISyntaxException, RequestError {
+        Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
+        expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '705', 'error_message' : 'Toopher Unknown User Error'}"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedStatusResponse);
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI toopherApi = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(httpClient)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
+            fail();
+        } catch(ToopherUnknownUserError toopherUnknownUserError){}
+
+    }
+
+    @Test
+    public void testParseRequestErrorUnknownTerminal() throws InterruptedException, URISyntaxException, RequestError {
+        Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
+        expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '706', 'error_message' : 'Toopher Unknown Terminal Error'}"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedStatusResponse);
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI toopherApi = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(httpClient)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
+            fail();
+        } catch(ToopherUnknownTerminalError toopherUnknownTerminalError){}
+
+    }
+
+    @Test
+    public void testParseRequestErrorClient() throws InterruptedException, URISyntaxException, RequestError {
+        Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
+        expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '707', 'error_message' : 'Toopher Client Error'}"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedStatusResponse);
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI toopherApi = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(httpClient)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
+            fail();
+        } catch(ToopherClientError toopherClientError){}
+
+    }
+
+    @Test
+    public void testParseRequestErrorNotJSON() throws InterruptedException, URISyntaxException, RequestError {
+        Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
+        expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '707', 'I'm not valid JSON body text'}"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedStatusResponse);
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI toopherApi = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(httpClient)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
+            fail();
+        } catch(RequestError re){}
+
+    }
+
 }

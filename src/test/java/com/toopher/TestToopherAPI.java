@@ -22,6 +22,8 @@ public class TestToopherAPI {
     private final String PAIRING_ID      = "pairing_id";
     private final String TERMINAL_NAME   = "terminal_name";
     private final String ACTION_NAME     = "action_name";
+    private final String USER_NAME = "user_name";
+
 
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
@@ -29,7 +31,7 @@ public class TestToopherAPI {
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         PairingStatus pairing = toopherApi.pair("awkward turtle", "some user");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
@@ -219,16 +221,16 @@ public class TestToopherAPI {
 
     @Test
     public void testEnableToopherForUser() throws InterruptedException, RequestError {
-        Map<URI, String> expectedUriResponses = new HashMap<URI, String>();
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), "[{'id': '1'}]");
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/1"), "[{}]");
+        Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), new ResponseMock(200, "[{'id': '1'}]"));
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/1"), new ResponseMock(200, "{}"));
 
         HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
         toopherApi.setToopherEnabledForUser("1", false);
         String actualResponse = httpClient.getExpectedResponse();
-        String expectedResponse = expectedUriResponses.get(httpClient.getLastCalledEndpoint());
+        String expectedResponse = expectedUriResponses.get(httpClient.getLastCalledEndpoint()).getResponseBody();
         assertEquals(actualResponse, expectedResponse);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("disable_toopher_auth"), "true");
@@ -236,15 +238,29 @@ public class TestToopherAPI {
 
     @Test
     public void testEnableToopherForUserWhenUserNameIsNotPresent() throws InterruptedException, RequestError {
-        Map<URI, String> expectedUriResponses = new HashMap<URI, String>();
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), "[{'id': '1'}]");
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/1"), "[{}]");
+        Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), new ResponseMock(200, "[]"));
 
         HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
         try {
-            toopherApi.setToopherEnabledForUser("", true);
+            toopherApi.setToopherEnabledForUser("1", true);
+            fail();
+        } catch (RequestError re) {}
+    }
+
+    @Test
+    public void testEnableToopherForUserWithDuplicateUserName() throws InterruptedException, RequestError {
+        Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=1"), new ResponseMock(200, "[{'id': '1'}, {'id': '1'}]"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        try {
+            toopherApi.setToopherEnabledForUser("1", true);
+            fail();
         } catch (RequestError re) {}
     }
 
@@ -302,5 +318,26 @@ public class TestToopherAPI {
         try {
             api.authenticate(PAIRING_ID, TERMINAL_NAME);
         } catch (RequestError re) { fail(); }
+    }
+
+    @Test
+    public void testParseRequestError() throws InterruptedException, URISyntaxException, RequestError {
+        Map<URI, ResponseMock> expectedStatusResponse = new HashMap<URI, ResponseMock>();
+        expectedStatusResponse.put(createURI("https://api.toopher.test/v1/authentication_requests/initiate"), new ResponseMock(409, "{'error_code' : '704', 'error_message' : 'Toopher User Disabled Error'}"));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedStatusResponse);
+        AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
+
+        ToopherAPI toopherApi = new ToopherAPI.Builder(CONSUMER_KEY, CONSUMER_SECRET)
+                .setBaseUri(BASE_URI_STRING)
+                .setHttpClient(httpClient)
+                .setAuthenticationStatusFactory(factoryMock)
+                .build();
+
+        try {
+            toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
+            fail();
+        } catch(ToopherUserDisabledError toopherUserDisabledError){}
+
     }
 }

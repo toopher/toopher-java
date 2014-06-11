@@ -23,7 +23,9 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
@@ -38,7 +40,8 @@ public class HttpClientMock extends DefaultHttpClient {
     private HttpUriRequest lastRequest;
     private int expectedResponseStatus;
     private String expectedResponseBody;
-    private Map<URI, String> expectedUriResponses;
+    private Map<URI, ResponseMock> expectedUriResponses;
+
 
     public HttpClientMock(int responseStatus, String responseBody) throws InterruptedException {
         this.expectedResponseStatus = responseStatus;
@@ -47,18 +50,16 @@ public class HttpClientMock extends DefaultHttpClient {
         done.acquire();
     }
 
-    public HttpClientMock(Map<URI, String> responses) throws InterruptedException {
-        expectedUriResponses = new HashMap<URI, String>();
+    public HttpClientMock(Map<URI, ResponseMock> responses) throws InterruptedException {
+        expectedUriResponses = new HashMap<URI, ResponseMock>();
         for(URI url : responses.keySet()){
             expectedUriResponses.put(url, responses.get(url));
         }
-        this.expectedResponseStatus = 200;
         done = new Semaphore(1);
         done.acquire();
     }
 
-
-        public String getLastCalledMethod() {
+    public String getLastCalledMethod() {
         if (lastRequest != null) {
             return lastRequest.getMethod();
         }
@@ -80,13 +81,20 @@ public class HttpClientMock extends DefaultHttpClient {
 
     public String getExpectedResponse(){
         if(expectedUriResponses != null) {
-            return expectedUriResponses.get(lastURI);
+            return expectedUriResponses.get(lastURI).getResponseBody();
         }
         return null;
     }
 
+    public int getExpectedResponseStatus(){
+        if(expectedUriResponses != null) {
+            return expectedUriResponses.get(lastURI).getStatusCode();
+        }
+        return -1;
+    }
+
     @Override
-    public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) {
+    public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) throws IOException {
         lastRequest = req;
         if (req instanceof HttpPost){
             try {
@@ -100,25 +108,23 @@ public class HttpClientMock extends DefaultHttpClient {
         } else {
             lastParams = req.getParams();
         }
-        HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         BasicHttpEntity entity = new BasicHttpEntity();
+        System.out.println(req.getURI());
         if(expectedResponseBody == null && expectedUriResponses != null) {
-            expectedResponseBody = expectedUriResponses.get(req.getURI());
+            expectedResponseBody = expectedUriResponses.get(req.getURI()).getResponseBody();
+            expectedResponseStatus = expectedUriResponses.get(req.getURI()).getStatusCode();
         }
         try {
             entity.setContent(new ByteArrayInputStream(expectedResponseBody.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         resp.setEntity(entity);
         lastURI = req.getURI();
         T result;
-        try {
-            result = responseHandler.handleResponse(resp);
-        } catch (IOException e) {
-            result = null;
-            e.printStackTrace();
-        }
+        result = responseHandler.handleResponse(resp);
+
         done.release();
         return result;
     }

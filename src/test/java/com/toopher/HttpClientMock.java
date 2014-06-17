@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-
-
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {
     public HttpParams lastParams;
@@ -52,7 +50,7 @@ public class HttpClientMock extends DefaultHttpClient {
 
     public HttpClientMock(Map<URI, ResponseMock> responses) throws InterruptedException {
         expectedUriResponses = new HashMap<URI, ResponseMock>();
-        for(URI url : responses.keySet()){
+        for (URI url : responses.keySet()) {
             expectedUriResponses.put(url, responses.get(url));
         }
         done = new Semaphore(1);
@@ -72,22 +70,20 @@ public class HttpClientMock extends DefaultHttpClient {
         }
         return null;
     }
-    public URI getLastCalledEndpoint(){
-        if(lastURI != null) {
+
+    public URI getLastCalledEndpoint() {
             return lastURI;
-        }
-        return null;
     }
 
-    public String getExpectedResponse(){
-        if(expectedUriResponses != null) {
+    public String getExpectedResponse() {
+        if (expectedUriResponses != null) {
             return expectedUriResponses.get(lastURI).getResponseBody();
         }
         return null;
     }
 
-    public int getExpectedResponseStatus(){
-        if(expectedUriResponses != null) {
+    public int getExpectedResponseStatus() {
+        if (expectedUriResponses != null) {
             return expectedUriResponses.get(lastURI).getStatusCode();
         }
         return -1;
@@ -96,10 +92,10 @@ public class HttpClientMock extends DefaultHttpClient {
     @Override
     public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) throws IOException {
         lastRequest = req;
-        if (req instanceof HttpPost){
+        if (req instanceof HttpPost) {
             try {
                 lastParams = new BasicHttpParams();
-                for(NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())){
+                for (NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())) {
                     lastParams.setParameter(nvp.getName(), nvp.getValue());
                 }
             } catch (IOException e) {
@@ -109,7 +105,7 @@ public class HttpClientMock extends DefaultHttpClient {
             lastParams = req.getParams();
         }
         BasicHttpEntity entity = new BasicHttpEntity();
-        if(expectedResponseBody == null && expectedUriResponses != null) {
+        if (expectedResponseBody == null && expectedUriResponses != null) {
             expectedResponseBody = expectedUriResponses.get(req.getURI()).getResponseBody();
             expectedResponseStatus = expectedUriResponses.get(req.getURI()).getStatusCode();
         }

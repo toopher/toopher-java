@@ -582,7 +582,6 @@ public class ToopherAPI {
         public HttpClient httpClient;
         public AuthenticationStatusFactory authenticationStatusFactory;
 
-
         public Builder(String consumerKey, String consumerSecret) {
             this.consumerKey = consumerKey;
             this.consumerSecret = consumerSecret;

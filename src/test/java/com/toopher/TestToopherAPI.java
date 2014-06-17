@@ -17,13 +17,12 @@ public class TestToopherAPI {
 
     private static String AUTH_REQUEST_JSON = "{'id':'1', 'granted':true, 'pending':true,'automated':true, 'reason':'test', 'terminal':{'id':'1','name':'some user'}}".replace("'", "\"");
     private final String BASE_URI_STRING = "https://api.toopher.test/v1/";
-    private final String CONSUMER_KEY    = "key";
+    private final String CONSUMER_KEY = "key";
     private final String CONSUMER_SECRET = "secret";
-    private final String PAIRING_ID      = "pairing_id";
-    private final String TERMINAL_NAME   = "terminal_name";
-    private final String ACTION_NAME     = "action_name";
+    private final String PAIRING_ID = "pairing_id";
+    private final String TERMINAL_NAME = "terminal_name";
+    private final String ACTION_NAME = "action_name";
     private final String USER_NAME = "user_name";
-
 
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
@@ -36,7 +35,7 @@ public class TestToopherAPI {
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
-        
+
         assertEquals(pairing.userId, "1");
         assertEquals(pairing.userName, "some user");
         assertTrue(pairing.pending);
@@ -62,32 +61,25 @@ public class TestToopherAPI {
 
     @Test
     public void testAuthenticateWithActionName() throws InterruptedException, RequestError {
-        String pairingId = "pairing ID";
-        String terminalName = "my computer";
-        String actionName = "action";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
-        try{
-            toopherApi.authenticate(pairingId, terminalName, actionName);
-        } catch(RequestError re){}
+        toopherApi.authenticate(PAIRING_ID, TERMINAL_NAME, ACTION_NAME);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
-        assertEquals(httpClient.getLastCalledData("terminal_name"), terminalName);
-        assertEquals(httpClient.getLastCalledData("action_name"), actionName);
+        assertEquals(httpClient.getLastCalledData("pairing_id"), PAIRING_ID);
+        assertEquals(httpClient.getLastCalledData("terminal_name"), TERMINAL_NAME);
+        assertEquals(httpClient.getLastCalledData("action_name"), ACTION_NAME);
     }
 
     @Test
     public void testAuthenticateThrowingRequestError() throws InterruptedException, RequestError {
-        String pairingId = "pairing ID";
-        String terminalName = "my computer";
         HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
         try {
-            toopherApi.authenticate(pairingId, terminalName);
-        } catch(RequestError re){
-            assertTrue(true);
+            toopherApi.authenticate(PAIRING_ID, TERMINAL_NAME);
+            fail();
+        } catch (RequestError re) {
         }
     }
 
@@ -97,7 +89,7 @@ public class TestToopherAPI {
         String terminalName = "my computer";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-            createURI("https://api.toopher.test/v1/"), httpClient);
+                createURI("https://api.toopher.test/v1/"), httpClient);
         toopherApi.authenticate(pairingId, terminalName);
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_id"), pairingId);
@@ -122,8 +114,6 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledData("extra_parameter"), extraParameter);
     }
 
-
-
     @Test
     public void testAuthenticateByUserNameNoExtras() throws InterruptedException, RequestError {
         String extraTerminalName = "terminalNameExtra";
@@ -131,8 +121,8 @@ public class TestToopherAPI {
         String actionName = "action";
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-            createURI("https://api.toopher.test/v1/"), httpClient);
-            toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, null);
+                createURI("https://api.toopher.test/v1/"), httpClient);
+        toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, null);
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
         assertEquals(httpClient.getLastCalledData("action_name"), actionName);
@@ -147,7 +137,7 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
-            toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, extras);
+        toopherApi.authenticateByUserName(userName, extraTerminalName, actionName, extras);
         assertEquals(httpClient.getLastCalledData("user_name"), userName);
         assertEquals(httpClient.getLastCalledData("terminal_name_extra"), extraTerminalName);
         assertEquals(httpClient.getLastCalledData("action_name"), actionName);
@@ -174,9 +164,11 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
-        try{
+        try {
             toopherApi.getAuthenticationStatus("1");
-        } catch (RequestError re){}
+            fail("My method didn't throw when I expected it to");
+        } catch (RequestError re) {
+        }
     }
 
     @Test
@@ -200,9 +192,10 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, "{'id':'1'}");
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
-        try{
+        try {
             toopherApi.getAuthenticationStatusWithOTP("1", "ImAPassword");
-        } catch (RequestError re){}
+        } catch (RequestError re) {
+        }
     }
 
     @Test
@@ -210,12 +203,10 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, AUTH_REQUEST_JSON);
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1/"), httpClient);
-        String userName = "some user";
-        String terminalName = "my computer";
-        String extraTerminalName = "my extra computer";
-        toopherApi.assignUserFriendlyNameToTerminal(userName, terminalName, extraTerminalName);
-        assertEquals(httpClient.getLastCalledData("user_name"), userName);
-        assertEquals(httpClient.getLastCalledData("name"), terminalName);
+        final String extraTerminalName = "my extra computer";
+        toopherApi.assignUserFriendlyNameToTerminal(USER_NAME, TERMINAL_NAME, extraTerminalName);
+        assertEquals(httpClient.getLastCalledData("user_name"), USER_NAME);
+        assertEquals(httpClient.getLastCalledData("name"), TERMINAL_NAME);
         assertEquals(httpClient.getLastCalledData("name_extra"), extraTerminalName);
     }
 
@@ -247,7 +238,8 @@ public class TestToopherAPI {
         try {
             toopherApi.setToopherEnabledForUser("1", true);
             fail();
-        } catch (RequestError re) {}
+        } catch (RequestError re) {
+        }
     }
 
     @Test
@@ -261,7 +253,8 @@ public class TestToopherAPI {
         try {
             toopherApi.setToopherEnabledForUser("1", true);
             fail();
-        } catch (RequestError re) {}
+        } catch (RequestError re) {
+        }
     }
 
     @Test
@@ -279,7 +272,7 @@ public class TestToopherAPI {
         assertTrue(pairing.enabled);
     }
 
-    public URI createURI(String url) {
+    private URI createURI(String url) {
         try {
             return new URL(url).toURI();
         } catch (MalformedURLException e) {
@@ -305,7 +298,7 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testAuthenticationStatusFactory() throws InterruptedException, URISyntaxException {
+    public void testAuthenticationStatusFactoryBuildsValidJSON() throws InterruptedException, URISyntaxException {
         HttpClientMock clientMock = new HttpClientMock(200, "{}");
         AuthenticationStatusFactoryMock factoryMock = new AuthenticationStatusFactoryMock();
 
@@ -317,7 +310,9 @@ public class TestToopherAPI {
 
         try {
             api.authenticate(PAIRING_ID, TERMINAL_NAME);
-        } catch (RequestError re) { fail(); }
+        } catch (RequestError re) {
+            fail();
+        }
     }
 
     @Test
@@ -337,7 +332,8 @@ public class TestToopherAPI {
         try {
             toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
             fail();
-        } catch(ToopherUserDisabledError toopherUserDisabledError){}
+        } catch (ToopherUserDisabledError toopherUserDisabledError) {
+        }
 
     }
 
@@ -358,7 +354,8 @@ public class TestToopherAPI {
         try {
             toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
             fail();
-        } catch(ToopherUnknownUserError toopherUnknownUserError){}
+        } catch (ToopherUnknownUserError toopherUnknownUserError) {
+        }
 
     }
 
@@ -379,7 +376,8 @@ public class TestToopherAPI {
         try {
             toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
             fail();
-        } catch(ToopherUnknownTerminalError toopherUnknownTerminalError){}
+        } catch (ToopherUnknownTerminalError toopherUnknownTerminalError) {
+        }
 
     }
 
@@ -400,7 +398,8 @@ public class TestToopherAPI {
         try {
             toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
             fail();
-        } catch(ToopherClientError toopherClientError){}
+        } catch (ToopherClientError toopherClientError) {
+        }
 
     }
 
@@ -421,7 +420,8 @@ public class TestToopherAPI {
         try {
             toopherApi.authenticateByUserName(USER_NAME, TERMINAL_NAME, ACTION_NAME, null);
             fail();
-        } catch(RequestError re){}
+        } catch (RequestError re) {
+        }
 
     }
 

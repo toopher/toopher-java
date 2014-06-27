@@ -407,21 +407,9 @@ public class ToopherAPI {
         post(endpoint, params, null);
     }
 
-    /**
-     * Toggle whether a user is Toopher-Enabled
-     *
-     * @param userName
-     *            The name of the user
-     * @param enabled
-     *            Whether or not the user is Toopher-enabled
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered, or the
-     */
-    public void setToopherEnabledForUser(String userName, boolean toopherEnabled) throws RequestError {
+    protected String getUserId(String userName) throws RequestError{
         final String searchEndpoint = "users";
-        final String updateEndpoint = "users/%s";
 
-        // first, look up the Toopher User ID
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("name", userName));
 
@@ -442,9 +430,28 @@ public class ToopherAPI {
         } catch (JSONException e) {
             throw new RequestError(e);
         }
+        return userId;
+    }
 
+    /**
+     * Toggle whether a user is Toopher-Enabled
+     *
+     * @param userName
+     *            The name of the user
+     * @param toopherEnabled
+     *            Whether or not the user is Toopher-enabled
+     * @throws RequestError
+     *             Thrown when an exceptional condition is encountered, or the
+     */
+    public void setToopherEnabledForUser(String userName, boolean toopherEnabled) throws RequestError {
+        final String searchEndpoint = "users";
+        final String updateEndpoint = "users/%s";
+
+        // first, look up the Toopher User ID
+        String userId = getUserId(userName);
 
         // now, we can use that User ID to update the disable_toopher_auth field
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
         params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", toopherEnabled ? "false" : "true"));
 
@@ -452,10 +459,10 @@ public class ToopherAPI {
     }
 
 
-    private <T> T get(String endpoint) throws RequestError {
+    protected <T> T get(String endpoint) throws RequestError {
         return request(new HttpGet(), endpoint, null);
     }
-    private <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
+    protected <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
         if (params == null) {
             params = new ArrayList<NameValuePair>();
         }
@@ -467,7 +474,7 @@ public class ToopherAPI {
     	return request(new HttpGet(), endpoint, params);
     }
 
-    private <T> T post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
+    protected <T> T post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
         HttpPost post = new HttpPost();
         if (extras != null && extras.size() > 0) {
         	for (Map.Entry<String, String> e : extras.entrySet()){
@@ -484,7 +491,7 @@ public class ToopherAPI {
         return request(post, endpoint, null);
     }
 
-    private <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError {
+    protected <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError {
         try {
             URIBuilder uriBuilder = new URIBuilder().setScheme(this.uriScheme).setHost(this.uriHost)
     		    	.setPort(this.uriPort)

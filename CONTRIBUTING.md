@@ -1,5 +1,8 @@
 # ToopherAPI Java Client
 
+#### Java Version
+>=5.0 (originally numbered 1.5)
+
 #### Installing Dependencies
 Toopher uses [Maven](http://maven.apache.org/).
 

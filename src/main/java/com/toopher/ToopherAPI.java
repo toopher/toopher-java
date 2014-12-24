@@ -1,16 +1,7 @@
 package com.toopher;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,10 +19,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONArray;
 import org.json.JSONTokener;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Java binding for the Toopher API
@@ -39,16 +37,14 @@ import org.json.JSONTokener;
  */
 public class ToopherAPI {
     private static final String DEFAULT_URI_SCHEME = "https";
-    private static final String DEFAULT_URI_HOST = "api.toopher.com";
-    private static final String DEFAULT_URI_BASE = "/v1/";
-    private static final int DEFAULT_URI_PORT = 443;
+    private static final String DEFAULT_URI_HOST   = "api.toopher.com";
+    private static final int DEFAULT_URI_PORT      = 443;
+    private static final String DEFAULT_URI_BASE   = "/v1/";
 
-    private final HttpClient httpClient;
+    private final URI baseUri;
     private final OAuthConsumer consumer;
-    private final String uriScheme;
-    private final String uriHost;
-    private final int uriPort;
-    private final String uriBase;
+    private final HttpClient httpClient;
+    private final AuthenticationStatusFactory authenticationStatusFactory;
 
     /**
      * The ToopherJava binding library version
@@ -63,10 +59,9 @@ public class ToopherAPI {
      * @param consumerSecret
      *            The consumer secret for a requester (obtained from the developer portal)
      */
-    public ToopherAPI(String consumerKey, String consumerSecret) {
-    	this(consumerKey, consumerSecret, (URI)null);
+    public ToopherAPI(String consumerKey, String consumerSecret) throws URISyntaxException {
+        this(new Builder(consumerKey, consumerSecret));
     }
-
 
     /**
      * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
@@ -80,7 +75,7 @@ public class ToopherAPI {
      * @throws URISyntaxException
      */
     public ToopherAPI(String consumerKey, String consumerSecret, String uri) throws URISyntaxException {
-    	this(consumerKey, consumerSecret, new URI(uri));
+        this(new Builder(consumerKey, consumerSecret).setBaseUri(uri));
     }
 
     /**
@@ -99,7 +94,8 @@ public class ToopherAPI {
      * @throws URISyntaxException
      */
     public ToopherAPI(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
-    	this(consumerKey, consumerSecret, new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build());
+        this(new Builder(consumerKey, consumerSecret)
+                .setBaseUri(new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build()));
     }
 
     /**
@@ -113,9 +109,8 @@ public class ToopherAPI {
      *            The alternate URI
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri) {
-        this(consumerKey, consumerSecret, uri, null);
+        this(new Builder(consumerKey, consumerSecret).setBaseUri(uri));
     }
-
 
     /**
      * Create an API object with the supplied credentials and API URI,
@@ -131,28 +126,24 @@ public class ToopherAPI {
      *     The alternate HTTP client
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
-        if (httpClient == null) {
-            this.httpClient = new DefaultHttpClient();
-            HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
-                                            String.format("Toopher-Java/%s", VERSION));
-        } else {
-            this.httpClient = httpClient;
-        }
-
-        consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-        if (uri == null){
-            this.uriScheme = ToopherAPI.DEFAULT_URI_SCHEME;
-        	this.uriHost = ToopherAPI.DEFAULT_URI_HOST;
-        	this.uriPort = ToopherAPI.DEFAULT_URI_PORT;
-        	this.uriBase = ToopherAPI.DEFAULT_URI_BASE;
-    	} else {
-	        this.uriScheme = uri.getScheme();
-	        this.uriHost = uri.getHost();
-	        this.uriPort = uri.getPort();
-	        this.uriBase = uri.getPath();
-	    }
+        this(new ToopherAPI.Builder(consumerKey, consumerSecret)
+                .setBaseUri(uri).setHttpClient(httpClient));
     }
 
+    public ToopherAPI(Builder builder) {
+        this(builder.getConsumer(), builder.getBaseUri(), builder.getHttpClient(),
+                builder.getAuthenticationStatusFactory());
+    }
+
+    private ToopherAPI(OAuthConsumer consumer,
+                       URI baseUri,
+                       HttpClient httpClient,
+                       AuthenticationStatusFactory authenticationStatusFactory) {
+        this.consumer = consumer;
+        this.baseUri = baseUri;
+        this.httpClient = httpClient;
+        this.authenticationStatusFactory = authenticationStatusFactory;
+    }
 
     /**
      * Create a pairing
@@ -267,7 +258,9 @@ public class ToopherAPI {
      *             Thrown when an exceptional condition is encountered
      */
     public AuthenticationStatus authenticate(String pairingId, String terminalName) throws RequestError {
-        return authenticate(pairingId, terminalName, null, null);
+        AuthenticationRequestDetails.Builder builder = new AuthenticationRequestDetails.Builder();
+        builder.setPairingId(pairingId).setTerminalName(terminalName);
+        return authenticate(builder.build());
     }
 
     /**
@@ -284,7 +277,9 @@ public class ToopherAPI {
      *             Thrown when an exceptional condition is encountered
      */
     public AuthenticationStatus authenticate(String pairingId, String terminalName, String actionName) throws RequestError {
-        return authenticate(pairingId, terminalName, actionName, null);
+        AuthenticationRequestDetails.Builder builder = new AuthenticationRequestDetails.Builder();
+        builder.setPairingId(pairingId).setTerminalName(terminalName).setActionName(actionName);
+        return authenticate(builder.build());
     }
 
     /**
@@ -304,23 +299,25 @@ public class ToopherAPI {
      */
     public AuthenticationStatus authenticate(String pairingId, String terminalName,
                                              String actionName, Map<String, String> extras) throws RequestError {
+        AuthenticationRequestDetails.Builder builder = new AuthenticationRequestDetails.Builder(extras);
+        builder.setPairingId(pairingId).setTerminalName(terminalName).setActionName(actionName);
+        return authenticate(builder.build());
+    }
+
+    /**
+     * Initiate an authentication request.
+     *
+     * @param details An AuthenticationRequestDetails object that contains the request parameters.
+     * @return An AuthenticationStatus object.
+     * @throws RequestError Thrown when an exceptional condition is encountered.
+     */
+    public AuthenticationStatus authenticate(AuthenticationRequestDetails details) throws RequestError {
         final String endpoint = "authentication_requests/initiate";
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        if (pairingId != null) {
-            params.add(new BasicNameValuePair("pairing_id", pairingId));
-        }
-        if (terminalName != null) {
-            params.add(new BasicNameValuePair("terminal_name", terminalName));
-        }
-        if (actionName != null && actionName.length() > 0) {
-            params.add(new BasicNameValuePair("action_name", actionName));
-        }
-
-        JSONObject json = post(endpoint, params, extras);
+        JSONObject json = post(endpoint, details);
         try {
-            return new AuthenticationStatus(json);
-        } catch (Exception e) {
+            return authenticationStatusFactory.create(json);
+        } catch (JSONException e) {
             throw new RequestError(e);
         }
     }
@@ -338,14 +335,11 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus authenticateByUserName(String userName, String terminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
-        if (extras == null) {
-            extras = new HashMap<String, String>();
-        }
-        extras.put("user_name", userName);
-        extras.put("terminal_name_extra", terminalNameExtra);
-
-        return authenticate(null, null, actionName, extras);
+    public AuthenticationStatus authenticateByUserName(String userName, String terminalNameExtra, String actionName,
+                                                       Map<String, String> extras) throws RequestError {
+        AuthenticationRequestDetails.Builder builder = new AuthenticationRequestDetails.Builder(extras);
+        builder.setUserName(userName).setTerminalNameExtra(terminalNameExtra).setActionName(actionName);
+        return authenticate(builder.build());
     }
 
     /**
@@ -357,8 +351,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus getAuthenticationStatus(String authenticationRequestId)
-            throws RequestError {
+    public AuthenticationStatus getAuthenticationStatus(String authenticationRequestId) throws RequestError {
         final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
 
         JSONObject json = get(endpoint);
@@ -412,7 +405,7 @@ public class ToopherAPI {
      *
      * @param userName
      *            The name of the user
-     * @param enabled
+     * @param toopherEnabled
      *            Whether or not the user is Toopher-enabled
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered, or the
@@ -484,11 +477,13 @@ public class ToopherAPI {
         return request(post, endpoint, null);
     }
 
+    private JSONObject post(String endpoint, ApiRequestDetails details) throws RequestError {
+        return post(endpoint, details.getParams(), details.getExtras());
+    }
+
     private <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError {
         try {
-            URIBuilder uriBuilder = new URIBuilder().setScheme(this.uriScheme).setHost(this.uriHost)
-    		    	.setPort(this.uriPort)
-                    .setPath(this.uriBase + endpoint);
+            URIBuilder uriBuilder = new URIBuilder(this.baseUri).setPath(this.baseUri.getPath() + endpoint);
             if (queryStringParameters != null && queryStringParameters.size() > 0) {
                 for (NameValuePair nvp : queryStringParameters) {
                     uriBuilder.setParameter(nvp.getName(), nvp.getValue());
@@ -577,6 +572,99 @@ public class ToopherAPI {
             // Complete error info is in the HTTP StatusLine
             throw new RequestError(new HttpResponseException(statusLine.getStatusCode(),
                         statusLine.getReasonPhrase()));
+        }
+    }
+
+    public static class Builder {
+        public String consumerKey;
+        public String consumerSecret;
+        public URI baseUri;
+        public HttpClient httpClient;
+        public AuthenticationStatusFactory authenticationStatusFactory;
+
+        public Builder(String consumerKey, String consumerSecret) {
+            this.consumerKey = consumerKey;
+            this.consumerSecret = consumerSecret;
+        }
+
+        public Builder setAuthenticationStatusFactory(AuthenticationStatusFactory authenticationStatusFactory) {
+            this.authenticationStatusFactory = authenticationStatusFactory;
+            return this;
+        }
+
+        public Builder setBaseUri(String baseUri) throws URISyntaxException {
+            this.baseUri = new URI(baseUri);
+            return this;
+        }
+
+        public Builder setBaseUri(URI baseUri) {
+            this.baseUri = baseUri;
+            return this;
+        }
+
+        public Builder setHttpClient(HttpClient httpClient) {
+            this.httpClient = httpClient;
+            return this;
+        }
+
+        public ToopherAPI build() {
+            return new ToopherAPI(this);
+        }
+
+        /**
+         * Returns the AuthenticationStatus factory, or the default AuthenticationStatus factory.
+         *
+         * @return An AuthenticationStatusFactory object.
+         */
+        public AuthenticationStatusFactory getAuthenticationStatusFactory() {
+            if (authenticationStatusFactory == null) {
+                authenticationStatusFactory = new AuthenticationStatusFactory();
+            }
+
+            return authenticationStatusFactory;
+        }
+
+        /**
+         * Returns the base URI, or the default base URI.
+         *
+         * @return A URI object.
+         */
+        public URI getBaseUri() {
+            if (baseUri == null) {
+                try {
+                    baseUri = new URIBuilder()
+                            .setScheme(DEFAULT_URI_SCHEME)
+                            .setHost(DEFAULT_URI_HOST)
+                            .setPort(DEFAULT_URI_PORT)
+                            .setPath(DEFAULT_URI_BASE)
+                            .build();
+                } catch (URISyntaxException urise) {
+                    // There's not really any way to recover when the DEFAULT_URI_* components are invalid and
+                    // the client tries to use the default URI, so preemptively crash and try not to do that again.
+                    throw new RuntimeException("DEFAULT_URI_* components are invalid.");
+                }
+            }
+
+            return baseUri;
+        }
+
+        public OAuthConsumer getConsumer() {
+            return new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
+        }
+
+        /**
+         * Returns the HTTP client, or the default HTTP client.
+         *
+         * @return An HttpClient object.
+         */
+        public HttpClient getHttpClient() {
+            if (httpClient == null) {
+                httpClient = new DefaultHttpClient();
+                HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
+                        String.format("Toopher-Java/%s", VERSION));
+            }
+
+            return httpClient;
         }
     }
 }

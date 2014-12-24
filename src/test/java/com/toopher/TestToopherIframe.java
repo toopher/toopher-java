@@ -1,14 +1,16 @@
 package com.toopher;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.nio.charset.Charset;
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.http.NameValuePair;
-import org.junit.*;
-import org.apache.http.client.utils.URLEncodedUtils;
 import static org.junit.Assert.*;
 
 public class TestToopherIframe {

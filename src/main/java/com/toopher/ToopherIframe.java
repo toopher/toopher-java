@@ -109,48 +109,6 @@ public final class ToopherIframe {
     }
 
     /**
-     * Return a URL to retrieve a Toopher Device Pairing iframe for the given user
-     *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail (optional)
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param ttl
-     *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *          API will no longer allow the iframe to be fetched by the browser
-     * @return
-     *          URI that can be used to retrieve the Pairing Iframe by the user's browser
-     */
-    public String pairUri(String userName, String resetEmail, long ttl) {
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
-        params.add(new BasicNameValuePair("username", userName));
-        if (resetEmail != null) {
-            params.add(new BasicNameValuePair("reset_email", resetEmail));
-        }
-        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
-    }
-
-    /**
-     * Return a URL to retrieve a Toopher Device Pairing iframe for the given user
-     *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @return
-     *          URI that can be used to retrieve the Pairing iframe by the user's browser
-     */
-    public String pairUri(String userName, String resetEmail) {
-        return this.pairUri(userName, resetEmail, DEFAULT_TTL);
-    }
-
-    /**
      * Generate a URL to retrieve a Toopher Authentication iframe for a given user/action
      *
      * @param userName

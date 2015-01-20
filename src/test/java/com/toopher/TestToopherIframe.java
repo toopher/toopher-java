@@ -34,22 +34,6 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testGetPairUri() {
-        ToopherIframe.setDateOverride(TEST_DATE);
-        ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.pairUri("jdoe", "jdoe@example.com", REQUEST_TTL), Charset.forName("UTF-8")));
-        assertEquals("UGlgBEUF6UZEhYPxevJeagqy6D4=", params.get("oauth_signature"));
-    }
-
-    @Test
-    public void testGetPairUriWithoutResetEmail() {
-        ToopherIframe.setDateOverride(TEST_DATE);
-        ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.pairUri("jdoe", null, REQUEST_TTL), Charset.forName("UTF-8")));
-        assertEquals("s/jY/wPfXafzpf9xBUkIkdYaXII=", params.get("oauth_signature"));
-    }
-
-    @Test
     public void testGetAuthUri() {
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);

@@ -227,6 +227,56 @@ public final class ToopherIframe {
     }
 
     /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName
+     *          Unique name that identifies this user.  This will be displayed to the user on
+     *          their mobile device when they pair or authenticate
+     * @param resetEmail
+     *          Email address that the user has access to.  In case the user has lost or cannot
+     *          access their mobile device, Toopher will send a reset email to this address
+     * @return
+     *          URL that can be used to retrieve the Pairing iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName, String resetEmail) {
+        Map<String, String> extras = new HashMap<String, String>();
+        return getUserManagementUrl(userName, resetEmail, extras);
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName
+     *          Unique name that identifies this user.  This will be displayed to the user on
+     *          their mobile device when they pair or authenticate
+     * @param resetEmail
+     *          Email address that the user has access to.  In case the user has lost or cannot
+     *          access their mobile device, Toopher will send a reset email to this address
+     * @param extras
+     *          ttl:
+     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
+     *              API will no longer allow the iframe to be fetched by the browser
+     * @return
+     *          URL that can be used to retrieve the Pairing iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras)  {
+        final long ttl;
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+        if (!extras.containsKey("ttl")) {
+            ttl = DEFAULT_TTL;
+        } else {
+            ttl = Long.parseLong(extras.get("ttl"));
+        }
+
+        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
+        params.add(new BasicNameValuePair("username", userName));
+        params.add(new BasicNameValuePair("reset_email", resetEmail));
+        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
+        return getOAuthUri(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
+    }
+
+    /**
      * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
      * @param params

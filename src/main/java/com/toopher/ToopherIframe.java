@@ -142,8 +142,8 @@ public final class ToopherIframe {
      *          with the iframe response.
      * @param extras
      *          allowInlinePairing:
-     *              Determines whether to return the combined pairing/authentication iframe url
-     *              or the authentication url.
+     *              Enables users to pair and authenticate in the same iframe. If set to false, users
+     *              must be paired separately. The default, true, is strongly recommended.
      *          automationAllowed:
      *              Determines whether Toopher's Automated Location-Based Authentication is permitted
      *              to grant the authentication without prompting the user

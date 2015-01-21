@@ -109,7 +109,7 @@ public final class ToopherIframe {
     }
 
     /**
-     * Generate a URL to retrieve a Toopher Authentication iframe for a given user/action
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
      * @param userName
      *          Unique name that identifies this user.  This will be displayed to the user on
@@ -117,63 +117,113 @@ public final class ToopherIframe {
      * @param resetEmail
      *          Email address that the user has access to.  In case the user has lost or cannot
      *          access their mobile device, Toopher will send a reset email to this address
-     * @param actionName
-     *          The name of the action to authenticate; will be shown to the user.  If blank,
-     *          the Toopher API will default the action to "Log In".
-     * @param automationAllowed
-     *          Determines whether Toopher's Automated Location-Based Authentication is permitted
-     *          to grant the authentication without prompting the user
-     * @param challengeRequired
-     *          If set to true, the user must correctly respond to a challenge on their device
-     *          before the response will be sent
      * @param requestToken
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
-     * @param requesterMetadata
-     *          Optional, can be empty.  Toopher will include this value in the signed data returned
-     *          with the iframe response
-     * @param ttl
-     *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *          API will no longer allow the iframe to be fetched by the browser
      * @return
      *          URI that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String requestToken, String requesterMetadata, long ttl) {
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
+    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken) {
+        Map<String, String> extras = new HashMap<String, String>();
+        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
+    }
 
-        if (requesterMetadata == null) {
-            requesterMetadata = "None";
+    /**
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
+     *
+     * @param userName
+     *          Unique name that identifies this user.  This will be displayed to the user on
+     *          their mobile device when they pair or authenticate
+     * @param resetEmail
+     *          Email address that the user has access to.  In case the user has lost or cannot
+     *          access their mobile device, Toopher will send a reset email to this address
+     * @param requestToken
+     *          Optional, can be empty.  Toopher will include this token in the signed data returned
+     *          with the iframe response.
+     * @param extras
+     *          allowInlinePairing:
+     *              Determines whether to return the combined pairing/authentication iframe url
+     *              or the authentication url.
+     *          automationAllowed:
+     *              Determines whether Toopher's Automated Location-Based Authentication is permitted
+     *              to grant the authentication without prompting the user
+     *          challengeRequired:
+     *              If set to true, the user must correctly respond to a challenge on their device
+     *              before the response will be sent
+     *          ttl:
+     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
+     *              API will no longer allow the iframe to be fetched by the browser
+     * @return
+     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     */
+    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, Map<String, String> extras) {
+        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
+     *
+     * @param userName
+     *          Unique name that identifies this user.  This will be displayed to the user on
+     *          their mobile device when they pair or authenticate
+     * @param resetEmail
+     *          Email address that the user has access to.  In case the user has lost or cannot
+     *          access their mobile device, Toopher will send a reset email to this address
+     * @param requestToken
+     *          Optional, can be empty.  Toopher will include this token in the signed data returned
+     *          with the iframe response.
+     * @param actionName
+     *          The name of the action to authenticate; will be shown to the user.  If blank,
+     *          the Toopher API will default the action to "Log In".
+     * @param requesterMetadata
+     *          Optional, can be empty.  Toopher will include this value in the signed data returned
+     *          with the iframe response
+     * @param extras
+     *          allowInlinePairing:
+     *              Determines whether to return the combined pairing/authentication iframe url
+     *              or the authentication url.
+     *          automationAllowed:
+     *              Determines whether Toopher's Automated Location-Based Authentication is permitted
+     *              to grant the authentication without prompting the user
+     *          challengeRequired:
+     *              If set to true, the user must correctly respond to a challenge on their device
+     *              before the response will be sent
+     *          ttl:
+     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
+     *              API will no longer allow the iframe to be fetched by the browser
+     * @return
+     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     */
+    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, String actionName, String requesterMetadata, Map<String, String> extras) {
+        final long ttl;
+        final List<NameValuePair> params = new ArrayList<NameValuePair>(10);
+
+        if (!extras.containsKey("allowInlinePairing")) {
+            extras.put("allowInlinePairing", "true");
+        }
+        if (!extras.containsKey("automationAllowed")) {
+           extras.put("automationAllowed", "true");
+        }
+        if (!extras.containsKey("challengeRequired")) {
+            extras.put("challengeRequired", "false");
+        }
+        if (!extras.containsKey("ttl")) {
+            ttl = DEFAULT_TTL;
+        } else {
+            ttl = Long.parseLong(extras.get("ttl"));
         }
 
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("action_name", actionName));
-        params.add(new BasicNameValuePair("automation_allowed", automationAllowed ? "True" : "False"));
-        params.add(new BasicNameValuePair("challenge_required", challengeRequired ? "True" : "False"));
+        params.add(new BasicNameValuePair("action_name", actionName ));
+        params.add(new BasicNameValuePair("allow_inline_pairing", Boolean.parseBoolean(extras.get("allowInlinePairing")) ? "True" : "False"));
+        params.add(new BasicNameValuePair("automation_allowed", Boolean.parseBoolean(extras.get("automationAllowed")) ? "True" : "False" ));
+        params.add(new BasicNameValuePair("challenge_required", Boolean.parseBoolean(extras.get("challengeRequired")) ? "True" : "False"));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUri(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
-    }
-
-    /**
-     * Simplified interface to generate a "Log In" iframe uri, with sensible defaults
-     *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
-     */
-    public String loginUri(String userName, String resetEmail, String requestToken) {
-        return authUri(userName, resetEmail, "Log In", true, false, requestToken, null, DEFAULT_TTL);
     }
 
     /**

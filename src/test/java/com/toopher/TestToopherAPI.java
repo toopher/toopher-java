@@ -13,11 +13,15 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 public class TestToopherAPI {
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
+
     private ToopherAPI toopherApi;
     private String id;
+    private String name;
     private JSONObject user;
     private String userId;
     private String userName;
+    private String reason;
     private JSONObject terminal;
     private String terminalId;
     private String terminalName;
@@ -25,11 +29,13 @@ public class TestToopherAPI {
     @Before
     public void setUp() {
         this.id = UUID.randomUUID().toString();
+        this.name = "name";
         this.user = new JSONObject();
         this.user.put("id", UUID.randomUUID().toString());
-        this.user.put("name", "user_name");
+        this.user.put("name", "userName");
         this.userId = this.user.getString("id");
         this.userName = this.user.getString("name");
+        this.reason = "it is a test";
         this.terminal = new JSONObject();
         this.terminal.put("id", UUID.randomUUID().toString());
         this.terminal.put("name", "terminalName");

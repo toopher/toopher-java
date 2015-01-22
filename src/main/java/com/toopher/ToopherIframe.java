@@ -141,18 +141,7 @@ public final class ToopherIframe {
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
      * @param extras
-     *          allowInlinePairing:
-     *              Enables users to pair and authenticate in the same iframe. If set to false, users
-     *              must be paired separately. The default, true, is strongly recommended.
-     *          automationAllowed:
-     *              Determines whether Toopher's Automated Location-Based Authentication is permitted
-     *              to grant the authentication without prompting the user
-     *          challengeRequired:
-     *              If set to true, the user must correctly respond to a challenge on their device
-     *              before the response will be sent
-     *          ttl:
-     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *              API will no longer allow the iframe to be fetched by the browser
+     *          An optional Map of extra parameters to provide to the API
      * @return
      *          URL that can be used to retrieve the Authentication iframe by the user's browser
      */
@@ -179,18 +168,7 @@ public final class ToopherIframe {
      *          Optional, can be empty.  Toopher will include this value in the signed data returned
      *          with the iframe response
      * @param extras
-     *          allowInlinePairing:
-     *              Determines whether to return the combined pairing/authentication iframe url
-     *              or the authentication url.
-     *          automationAllowed:
-     *              Determines whether Toopher's Automated Location-Based Authentication is permitted
-     *              to grant the authentication without prompting the user
-     *          challengeRequired:
-     *              If set to true, the user must correctly respond to a challenge on their device
-     *              before the response will be sent
-     *          ttl:
-     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *              API will no longer allow the iframe to be fetched by the browser
+     *          An optional Map of extra parameters to provide to the API
      * @return
      *          URL that can be used to retrieve the Authentication iframe by the user's browser
      */

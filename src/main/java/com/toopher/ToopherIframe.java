@@ -121,7 +121,7 @@ public final class ToopherIframe {
      *          Optional, can be empty.  Toopher will include this token in the signed data returned
      *          with the iframe response.
      * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     *          URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken) {
         Map<String, String> extras = new HashMap<String, String>();
@@ -154,7 +154,7 @@ public final class ToopherIframe {
      *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
      *              API will no longer allow the iframe to be fetched by the browser
      * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     *          URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, Map<String, String> extras) {
         return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
@@ -192,7 +192,7 @@ public final class ToopherIframe {
      *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
      *              API will no longer allow the iframe to be fetched by the browser
      * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     *          URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, String actionName, String requesterMetadata, Map<String, String> extras) {
         final long ttl;
@@ -223,7 +223,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
+        return getOAuthUrl(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
     }
 
     /**
@@ -273,7 +273,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
+        return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
     }
 
     /**
@@ -387,7 +387,7 @@ public final class ToopherIframe {
         return org.apache.commons.codec.binary.Base64.encodeBase64String(mac.doFinal(toSign.getBytes())).trim();
     }
 
-    private static final String getOAuthUri(String uri, List<NameValuePair> params, String key, String secret) {
+    private static final String getOAuthUrl(String uri, List<NameValuePair> params, String key, String secret) {
         final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
 
         HttpParameters additionalParameters = new HttpParameters();

@@ -111,7 +111,7 @@ public class ToopherAPIDemo {
 
 			String requestId;
 			try {
-				AuthenticationStatus requestStatus = api.authenticate(pairingId, terminalName);
+				AuthenticationRequest requestStatus = api.authenticate(pairingId, terminalName);
 				requestId = requestStatus.id;
 			} catch (RequestError err) {
 				System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
@@ -123,7 +123,7 @@ public class ToopherAPIDemo {
 				in.nextLine();
 				System.out.println("Checking status of authentication request...");
 
-				AuthenticationStatus requestStatus;
+				AuthenticationRequest requestStatus;
 				try {
 					requestStatus = api.getAuthenticationStatus(requestId);
 				} catch (RequestError err) {

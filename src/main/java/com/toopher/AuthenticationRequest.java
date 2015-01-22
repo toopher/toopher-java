@@ -8,7 +8,7 @@ import java.util.Map;
  * Provide information about the status of an authentication request
  * 
  */
-public class AuthenticationStatus extends ApiResponseObject {
+public class AuthenticationRequest extends ApiResponseObject {
 
 	/**
      * The unique id for the authentication request
@@ -36,17 +36,12 @@ public class AuthenticationStatus extends ApiResponseObject {
     public String reason;
 
     /**
-     * The unique id for the terminal associated with the request
+     * Contains the unique id and descriptive name for the terminal
+     * associated with the request
      */
-    public String terminalId;
+    public UserTerminal terminal;
 
-    /**
-     * The descriptive name for the terminal associated with the request
-     */
-    public String terminalName;
-    
-    
-    public AuthenticationStatus(JSONObject json) throws JSONException{
+    public AuthenticationRequest(JSONObject json) throws JSONException{
 		super(json);
 		
 		this.id = json.getString("id");
@@ -54,17 +49,13 @@ public class AuthenticationStatus extends ApiResponseObject {
         this.granted = json.getBoolean("granted");
         this.automated = json.getBoolean("automated");
         this.reason = json.getString("reason");
-
-        JSONObject terminal = json.getJSONObject("terminal");
-        this.terminalId = terminal.getString("id");
-        this.terminalName = terminal.getString("name");
-
+        this.terminal = new UserTerminal(json.getJSONObject("terminal"));
 	}
 
     @Override
     public String toString() {
-        return String.format("[AuthenticationStatus: id=%s; pending=%b; granted=%b; automated=%b; reason=%s; terminalId=%s; terminalName=%s]",
-                             id, pending, granted, automated, reason, terminalId, terminalName);
+        return String.format("[AuthenticationRequest: id=%s; pending=%b; granted=%b; automated=%b; reason=%s; terminalId=%s; terminalName=%s]",
+                             id, pending, granted, automated, reason, terminal.id, terminal.name);
     }
 
 }

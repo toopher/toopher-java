@@ -244,11 +244,11 @@ public class ToopherAPI {
      *            The pairing id indicating to whom the request should be sent
      * @param terminalName
      *            The user-facing descriptive name for the terminal from which the request originates
-     * @return An AuthenticationStatus object
+     * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus authenticate(String pairingId, String terminalName) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingId, String terminalName) throws RequestError {
         return authenticate(pairingId, terminalName, null, null);
     }
 
@@ -261,11 +261,11 @@ public class ToopherAPI {
      *            The user-facing descriptive name for the terminal from which the request originates
      * @param actionName
      *            The user-facing descriptive name for the action which is being authenticated
-     * @return An AuthenticationStatus object
+     * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus authenticate(String pairingId, String terminalName, String actionName) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingId, String terminalName, String actionName) throws RequestError {
         return authenticate(pairingId, terminalName, actionName, null);
     }
 
@@ -280,11 +280,11 @@ public class ToopherAPI {
      *            The user-facing descriptive name for the action which is being authenticated
      * @param extras
      *            An optional Map of extra parameters to provide to the API
-     * @return An AuthenticationStatus object
+     * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus authenticate(String pairingId, String terminalName,
+    public AuthenticationRequest authenticate(String pairingId, String terminalName,
                                              String actionName, Map<String, String> extras) throws RequestError {
         final String endpoint = "authentication_requests/initiate";
 
@@ -301,7 +301,7 @@ public class ToopherAPI {
 
         JSONObject json = post(endpoint, params, extras);
         try {
-            return new AuthenticationStatus(json);
+            return new AuthenticationRequest(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -316,11 +316,11 @@ public class ToopherAPI {
      *            Unique identifier for this terminal.  Not displayed to the user.
      * @param actionName
      *            The user-facing descriptive name for the action which is being authenticated
-     * @return An AuthenticationStatus object
+     * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus authenticateByUserName(String userName, String terminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
+    public AuthenticationRequest authenticateByUserName(String userName, String terminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
         if (extras == null) {
             extras = new HashMap<String, String>();
         }
@@ -335,29 +335,29 @@ public class ToopherAPI {
      *
      * @param authenticationRequestId
      *            The authentication request ID
-     * @return An AuthenticationStatus object
+     * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationStatus getAuthenticationStatus(String authenticationRequestId)
+    public AuthenticationRequest getAuthenticationStatus(String authenticationRequestId)
             throws RequestError {
         final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
 
         JSONObject json = get(endpoint);
         try {
-            return new AuthenticationStatus(json);
+            return new AuthenticationRequest(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
     }
 
-    public AuthenticationStatus getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {
+    public AuthenticationRequest getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {
         final String endpoint = String.format("authentication_requests/%s/otp_auth", authenticationRequestId);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", OTP));
         JSONObject json = post(endpoint, params, null);
         try {
-            return new AuthenticationStatus(json);
+            return new AuthenticationRequest(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }

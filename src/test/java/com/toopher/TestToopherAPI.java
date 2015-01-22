@@ -18,6 +18,9 @@ public class TestToopherAPI {
     private JSONObject user;
     private String userId;
     private String userName;
+    private JSONObject terminal;
+    private String terminalId;
+    private String terminalName;
 
     @Before
     public void setUp() {
@@ -27,6 +30,12 @@ public class TestToopherAPI {
         this.user.put("name", "user_name");
         this.userId = this.user.getString("id");
         this.userName = this.user.getString("name");
+        this.terminal = new JSONObject();
+        this.terminal.put("id", UUID.randomUUID().toString());
+        this.terminal.put("name", "terminalName");
+        this.terminal.put("user", this.user);
+        this.terminalId = this.terminal.getString("id");
+        this.terminalName = this.terminal.getString("name");
     }
 
     @Test

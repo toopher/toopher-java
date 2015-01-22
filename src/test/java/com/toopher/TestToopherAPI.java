@@ -108,6 +108,34 @@ public class TestToopherAPI {
         assertTrue(pairing.enabled);
     }
 
+    @Test
+    public void testAdvancedAuthenticationRequestsGetById() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("granted", true);
+        jsonResponse.put("automated", false);
+        jsonResponse.put("reason", reason);
+        jsonResponse.put("terminal", terminal);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        AuthenticationRequest authenticationRequest = toopherAPI.advanced.authenticationRequests.getById(id);
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
+        assertEquals(authenticationRequest.id, id);
+        assertEquals(authenticationRequest.reason, reason);
+        assertEquals(authenticationRequest.terminal.id, terminalId);
+        assertEquals(authenticationRequest.terminal.name, terminalName);
+        assertEquals(authenticationRequest.terminal.user.id, userId);
+        assertEquals(authenticationRequest.terminal.user.name, userName);
+        assertTrue(authenticationRequest.pending);
+        assertTrue(authenticationRequest.granted);
+        assertFalse(authenticationRequest.automated);
+    }
+
     private URI createURI(String url) {
         try {
             return new URL(url).toURI();

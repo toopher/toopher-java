@@ -564,13 +564,14 @@ public class ToopherAPI {
 
     class AdvancedApiUsageFactory {
         public final Pairings pairings;
+        public final AuthenticationRequests authenticationRequests;
 
         public AdvancedApiUsageFactory(String consumerKey, String consumerSecret) {
             pairings = new Pairings();
+            authenticationRequests = new AuthenticationRequests();
         }
 
         class Pairings {
-
             /**
              * Retrieve the current status of a pairing
              *
@@ -587,6 +588,29 @@ public class ToopherAPI {
                 JSONObject json = get(endpoint);
                 try {
                     return new Pairing(json);
+                } catch (Exception e) {
+                    throw new RequestError(e);
+                }
+            }
+        }
+
+        class AuthenticationRequests {
+            /**
+             * Retrieve the current status of an authentication request
+             *
+             * @param authenticationRequestId
+             *          The unique id for an authentication request
+             * @return
+             *          An AuthenticationRequest object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public AuthenticationRequest getById(String authenticationRequestId) throws RequestError {
+                final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
+
+                JSONObject json = get(endpoint);
+                try {
+                    return new AuthenticationRequest(json);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }

@@ -565,10 +565,12 @@ public class ToopherAPI {
     class AdvancedApiUsageFactory {
         public final Pairings pairings;
         public final AuthenticationRequests authenticationRequests;
+        public final Users users;
 
         public AdvancedApiUsageFactory(String consumerKey, String consumerSecret) {
             pairings = new Pairings();
             authenticationRequests = new AuthenticationRequests();
+            users = new Users();
         }
 
         class Pairings {
@@ -611,6 +613,29 @@ public class ToopherAPI {
                 JSONObject json = get(endpoint);
                 try {
                     return new AuthenticationRequest(json);
+                } catch (Exception e) {
+                    throw new RequestError(e);
+                }
+            }
+        }
+
+        class Users {
+            /**
+             * Retrieve the current status of a user
+             *
+             * @param userId
+             *          The unique id for a user
+             * @return
+             *          A User object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public User getById(String userId) throws RequestError {
+                final String endpoint = String.format("users/%s", userId);
+
+                JSONObject json = get(endpoint);
+                try {
+                    return new User(json);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }

@@ -136,6 +136,26 @@ public class TestToopherAPI {
         assertFalse(authenticationRequest.automated);
     }
 
+    @Test
+    public void testAdvancedUsersGetById() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("name", name);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("disable_toopher_auth", true);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        User user = toopherAPI.advanced.users.getById(id);
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+        assertFalse(user.enabled);
+    }
+
     private URI createURI(String url) {
         try {
             return new URL(url).toURI();

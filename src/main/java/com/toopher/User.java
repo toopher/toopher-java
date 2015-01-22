@@ -18,7 +18,7 @@ public class User extends ApiResponseObject {
     public String name;
 
     /**
-     *
+     * Whether or not the user is Toopher-enabled
      */
     public boolean enabled;
 

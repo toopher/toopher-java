@@ -621,7 +621,7 @@ public class ToopherAPI {
 
         class Users {
             /**
-             * Retrieve the current status of a user
+             * Retrieve the current status of a user with the user id
              *
              * @param userId
              *          The unique id for a user
@@ -634,6 +634,28 @@ public class ToopherAPI {
                 final String endpoint = String.format("users/%s", userId);
 
                 JSONObject json = get(endpoint);
+                try {
+                    return new User(json);
+                } catch (Exception e) {
+                    throw new RequestError(e);
+                }
+            }
+
+            /**
+             * Retrieve the current status of a user with the user name
+             * @param name
+             *          The name of the user
+             * @return
+             *          A User object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public User getByName(String name) throws RequestError {
+                final String endpoint = String.format("users");
+
+                List params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("user_name", name));
+                JSONObject json = get(endpoint, params, null);
                 try {
                     return new User(json);
                 } catch (Exception e) {

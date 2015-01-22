@@ -1,5 +1,6 @@
 package com.toopher;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +16,6 @@ import static org.junit.Assert.*;
 public class TestToopherAPI {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
 
-    private ToopherAPI toopherApi;
     private String id;
     private String name;
     private JSONObject user;
@@ -154,6 +154,26 @@ public class TestToopherAPI {
         assertEquals(user.id, id);
         assertEquals(user.name, name);
         assertFalse(user.enabled);
+    }
+
+    @Test
+    public void testAdvancedUsersGetByName() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("name", name);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("disable_toopher_auth", false);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        User user = toopherAPI.advanced.users.getByName(name);
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+        assertTrue(user.enabled);
     }
 
     private URI createURI(String url) {

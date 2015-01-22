@@ -198,31 +198,25 @@ public final class ToopherIframe {
         final long ttl;
         final List<NameValuePair> params = new ArrayList<NameValuePair>(10);
 
-        if (!extras.containsKey("allowInlinePairing")) {
-            extras.put("allowInlinePairing", "true");
-        }
-        if (!extras.containsKey("automationAllowed")) {
-           extras.put("automationAllowed", "true");
-        }
-        if (!extras.containsKey("challengeRequired")) {
-            extras.put("challengeRequired", "false");
-        }
         if (!extras.containsKey("ttl")) {
             ttl = DEFAULT_TTL;
         } else {
             ttl = Long.parseLong(extras.get("ttl"));
+            extras.remove("ttl");
         }
 
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("action_name", actionName ));
-        params.add(new BasicNameValuePair("allow_inline_pairing", Boolean.parseBoolean(extras.get("allowInlinePairing")) ? "True" : "False"));
-        params.add(new BasicNameValuePair("automation_allowed", Boolean.parseBoolean(extras.get("automationAllowed")) ? "True" : "False" ));
-        params.add(new BasicNameValuePair("challenge_required", Boolean.parseBoolean(extras.get("challengeRequired")) ? "True" : "False"));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
+
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
         return getOAuthUrl(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
     }
 

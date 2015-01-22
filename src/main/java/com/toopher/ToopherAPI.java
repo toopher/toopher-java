@@ -49,6 +49,7 @@ public class ToopherAPI {
     private final String uriHost;
     private final int uriPort;
     private final String uriBase;
+    public final AdvancedApiUsageFactory advanced;
 
     /**
      * The ToopherJava binding library version
@@ -131,6 +132,7 @@ public class ToopherAPI {
      *     The alternate HTTP client
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
+        this.advanced = new AdvancedApiUsageFactory(consumerKey, consumerSecret);
         if (httpClient == null) {
             this.httpClient = new DefaultHttpClient();
             HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
@@ -190,26 +192,6 @@ public class ToopherAPI {
         params.add(new BasicNameValuePair("user_name", userName));
 
         JSONObject json = post(endpoint, params, extras);
-        try {
-            return new Pairing(json);
-        } catch (Exception e) {
-            throw new RequestError(e);
-        }
-    }
-
-    /**
-     * Retrieve the current status of a pairing request
-     *
-     * @param pairingRequestId
-     *            The unique id for a pairing request
-     * @return A Pairing object
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered
-     */
-    public Pairing getPairing(String pairingRequestId) throws RequestError {
-        final String endpoint = String.format("pairings/%s", pairingRequestId);
-
-        JSONObject json = get(endpoint);
         try {
             return new Pairing(json);
         } catch (Exception e) {
@@ -577,6 +559,38 @@ public class ToopherAPI {
             // Complete error info is in the HTTP StatusLine
             throw new RequestError(new HttpResponseException(statusLine.getStatusCode(),
                         statusLine.getReasonPhrase()));
+        }
+    }
+
+    class AdvancedApiUsageFactory {
+        public final Pairings pairings;
+
+        public AdvancedApiUsageFactory(String consumerKey, String consumerSecret) {
+            pairings = new Pairings();
+        }
+
+        class Pairings {
+
+            /**
+             * Retrieve the current status of a pairing
+             *
+             * @param pairingId
+             *          The unique id for a pairing
+             * @return
+             *          A Pairing object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public Pairing getById(String pairingId) throws RequestError {
+                final String endpoint = String.format("pairings/%s", pairingId);
+
+                JSONObject json = get(endpoint);
+                try {
+                    return new Pairing(json);
+                } catch (Exception e) {
+                    throw new RequestError(e);
+                }
+            }
         }
     }
 }

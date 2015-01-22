@@ -52,27 +52,6 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testGetPairing() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("user", user);
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
-        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
-        Pairing pairing = toopherApi.getPairing(id);
-
-        assertEquals(httpClient.getLastCalledMethod(), "GET");
-
-        assertEquals(pairing.user.id, userId);
-        assertEquals(pairing.user.name, userName);
-        assertTrue(pairing.pending);
-        assertTrue(pairing.enabled);
-    }
-
-    @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("id", id);
@@ -87,6 +66,27 @@ public class TestToopherAPI {
         Pairing pairing = toopherApi.pairWithQrCode(userName);
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(pairing.user.id, userId);
+        assertEquals(pairing.user.name, userName);
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
+    }
+
+    @Test
+    public void testAdvancedPairingsGetById() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("user", user);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI("https://api.toopher.test/v1"), httpClient);
+        Pairing pairing = toopherAPI.advanced.pairings.getById(id);
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
         assertEquals(pairing.user.id, userId);
         assertEquals(pairing.user.name, userName);
         assertTrue(pairing.pending);

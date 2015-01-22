@@ -1,19 +1,42 @@
 package com.toopher;
 
+import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class TestToopherAPI {
+    private ToopherAPI toopherApi;
+    private String id;
+    private JSONObject user;
+    private String userId;
+    private String userName;
+
+    @Before
+    public void setUp() {
+        this.id = UUID.randomUUID().toString();
+        this.user = new JSONObject();
+        this.user.put("id", UUID.randomUUID().toString());
+        this.user.put("name", "user_name");
+        this.userId = this.user.getString("id");
+        this.userName = this.user.getString("name");
+    }
+
     @Test
     public void testCreatePairing() throws InterruptedException, RequestError {
-        HttpClientMock httpClient = new HttpClientMock(200,
-                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("user", user);
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
@@ -22,16 +45,20 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
         
-        assertEquals(pairing.user.id, "1");
-        assertEquals(pairing.user.name, "some user");
+        assertEquals(pairing.user.id, userId);
+        assertEquals(pairing.user.name, userName);
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }
 
     @Test
     public void testGetPairing() throws InterruptedException, RequestError {
-        HttpClientMock httpClient = new HttpClientMock(200,
-                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("user", user);
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
@@ -39,24 +66,29 @@ public class TestToopherAPI {
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
 
-        assertEquals(pairing.user.id, "1");
-        assertEquals(pairing.user.name, "some user");
+        assertEquals(pairing.user.id, userId);
+        assertEquals(pairing.user.name, userName);
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }
 
     @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
-        HttpClientMock httpClient = new HttpClientMock(200,
-                "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("user", user);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        Pairing pairing = toopherApi.pairWithQrCode("some user");
+        Pairing pairing = toopherApi.pairWithQrCode(userName);
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(pairing.user.id, "1");
-        assertEquals(pairing.user.name, "some user");
+        assertEquals(pairing.user.id, userId);
+        assertEquals(pairing.user.name, userName);
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }

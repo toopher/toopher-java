@@ -161,11 +161,11 @@ public class ToopherAPI {
      *            The pairing phrase supplied by the user
      * @param userName
      *            A user-facing descriptive name for the user (displayed in requests)
-     * @return A PairingStatus object
+     * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public PairingStatus pair(String pairingPhrase, String userName) throws RequestError {
+    public Pairing pair(String pairingPhrase, String userName) throws RequestError {
         return this.pair(pairingPhrase, userName, null);
     }
 
@@ -178,11 +178,11 @@ public class ToopherAPI {
      *            A user-facing descriptive name for the user (displayed in requests)
      * @param extras
      *            An optional Map of extra parameters to provide to the API
-     * @return A PairingStatus object
+     * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public PairingStatus pair(String pairingPhrase, String userName, Map<String, String> extras) throws RequestError {
+    public Pairing pair(String pairingPhrase, String userName, Map<String, String> extras) throws RequestError {
         final String endpoint = "pairings/create";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -191,7 +191,7 @@ public class ToopherAPI {
 
         JSONObject json = post(endpoint, params, extras);
         try {
-            return new PairingStatus(json);
+            return new Pairing(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -202,16 +202,16 @@ public class ToopherAPI {
      *
      * @param pairingRequestId
      *            The unique id for a pairing request
-     * @return A PairingStatus object
+     * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public PairingStatus getPairingStatus(String pairingRequestId) throws RequestError {
+    public Pairing getPairing(String pairingRequestId) throws RequestError {
         final String endpoint = String.format("pairings/%s", pairingRequestId);
 
         JSONObject json = get(endpoint);
         try {
-            return new PairingStatus(json);
+            return new Pairing(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -222,11 +222,11 @@ public class ToopherAPI {
      *
      * @param userName
      *            A user-facing descriptive name for the user (displayed in requests)
-     * @return A PairingStatus object
+     * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public PairingStatus pairWithQrCode(String userName) throws RequestError {
+    public Pairing pairWithQrCode(String userName) throws RequestError {
         return this.pairWithQrCode(userName, null);
     }
 
@@ -237,11 +237,11 @@ public class ToopherAPI {
      *            A user-facing descriptive name for the user (displayed in requests)
      * @param extras
      *            An optional Map of extra parameters to provide to the API
-     * @return A PairingStatus object
+     * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public PairingStatus pairWithQrCode(String userName, Map<String, String> extras) throws RequestError {
+    public Pairing pairWithQrCode(String userName, Map<String, String> extras) throws RequestError {
         final String endpoint = "pairings/create/qr";
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -249,7 +249,7 @@ public class ToopherAPI {
 
         JSONObject json = post(endpoint, params, extras);
         try {
-            return new PairingStatus(json);
+            return new Pairing(json);
         } catch (Exception e) {
             throw new RequestError(e);
         }

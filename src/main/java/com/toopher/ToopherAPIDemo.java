@@ -71,8 +71,8 @@ public class ToopherAPIDemo {
 			System.out.println("Sending pairing request...");
 
 			try {
-				PairingStatus pairingStatus = api.pair(pairingPhrase, userName);
-				pairingId = pairingStatus.id;
+				Pairing pairing = api.pair(pairingPhrase, userName);
+				pairingId = pairing.id;
 				break;
 			} catch (RequestError err) {
 				System.out.println(String.format("The pairing phrase was not accepted (reason:%s)", err.getMessage()));
@@ -85,8 +85,8 @@ public class ToopherAPIDemo {
 			System.out.println("Checking status of pairing request...");
 
 			try {
-				PairingStatus pairingStatus = api.getPairingStatus(pairingId);
-				if (pairingStatus.enabled) {
+				Pairing pairing = api.getPairingStatus(pairingId);
+				if (pairing.enabled) {
 					System.out.println("Pairing complete");
                     System.out.println();
 					break;

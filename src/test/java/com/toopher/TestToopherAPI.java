@@ -17,7 +17,7 @@ public class TestToopherAPI {
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        PairingStatus pairing = toopherApi.pair("awkward turtle", "some user");
+        Pairing pairing = toopherApi.pair("awkward turtle", "some user");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
@@ -29,13 +29,13 @@ public class TestToopherAPI {
     }
 
     @Test
-    public void testGetPairingStatus() throws InterruptedException, RequestError {
+    public void testGetPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200,
                 "{'id':'1','enabled':true,'pending':true,'user':{'id':'1','name':'some user'}}".replace("'", "\""));
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        PairingStatus pairing = toopherApi.getPairingStatus("1");
+        Pairing pairing = toopherApi.getPairingStatus("1");
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
 
@@ -52,7 +52,7 @@ public class TestToopherAPI {
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        PairingStatus pairing = toopherApi.pairWithQrCode("some user");
+        Pairing pairing = toopherApi.pairWithQrCode("some user");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
 

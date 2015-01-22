@@ -394,7 +394,7 @@ public class ToopherAPI {
      *
      * @param userName
      *            The name of the user
-     * @param enabled
+     * @param toopherEnabled
      *            Whether or not the user is Toopher-enabled
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered, or the

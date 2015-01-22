@@ -22,8 +22,8 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
         
-        assertEquals(pairing.userId, "1");
-        assertEquals(pairing.userName, "some user");
+        assertEquals(pairing.user.id, "1");
+        assertEquals(pairing.user.name, "some user");
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }
@@ -39,8 +39,8 @@ public class TestToopherAPI {
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
 
-        assertEquals(pairing.userId, "1");
-        assertEquals(pairing.userName, "some user");
+        assertEquals(pairing.user.id, "1");
+        assertEquals(pairing.user.name, "some user");
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }
@@ -55,9 +55,8 @@ public class TestToopherAPI {
         Pairing pairing = toopherApi.pairWithQrCode("some user");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
-
-        assertEquals(pairing.userId, "1");
-        assertEquals(pairing.userName, "some user");
+        assertEquals(pairing.user.id, "1");
+        assertEquals(pairing.user.name, "some user");
         assertTrue(pairing.pending);
         assertTrue(pairing.enabled);
     }

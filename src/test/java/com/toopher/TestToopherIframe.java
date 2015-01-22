@@ -68,6 +68,7 @@ public class TestToopherIframe {
         assertEquals(expected, iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, "it is a test", "metadata", extras));
     }
 
+//    Do we prefer this type of test or the one above?
 //    @Test
 //    public void testGetAuthenticationUrlWithOptionalArgsAndExtras() {
 //        ToopherIframe.setDateOverride(TEST_DATE);

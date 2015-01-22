@@ -85,7 +85,7 @@ public class ToopherAPIDemo {
 			System.out.println("Checking status of pairing request...");
 
 			try {
-				Pairing pairing = api.getPairingStatus(pairingId);
+				Pairing pairing = api.getPairing(pairingId);
 				if (pairing.enabled) {
 					System.out.println("Pairing complete");
                     System.out.println();

@@ -35,7 +35,7 @@ public class TestToopherAPI {
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        Pairing pairing = toopherApi.getPairingStatus("1");
+        Pairing pairing = toopherApi.getPairing(id);
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
 

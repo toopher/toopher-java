@@ -696,7 +696,7 @@ public class ToopherAPI {
              *          Thrown when an exceptional condition is encountered
              */
             public User getByName(String name) throws RequestError {
-                final String endpoint = String.format("users");
+                final String endpoint = "users";
                 JSONArray result;
 
                 List params = new ArrayList<NameValuePair>();

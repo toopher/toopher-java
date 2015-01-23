@@ -9,6 +9,8 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -134,6 +136,44 @@ public class TestToopherAPI {
         assertTrue(authenticationRequest.pending);
         assertTrue(authenticationRequest.granted);
         assertFalse(authenticationRequest.automated);
+    }
+
+    @Test
+    public void testAdvancedUsersCreate() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("name", name);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        User user = toopherAPI.advanced.users.create(name);
+
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+    }
+
+    @Test
+    public void testAdvancedUsersCreateWithExtras() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("name", name);
+        jsonResponse.put("enabled", false);
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("disable_toopher_auth", "false");
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        User user = toopherAPI.advanced.users.create(name, extras);
+
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+        assertFalse(user.enabled);
     }
 
     @Test

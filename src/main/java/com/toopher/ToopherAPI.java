@@ -621,6 +621,51 @@ public class ToopherAPI {
 
         class Users {
             /**
+             * Create a new user with a userName
+             *
+             * @param userName
+             *          The name of the user
+             * @return
+             *          A User object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public User create(String userName) throws RequestError {
+                Map<String, String> extras = new HashMap<String, String>();
+                return create(userName, extras);
+            }
+
+            /**
+             * Create a new user with a userName
+             *
+             * @param userName
+             *          The name of the user
+             * @param extras
+             *          An optional Map of extra parameters to provide to the API
+             * @return
+             *          A User object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public User create(String userName, Map<String, String> extras) throws RequestError {
+                final String endpoint = "users/create";
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                JSONObject result;
+
+                for (Map.Entry<String, String> entry : extras.entrySet()) {
+                    params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+                }
+
+                try {
+                    result = post(endpoint, params, null);
+                } catch (Exception e) {
+                    throw new RequestError(e);
+                }
+
+                return new User(result);
+            }
+
+            /**
              * Retrieve the current status of a user with the user id
              *
              * @param userId

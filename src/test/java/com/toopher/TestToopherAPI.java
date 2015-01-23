@@ -219,6 +219,28 @@ public class TestToopherAPI {
 //        assertTrue(user.enabled);
 //    }
 
+    @Test
+    public void testAdvancedUserTerminalsGetById() throws InterruptedException, RequestError {
+        JSONObject response = new JSONObject();
+        response.put("id", id);
+        response.put("name", name);
+        response.put("name_extra", "nameExtra");
+        response.put("user", user);
+
+        HttpClientMock httpClient = new HttpClientMock(200, response.toString());
+
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.getById(id);
+
+        assertEquals(httpClient.getLastCalledMethod(), "GET");
+        assertEquals(userTerminal.id, id);
+        assertEquals(userTerminal.name, name);
+        assertEquals(userTerminal.requesterSpecifiedId, "nameExtra");
+        assertEquals(userTerminal.user.id, userId);
+        assertEquals(userTerminal.user.name, userName);
+    }
+
     private URI createURI(String url) {
         try {
             return new URL(url).toURI();

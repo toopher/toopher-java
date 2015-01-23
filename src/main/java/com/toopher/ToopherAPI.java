@@ -566,11 +566,13 @@ public class ToopherAPI {
         public final Pairings pairings;
         public final AuthenticationRequests authenticationRequests;
         public final Users users;
+        public final UserTerminals userTerminals;
 
         public AdvancedApiUsageFactory(String consumerKey, String consumerSecret) {
             pairings = new Pairings();
             authenticationRequests = new AuthenticationRequests();
             users = new Users();
+            userTerminals = new UserTerminals();
         }
 
         class Pairings {
@@ -717,6 +719,25 @@ public class ToopherAPI {
                 String userId = result.getJSONObject(0).getString("id");
                 return getById(userId);
             }
+        }
+
+        class UserTerminals {
+            /**
+             * Retrieve the current status of a user terminal by terminal id
+             *
+             * @param terminalId
+             *          The unique id for a user terminal
+             * @return
+             *          A UserTerminal object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public UserTerminal getById(String terminalId) throws RequestError {
+                final String endpoint = String.format("/user_terminals/%s", terminalId);
+                JSONObject result = get(endpoint);
+                return new UserTerminal(result);
+            }
+
         }
     }
 }

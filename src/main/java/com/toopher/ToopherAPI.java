@@ -652,15 +652,25 @@ public class ToopherAPI {
              */
             public User getByName(String name) throws RequestError {
                 final String endpoint = String.format("users");
+                JSONArray result;
 
                 List params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("user_name", name));
-                JSONObject json = get(endpoint, params, null);
                 try {
-                    return new User(json);
+                    result = (JSONArray) get(endpoint, params, null);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }
+
+
+                if (result.length() > 1) {
+                    throw new RequestError("More than one user with name {0}".format(name));
+                }
+                if (result.length() == 0) {
+                    throw new RequestError("No users with name {0}".format(name));
+                }
+                String userId = result.getJSONObject(0).getString("id");
+                return getById(userId);
             }
         }
     }

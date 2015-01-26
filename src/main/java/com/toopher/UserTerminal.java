@@ -34,5 +34,6 @@ public class UserTerminal extends ApiResponseObject {
         if (jsonResponse.has("name_extra")) {
             this.requesterSpecifiedId = jsonResponse.getString("name_extra");
         }
+        this.user.update(jsonResponse.getJSONObject("user"));
     }
 }

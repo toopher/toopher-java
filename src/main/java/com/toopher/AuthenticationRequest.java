@@ -95,6 +95,9 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.granted = jsonResponse.getBoolean("granted");
         this.automated = jsonResponse.getBoolean("automated");
         this.reason = jsonResponse.getString("reason");
+        this.terminal.update(jsonResponse.getJSONObject("terminal"));
+        this.action.update(jsonResponse.getJSONObject("action"));
+        this.user.update(jsonResponse.getJSONObject("user"));
     }
 
 }

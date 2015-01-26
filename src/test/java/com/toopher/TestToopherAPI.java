@@ -30,6 +30,7 @@ public class TestToopherAPI {
     private JSONObject terminal;
     private String terminalId;
     private String terminalName;
+    private String terminalNameExtra;
 
     @Before
     public void setUp() {
@@ -49,9 +50,11 @@ public class TestToopherAPI {
         this.terminal = new JSONObject();
         this.terminal.put("id", UUID.randomUUID().toString());
         this.terminal.put("name", "terminalName");
+        this.terminal.put("name_extra", "terminalNameExtra");
         this.terminal.put("user", this.user);
         this.terminalId = this.terminal.getString("id");
         this.terminalName = this.terminal.getString("name");
+        this.terminalNameExtra = this.terminal.getString("name_extra");
     }
 
     @Test
@@ -258,7 +261,7 @@ public class TestToopherAPI {
         JSONObject response = new JSONObject();
         response.put("id", id);
         response.put("name", name);
-        response.put("name_extra", "nameExtra");
+        response.put("name_extra", terminalNameExtra);
         response.put("user", user);
 
         HttpClientMock httpClient = new HttpClientMock(200, response.toString());
@@ -270,7 +273,7 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "GET");
         assertEquals(userTerminal.id, id);
         assertEquals(userTerminal.name, name);
-        assertEquals(userTerminal.requesterSpecifiedId, "nameExtra");
+        assertEquals(userTerminal.requesterSpecifiedId, terminalNameExtra);
         assertEquals(userTerminal.user.id, userId);
         assertEquals(userTerminal.user.name, userName);
     }

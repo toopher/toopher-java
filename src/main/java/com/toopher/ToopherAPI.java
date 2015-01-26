@@ -323,27 +323,6 @@ public class ToopherAPI {
         return authenticate(null, null, actionName, extras);
     }
 
-    /**
-     * Retrieve status information for an authentication request
-     *
-     * @param authenticationRequestId
-     *            The authentication request ID
-     * @return An AuthenticationRequest object
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered
-     */
-    public AuthenticationRequest getAuthenticationStatus(String authenticationRequestId)
-            throws RequestError {
-        final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
-
-        JSONObject json = advanced.raw.get(endpoint);
-        try {
-            return new AuthenticationRequest(json);
-        } catch (Exception e) {
-            throw new RequestError(e);
-        }
-    }
-
     public AuthenticationRequest getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {
         final String endpoint = String.format("authentication_requests/%s/otp_auth", authenticationRequestId);
         List<NameValuePair> params = new ArrayList<NameValuePair>();

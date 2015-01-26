@@ -44,5 +44,17 @@ public class Pairing extends ApiResponseObject {
         this.user = new User(json.getJSONObject("user"));
     }
 
+    public void refreshFromServer(ToopherAPI api) throws RequestError {
+        String endpoint = "pairings/{0}".format(id);
+        JSONObject result = api.advanced.raw.get(endpoint);
+        update(result);
+    }
+
+    public void update(JSONObject jsonResponse) {
+        this.enabled = jsonResponse.getBoolean("enabled");
+        this.pending = jsonResponse.getBoolean("pending");
+        this.user.update(jsonResponse.getJSONObject("user"));
+    }
+
 
 }

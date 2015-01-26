@@ -29,6 +29,12 @@ public class UserTerminal extends ApiResponseObject {
                 id, name, requesterSpecifiedId, user.name, user.id);
     }
 
+    public void refresh_from_server(ToopherAPI api) throws RequestError {
+        String endpoint = "user_terminals/{0}".format(id);
+        JSONObject result = api.advanced.raw.get(endpoint);
+        update(result);
+    }
+
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("name_extra")) {

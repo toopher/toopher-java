@@ -23,6 +23,12 @@ public class UserTerminal extends ApiResponseObject {
         this.user = new User(json.getJSONObject("user"));
     }
 
+    @Override
+    public String toString() {
+        return String.format("[UserTerminal: id=%s; name=%s; requesterSpecifiedId=%s; userName=%s; userId=%s]",
+                id, name, requesterSpecifiedId, user.name, user.id);
+    }
+
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("name_extra")) {

@@ -22,11 +22,6 @@ public class User extends ApiResponseObject {
      */
     public boolean enabled;
 
-    /**
-     * Contains the raw JSONObject
-     */
-    public JSONObject raw;
-
     public User (JSONObject json) throws JSONException {
         super(json);
 
@@ -35,6 +30,12 @@ public class User extends ApiResponseObject {
         if (json.has("disable_toopher_auth")) {
             this.enabled = (json.getBoolean("disable_toopher_auth") ? false : true);
         }
-        this.raw = json;
+    }
+
+    public void update(JSONObject jsonResponse) {
+        this.name = jsonResponse.getString("name");
+        if (jsonResponse.has("disable_toopher_auth")) {
+            this.enabled = (jsonResponse.getBoolean("disable_toopher_auth") ? false : true);
+        }
     }
 }

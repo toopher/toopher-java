@@ -1,7 +1,12 @@
 package com.toopher;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,6 +75,26 @@ public class AuthenticationRequest extends ApiResponseObject {
     public String toString() {
         return String.format("[AuthenticationRequest: id=%s; pending=%b; granted=%b; automated=%b; reason=%s; terminalId=%s; terminalName=%s]",
                              id, pending, granted, automated, reason, terminal.id, terminal.name);
+    }
+
+    public void authenticate_with_otp(ToopherAPI api, String otp) throws RequestError {
+        String endpoint = "authentication_requests/{0}/otp_auth".format(id);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("otp", otp));
+
+        JSONObject json = api.advanced.raw.post(endpoint, params, null);
+        try {
+            update(json);
+        } catch (Exception e) {
+            throw new RequestError(e);
+        }
+    }
+
+    public void update(JSONObject jsonResponse) {
+        this.pending = jsonResponse.getBoolean("pending");
+        this.granted = jsonResponse.getBoolean("granted");
+        this.automated = jsonResponse.getBoolean("automated");
+        this.reason = jsonResponse.getString("reason");
     }
 
 }

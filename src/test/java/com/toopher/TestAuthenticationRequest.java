@@ -18,7 +18,6 @@ import static org.junit.Assert.*;
 public class TestAuthenticationRequest {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
 
-    private ToopherAPI api;
     private String id;
     private String reason;
     private JSONObject terminal;
@@ -28,7 +27,6 @@ public class TestAuthenticationRequest {
 
     @Before
     public void setUp() {
-        this.api = new ToopherAPI("key", "secret");
         this.id = UUID.randomUUID().toString();
         this.reason = "it is a test";
         this.user = new JSONObject();
@@ -68,6 +66,26 @@ public class TestAuthenticationRequest {
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reason, "it is a changed test");
+    }
+
+    @Test
+    public void testRefreshFromServer() throws InterruptedException, RequestError {
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse);
+
+        JSONObject newJsonResponse = jsonResponse;
+        newJsonResponse.remove("pending");
+        newJsonResponse.remove("granted");
+        jsonResponse.put("pending", false);
+        jsonResponse.put("granted", false);
+
+        HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        authenticationRequest.refresh_from_server(toopherAPI);
+
+        assertEquals(authenticationRequest.id, id);
+        assertFalse(authenticationRequest.pending);
+        assertFalse(authenticationRequest.granted);
     }
 
     private URI createURI(String url) {

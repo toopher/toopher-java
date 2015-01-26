@@ -90,6 +90,12 @@ public class AuthenticationRequest extends ApiResponseObject {
         }
     }
 
+    public void refresh_from_server(ToopherAPI api) throws RequestError {
+        String endpoint = "authentication_requests{0}".format(id);
+        JSONObject result = api.advanced.raw.get(endpoint);
+        update(result);
+    }
+
     public void update(JSONObject jsonResponse) {
         this.pending = jsonResponse.getBoolean("pending");
         this.granted = jsonResponse.getBoolean("granted");

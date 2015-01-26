@@ -3,10 +3,7 @@ package com.toopher;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
@@ -233,24 +230,24 @@ public class ToopherAPI {
     /**
      * Initiate a login authentication request
      *
-     * @param pairingId
+     * @param pairingIdOrUsername
      *            The pairing id indicating to whom the request should be sent
-     * @param terminalName
+     * @param terminalNameOrTerminalNameExtra
      *            The user-facing descriptive name for the terminal from which the request originates
      * @return An AuthenticationRequest object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingId, String terminalName) throws RequestError {
-        return authenticate(pairingId, terminalName, null, null);
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError {
+        return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, null, null);
     }
 
     /**
      * Initiate a login authentication request
      *
-     * @param pairingId
+     * @param pairingIdOrUsername
      *            The pairing id indicating to whom the request should be sent
-     * @param terminalName
+     * @param terminalNameOrTerminalNameExtra
      *            The user-facing descriptive name for the terminal from which the request originates
      * @param actionName
      *            The user-facing descriptive name for the action which is being authenticated
@@ -258,17 +255,19 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingId, String terminalName, String actionName) throws RequestError {
-        return authenticate(pairingId, terminalName, actionName, null);
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError {
+        Map<String, String> extras = new HashMap<String, String>();
+        return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, actionName, extras);
     }
 
     /**
-     * Initiate an authentication request
+     * Initiate an authentication request by pairing id or username
      *
-     * @param pairingId
-     *            The pairing id indicating to whom the request should be sent
-     * @param terminalName
+     * @param pairingIdOrUsername
+     *            The pairing id or username indicating to whom the request should be sent
+     * @param terminalNameOrTerminalNameExtra
      *            The user-facing descriptive name for the terminal from which the request originates
+     *            or the unique identifier for this terminal.  Not displayed to the user.
      * @param actionName
      *            The user-facing descriptive name for the action which is being authenticated
      * @param extras
@@ -277,17 +276,19 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingId, String terminalName,
-                                             String actionName, Map<String, String> extras) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
         final String endpoint = "authentication_requests/initiate";
-
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        if (pairingId != null) {
-            params.add(new BasicNameValuePair("pairing_id", pairingId));
+
+        try {
+            UUID.fromString(pairingIdOrUsername);
+            params.add(new BasicNameValuePair("pairing_id", pairingIdOrUsername));
+            params.add(new BasicNameValuePair("terminal_name", terminalNameOrTerminalNameExtra));
+        }   catch (Exception e) {
+            params.add(new BasicNameValuePair("user_name", pairingIdOrUsername));
+            params.add(new BasicNameValuePair("terminal_name_extra", terminalNameOrTerminalNameExtra));
         }
-        if (terminalName != null) {
-            params.add(new BasicNameValuePair("terminal_name", terminalName));
-        }
+
         if (actionName != null && actionName.length() > 0) {
             params.add(new BasicNameValuePair("action_name", actionName));
         }
@@ -298,29 +299,6 @@ public class ToopherAPI {
         } catch (Exception e) {
             throw new RequestError(e);
         }
-    }
-
-    /**
-     * Initiate a login authentication request by username (instead of PairingID)
-     *
-     * @param userName
-     *            The unique UserName for this user
-     * @param terminalNameExtra
-     *            Unique identifier for this terminal.  Not displayed to the user.
-     * @param actionName
-     *            The user-facing descriptive name for the action which is being authenticated
-     * @return An AuthenticationRequest object
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered
-     */
-    public AuthenticationRequest authenticateByUserName(String userName, String terminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
-        if (extras == null) {
-            extras = new HashMap<String, String>();
-        }
-        extras.put("user_name", userName);
-        extras.put("terminal_name_extra", terminalNameExtra);
-
-        return authenticate(null, null, actionName, extras);
     }
 
     public AuthenticationRequest getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {

@@ -125,7 +125,7 @@ public class ToopherAPIDemo {
 
 				AuthenticationRequest requestStatus;
 				try {
-					requestStatus = api.getAuthenticationStatus(requestId);
+					requestStatus = api.authenticate(requestId, terminalName);
 				} catch (RequestError err) {
 					System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
 					continue;

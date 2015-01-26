@@ -29,12 +29,6 @@ public class Pairing extends ApiResponseObject {
      */
     public User user;
 
-    /**
-     * Contains the raw JSONObject
-     */
-    public JSONObject raw;
-
-
     @Override
     public String toString() {
         return String.format("[Pairing: id=%s; userId=%s, userName=%s, pending=%b, enabled=%b]", id,
@@ -48,7 +42,6 @@ public class Pairing extends ApiResponseObject {
         this.enabled = json.getBoolean("enabled");
         this.pending = json.getBoolean("pending");
         this.user = new User(json.getJSONObject("user"));
-        this.raw = json;
     }
 
 

@@ -11,7 +11,6 @@ public class UserTerminal extends ApiResponseObject {
     public String name;
     public String requesterSpecifiedId;
     public User user;
-    public JSONObject raw;
 
     public UserTerminal (JSONObject json) throws JSONException {
         super(json);
@@ -22,6 +21,5 @@ public class UserTerminal extends ApiResponseObject {
             this.requesterSpecifiedId = json.getString("name_extra");
         }
         this.user = new User(json.getJSONObject("user"));
-        this.raw = json;
     }
 }

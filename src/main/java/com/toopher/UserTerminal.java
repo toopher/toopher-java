@@ -22,4 +22,11 @@ public class UserTerminal extends ApiResponseObject {
         }
         this.user = new User(json.getJSONObject("user"));
     }
+
+    public void update(JSONObject jsonResponse) {
+        this.name = jsonResponse.getString("name");
+        if (jsonResponse.has("name_extra")) {
+            this.requesterSpecifiedId = jsonResponse.getString("name_extra");
+        }
+    }
 }

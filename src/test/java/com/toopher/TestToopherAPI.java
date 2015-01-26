@@ -65,7 +65,7 @@ public class TestToopherAPI {
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        Pairing pairing = toopherApi.pair("awkward turtle", "some user");
+        Pairing pairing = toopherApi.pair("some user", "awkward turtle");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
@@ -88,9 +88,32 @@ public class TestToopherAPI {
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI("https://api.toopher.test/v1"), httpClient);
-        Pairing pairing = toopherApi.pairWithQrCode(userName);
+        Pairing pairing = toopherApi.pair(userName);
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(pairing.user.id, userId);
+        assertEquals(pairing.user.name, userName);
+        assertTrue(pairing.pending);
+        assertTrue(pairing.enabled);
+    }
+
+    @Test
+    public void testCreateSmsPairing() throws InterruptedException, RequestError {
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", true);
+        jsonResponse.put("user", user);
+
+        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+
+        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        Pairing pairing = toopherApi.pair(userName, "123456");
+
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("phone_number"), "123456");
+
         assertEquals(pairing.user.id, userId);
         assertEquals(pairing.user.name, userName);
         assertTrue(pairing.pending);

@@ -157,25 +157,39 @@ public class ToopherAPI {
 
 
     /**
-     * Create a pairing
+     * Create a QR pairing
+     * @param userName
+     *          A user-facing descriptive name for the user (displayed in requests)
+     * @return  A Pairing object
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
+    public Pairing pair(String userName) throws RequestError {
+        Map<String, String> extras = new HashMap<String, String>();
+        return this.pair(userName, "", extras);
+    }
+    
+    /**
+     * Create an SMS pairing or regular pairing
      *
-     * @param pairingPhrase
-     *            The pairing phrase supplied by the user
+     * @param pairingPhraseOrNum
+     *            The pairing phrase or phone number supplied by the user
      * @param userName
      *            A user-facing descriptive name for the user (displayed in requests)
      * @return A Pairing object
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public Pairing pair(String pairingPhrase, String userName) throws RequestError {
-        return this.pair(pairingPhrase, userName, null);
+    public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError {
+        Map<String, String> extras = new HashMap<String, String>();
+        return this.pair(userName, pairingPhraseOrNum, extras);
     }
 
     /**
-     * Create a pairing
+     * Create an SMS pairing or regular pairing
      *
-     * @param pairingPhrase
-     *            The pairing phrase supplied by the user
+     * @param pairingPhraseOrNum
+     *            The pairing phrase or phone number supplied by the user
      * @param userName
      *            A user-facing descriptive name for the user (displayed in requests)
      * @param extras
@@ -184,54 +198,33 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public Pairing pair(String pairingPhrase, String userName, Map<String, String> extras) throws RequestError {
-        final String endpoint = "pairings/create";
+    public Pairing pair( String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError {
+        String endpoint;
+        JSONObject result;
 
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("pairing_phrase", pairingPhrase));
         params.add(new BasicNameValuePair("user_name", userName));
 
-        JSONObject json = advanced.raw.post(endpoint, params, extras);
-        try {
-            return new Pairing(json);
-        } catch (Exception e) {
-            throw new RequestError(e);
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
-    }
 
-    /**
-     * Create a pairing that is presented as a QR code
-     *
-     * @param userName
-     *            A user-facing descriptive name for the user (displayed in requests)
-     * @return A Pairing object
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered
-     */
-    public Pairing pairWithQrCode(String userName) throws RequestError {
-        return this.pairWithQrCode(userName, null);
-    }
+        if (!pairingPhraseOrNum.isEmpty()) {
+            if (pairingPhraseOrNum.matches("\\d+")) {
+                params.add(new BasicNameValuePair("phone_number", pairingPhraseOrNum));
+                endpoint = "pairings/create/sms";
+            } else {
+                params.add(new BasicNameValuePair("pairing_phrase", pairingPhraseOrNum));
+                endpoint = "pairings/create";
+            }
+        } else {
+            endpoint = "pairings/create/qr";
+        }
 
-    /**
-     * Create a pairing that is presented as a QR code
-     *
-     * @param userName
-     *            A user-facing descriptive name for the user (displayed in requests)
-     * @param extras
-     *            An optional Map of extra parameters to provide to the API
-     * @return A Pairing object
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered
-     */
-    public Pairing pairWithQrCode(String userName, Map<String, String> extras) throws RequestError {
-        final String endpoint = "pairings/create/qr";
+        result = advanced.raw.post(endpoint, params, null);
 
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("user_name", userName));
-
-        JSONObject json = advanced.raw.post(endpoint, params, extras);
         try {
-            return new Pairing(json);
+            return new Pairing(result);
         } catch (Exception e) {
             throw new RequestError(e);
         }

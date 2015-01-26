@@ -23,4 +23,8 @@ public class Action extends ApiResponseObject {
         this.id = json.getString("id");
         this.name = json.getString("name");
     }
+
+    public void update(JSONObject jsonResponse) {
+        this.name = jsonResponse.getString("name");
+    }
 }

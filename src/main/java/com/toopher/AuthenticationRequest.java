@@ -41,6 +41,18 @@ public class AuthenticationRequest extends ApiResponseObject {
      */
     public UserTerminal terminal;
 
+    /**
+     * Contains the unique id and descriptive name for the user
+     * associated with the request
+     */
+    public User user;
+
+    /**
+     * Contains the unique id and descriptive name for the action
+     * associated with the request
+     */
+    public Action action;
+
     public AuthenticationRequest(JSONObject json) throws JSONException{
 		super(json);
 		
@@ -50,6 +62,8 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.automated = json.getBoolean("automated");
         this.reason = json.getString("reason");
         this.terminal = new UserTerminal(json.getJSONObject("terminal"));
+        this.action = new Action(json.getJSONObject("action"));
+        this.user = terminal.user;
 	}
 
     @Override

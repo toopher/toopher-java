@@ -126,6 +126,7 @@ public class TestToopherAPI {
         jsonResponse.put("granted", true);
         jsonResponse.put("automated", false);
         jsonResponse.put("reason", reason);
+        jsonResponse.put("action", action);
         jsonResponse.put("terminal", terminal);
 
         HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
@@ -141,6 +142,8 @@ public class TestToopherAPI {
         assertEquals(authenticationRequest.terminal.name, terminalName);
         assertEquals(authenticationRequest.terminal.user.id, userId);
         assertEquals(authenticationRequest.terminal.user.name, userName);
+        assertEquals(authenticationRequest.action.id, actionId);
+        assertEquals(authenticationRequest.action.name, actionName);
         assertTrue(authenticationRequest.pending);
         assertTrue(authenticationRequest.granted);
         assertFalse(authenticationRequest.automated);

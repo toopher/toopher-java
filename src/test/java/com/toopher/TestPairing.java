@@ -95,4 +95,28 @@ public class TestPairing {
 
         assertEquals(resetLink, "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
     }
+
+    @Test
+    public void testEmailResetLink() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(201, "[]");
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        pairing.emailResetLink(toopherAPI, "email");
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("reset_email"), "email");
+    }
+
+    @Test
+    public void testEmailResetLinkWithExtras() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(201, "[]");
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("one_extra", "one_extra");
+        pairing.emailResetLink(toopherAPI, "email", extras);
+        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals(httpClient.getLastCalledData("reset_email"), "email");
+        assertEquals(httpClient.getLastCalledData("one_extra"), "one_extra");
+
+    }
 }

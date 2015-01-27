@@ -1,9 +1,13 @@
 package com.toopher;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -69,5 +73,16 @@ public class Pairing extends ApiResponseObject {
         String endpoint = "pairings/{0}/generate_reset_link".format(id);
         JSONObject result = api.advanced.raw.post(endpoint);
         return result.getString("url");
+    }
+
+    public void emailResetLink(ToopherAPI api, String email) throws RequestError {
+        emailResetLink(api, email, null);
+    }
+
+    public void emailResetLink(ToopherAPI api, String email, Map<String, String> extras) throws RequestError {
+        String endpoint = "pairings/{0}/send_reset_link".format(id);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("reset_email", email));
+        api.advanced.raw.post(endpoint, params, extras);
     }
 }

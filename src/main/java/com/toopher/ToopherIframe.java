@@ -45,7 +45,7 @@ public final class ToopherIframe {
     /**
      * Default amount of time that iframe requests are valid (seconds)
      */
-    private static final long DEFAULT_TTL = 10L;
+    private static final long DEFAULT_TTL = 300L;
 
     private static final String DEFAULT_BASE_URI = "https://api.toopher.com/v1/";
 

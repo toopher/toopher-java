@@ -651,6 +651,10 @@ public class ToopherAPI {
                 return request(new HttpGet(), endpoint, params);
             }
 
+            public <T> T post(String endpoint) throws RequestError {
+                return post(endpoint, null, null);
+            }
+
             public <T> T post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
                 HttpPost post = new HttpPost();
                 if (extras != null && extras.size() > 0) {

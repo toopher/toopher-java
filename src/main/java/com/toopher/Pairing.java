@@ -3,6 +3,9 @@ package com.toopher;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Provides information about the status of a pairing request
  * 
@@ -57,4 +60,14 @@ public class Pairing extends ApiResponseObject {
     }
 
 
+    public String getResetLink(ToopherAPI api) throws RequestError {
+        Map<String, String> extras = new HashMap<String, String>();
+        return getResetLink(api, extras);
+    }
+
+    public String getResetLink(ToopherAPI api, Map<String, String> extras) throws RequestError {
+        String endpoint = "pairings/{0}/generate_reset_link".format(id);
+        JSONObject result = api.advanced.raw.post(endpoint);
+        return result.getString("url");
+    }
 }

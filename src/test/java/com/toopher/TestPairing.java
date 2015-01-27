@@ -23,6 +23,7 @@ public class TestPairing {
     private String userId;
     private String userName;
     private JSONObject jsonResponse;
+    private Pairing pairing;
 
     @Before
     public void setUp() {
@@ -32,17 +33,17 @@ public class TestPairing {
         this.user.put("name", "userName");
         this.userId = user.getString("id");
         this.userName = user.getString("name");
+
         this.jsonResponse = new JSONObject();
-        this.jsonResponse.put("id", id);
-        this.jsonResponse.put("enabled", true);
-        this.jsonResponse.put("pending", false);
-        this.jsonResponse.put("user", user);
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", false);
+        jsonResponse.put("user", user);
+        this.pairing = new Pairing(jsonResponse);
     }
 
     @Test
     public void testRefreshFromServer() throws InterruptedException, RequestError {
-        Pairing pairing = new Pairing(jsonResponse);
-
         JSONObject newJsonResponse = jsonResponse;
         JSONObject newUser = newJsonResponse.getJSONObject("user");
         newUser.remove("name");
@@ -68,8 +69,6 @@ public class TestPairing {
 
     @Test
     public void testGetResetLink() throws InterruptedException, RequestError {
-        Pairing pairing = new Pairing(jsonResponse);
-
         JSONObject urlJsonResponse = new JSONObject();
         urlJsonResponse.put("url", "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
 
@@ -83,8 +82,6 @@ public class TestPairing {
 
     @Test
     public void testGetResetLinkWithExtras() throws InterruptedException, RequestError {
-        Pairing pairing = new Pairing(jsonResponse);
-
         JSONObject urlJsonResponse = new JSONObject();
         urlJsonResponse.put("url", "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
 

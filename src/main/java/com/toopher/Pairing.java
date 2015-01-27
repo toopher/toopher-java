@@ -50,7 +50,7 @@ public class Pairing extends ApiResponseObject {
         update(result);
     }
 
-    public void update(JSONObject jsonResponse) {
+    private void update(JSONObject jsonResponse) {
         this.enabled = jsonResponse.getBoolean("enabled");
         this.pending = jsonResponse.getBoolean("pending");
         this.user.update(jsonResponse.getJSONObject("user"));

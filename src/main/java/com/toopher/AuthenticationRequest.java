@@ -96,7 +96,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         update(result);
     }
 
-    public void update(JSONObject jsonResponse) {
+    private void update(JSONObject jsonResponse) {
         this.pending = jsonResponse.getBoolean("pending");
         this.granted = jsonResponse.getBoolean("granted");
         this.automated = jsonResponse.getBoolean("automated");

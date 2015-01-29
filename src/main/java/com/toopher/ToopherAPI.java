@@ -218,7 +218,7 @@ public class ToopherAPI {
             endpoint = "pairings/create/qr";
         }
 
-        result = advanced.raw.post(endpoint, params, null);
+        result = advanced.raw.post(endpoint, params);
 
         try {
             return new Pairing(result);
@@ -305,7 +305,7 @@ public class ToopherAPI {
         final String endpoint = String.format("authentication_requests/%s/otp_auth", authenticationRequestId);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", OTP));
-        JSONObject json = advanced.raw.post(endpoint, params, null);
+        JSONObject json = advanced.raw.post(endpoint, params);
         try {
             return new AuthenticationRequest(json);
         } catch (Exception e) {
@@ -336,7 +336,7 @@ public class ToopherAPI {
         params.add(new BasicNameValuePair("name", terminalName));
         params.add(new BasicNameValuePair("name_extra", terminalNameExtra));
 
-        advanced.raw.post(endpoint, params, null);
+        advanced.raw.post(endpoint, params);
     }
 
     /**
@@ -380,7 +380,7 @@ public class ToopherAPI {
         params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", toopherEnabled ? "false" : "true"));
 
-        advanced.raw.post(String.format(updateEndpoint, userId), params, null);
+        advanced.raw.post(String.format(updateEndpoint, userId), params);
     }
     
     private static ResponseHandler<Object> jsonHandler = new ResponseHandler<Object>() {
@@ -553,7 +553,7 @@ public class ToopherAPI {
                 }
 
                 try {
-                    result = advanced.raw.post(endpoint, params, null);
+                    result = advanced.raw.post(endpoint, params);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }

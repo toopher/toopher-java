@@ -293,28 +293,32 @@ public class TestToopherAPI {
         assertFalse(user.enabled);
     }
 
-//    TODO: Need to attach 2 JSON response objects
-//    @Test
-//    public void testAdvancedUsersGetByName() throws InterruptedException, RequestError {
-//        JSONObject jsonResponse = new JSONObject();
-//        jsonResponse.put("id", id);
-//        jsonResponse.put("name", name);
-//        jsonResponse.put("enabled", true);
-//        jsonResponse.put("disable_toopher_auth", false);
-//        JSONArray jsonArray = new JSONArray();
-//        jsonArray.put(jsonResponse);
-//
-//        HttpClientMock httpClient = new HttpClientMock(200, jsonArray.toString());
-//
-//        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
-//                createURI(DEFAULT_BASE_URL), httpClient);
-//        User user = toopherAPI.advanced.users.getByName(name);
-//
-//        assertEquals(httpClient.getLastCalledMethod(), "GET");
-//        assertEquals(user.id, id);
-//        assertEquals(user.name, name);
-//        assertTrue(user.enabled);
-//    }
+    @Test
+    public void testAdvancedUsersGetByName() throws InterruptedException, RequestError {
+        JSONObject usersJsonResponse = new JSONObject();
+        usersJsonResponse.put("id", id);
+        usersJsonResponse.put("name", name);
+        usersJsonResponse.put("enabled", true);
+        usersJsonResponse.put("disable_toopher_auth", false);
+        JSONArray usersJsonArray = new JSONArray();
+        usersJsonArray.put(usersJsonResponse);
+
+        Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/" + id), new ResponseMock(200, usersJsonResponse.toString()));
+        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=name"), new ResponseMock(200, usersJsonArray.toString()));
+
+        HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        User user = toopherAPI.advanced.users.getByName(name);
+        String actualResponse = httpClient.getExpectedResponse();
+        String expectedResponse = usersJsonResponse.toString();
+
+        assertEquals(expectedResponse, actualResponse);
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+        assertTrue(user.enabled);
+    }
 
     @Test
     public void testAdvancedUserTerminalsGetById() throws InterruptedException, RequestError {

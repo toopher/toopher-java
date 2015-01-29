@@ -593,16 +593,10 @@ public class ToopherAPI {
              */
             public User getByName(String name) throws RequestError {
                 final String endpoint = "users";
-                JSONArray result;
 
                 List params = new ArrayList<NameValuePair>();
-                params.add(new BasicNameValuePair("user_name", name));
-                try {
-                    result = (JSONArray) advanced.raw.get(endpoint, params, null);
-                } catch (Exception e) {
-                    throw new RequestError(e);
-                }
-
+                params.add(new BasicNameValuePair("name", name));
+                JSONArray result = (JSONArray) advanced.raw.get(endpoint, params);
 
                 if (result.length() > 1) {
                     throw new RequestError("More than one user with name {0}".format(name));

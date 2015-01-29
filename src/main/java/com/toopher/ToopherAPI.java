@@ -621,7 +621,7 @@ public class ToopherAPI {
              *          Thrown when an exceptional condition is encountered
              */
             public UserTerminal getById(String terminalId) throws RequestError {
-                final String endpoint = String.format("/user_terminals/%s", terminalId);
+                final String endpoint = String.format("user_terminals/%s", terminalId);
                 JSONObject result = advanced.raw.get(endpoint);
                 return new UserTerminal(result);
             }

@@ -357,7 +357,7 @@ public class ToopherAPI {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("name", userName));
 
-        JSONArray result = advanced.raw.get(searchEndpoint, params, null);
+        JSONArray result = advanced.raw.get(searchEndpoint, params);
 
         // user name should be a unique field per requester - if more than one object is returned, this is gonna be a problem
         if (result.length() > 1) {
@@ -637,6 +637,10 @@ public class ToopherAPI {
         class ApiRawRequester {
             public <T> T get(String endpoint) throws RequestError {
                 return request(new HttpGet(), endpoint, null);
+            }
+
+            public <T> T get(String endpoint, List<NameValuePair> params) throws RequestError {
+                return request(new HttpGet(), endpoint, params);
             }
 
             public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {

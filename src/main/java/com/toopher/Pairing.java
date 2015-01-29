@@ -70,8 +70,14 @@ public class Pairing extends ApiResponseObject {
     }
 
     public String getResetLink(ToopherAPI api, Map<String, String> extras) throws RequestError {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
         String endpoint = "pairings/{0}/generate_reset_link".format(id);
-        JSONObject result = api.advanced.raw.post(endpoint);
+        JSONObject result = api.advanced.raw.post(endpoint, params);
         return result.getString("url");
     }
 

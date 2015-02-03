@@ -41,6 +41,11 @@ public class AuthenticationRequest extends ApiResponseObject {
     public String reason;
 
     /**
+     * Indicates the code associated with the reason for the request's outcome
+     */
+    public int reasonCode;
+
+    /**
      * Contains the unique id and descriptive name for the terminal
      * associated with the request
      */
@@ -66,6 +71,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.granted = json.getBoolean("granted");
         this.automated = json.getBoolean("automated");
         this.reason = json.getString("reason");
+        this.reasonCode = json.getInt("reason_code");
         this.terminal = new UserTerminal(json.getJSONObject("terminal"));
         this.action = new Action(json.getJSONObject("action"));
         this.user = terminal.user;
@@ -101,6 +107,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.granted = jsonResponse.getBoolean("granted");
         this.automated = jsonResponse.getBoolean("automated");
         this.reason = jsonResponse.getString("reason");
+        this.reasonCode = jsonResponse.getInt("reason_code");
         this.terminal.update(jsonResponse.getJSONObject("terminal"));
         this.action.update(jsonResponse.getJSONObject("action"));
         this.user.update(jsonResponse.getJSONObject("user"));

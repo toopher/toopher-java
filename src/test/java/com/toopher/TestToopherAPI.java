@@ -27,6 +27,7 @@ public class TestToopherAPI {
     private String actionId;
     private String actionName;
     private String reason;
+    private int reasonCode;
     private JSONObject terminal;
     private String terminalId;
     private String terminalName;
@@ -47,6 +48,7 @@ public class TestToopherAPI {
         this.actionId = this.action.getString("id");
         this.actionName = this.action.getString("name");
         this.reason = "it is a test";
+        this.reasonCode = 111;
         this.terminal = new JSONObject();
         this.terminal.put("id", UUID.randomUUID().toString());
         this.terminal.put("name", "terminalName");
@@ -152,6 +154,7 @@ public class TestToopherAPI {
         response.put("granted", true);
         response.put("automated", false);
         response.put("reason", reason);
+        response.put("reason_code", reasonCode);
         response.put("terminal", terminal);
         response.put("action", action);
 
@@ -167,6 +170,7 @@ public class TestToopherAPI {
         assertTrue(authenticationRequest.granted);
         assertFalse(authenticationRequest.automated);
         assertEquals(authenticationRequest.reason, reason);
+        assertEquals(authenticationRequest.reasonCode, reasonCode);
         assertEquals(authenticationRequest.terminal.id, terminalId);
         assertEquals(authenticationRequest.terminal.name, terminalName);
         assertEquals(authenticationRequest.action.id, actionId);
@@ -181,6 +185,7 @@ public class TestToopherAPI {
         response.put("granted", true);
         response.put("automated", false);
         response.put("reason", reason);
+        response.put("reason_code", reasonCode);
         response.put("terminal", terminal);
         response.put("action", action);
 
@@ -196,6 +201,7 @@ public class TestToopherAPI {
         assertTrue(authenticationRequest.granted);
         assertFalse(authenticationRequest.automated);
         assertEquals(authenticationRequest.reason, reason);
+        assertEquals(authenticationRequest.reasonCode, reasonCode);
         assertEquals(authenticationRequest.terminal.id, terminalId);
         assertEquals(authenticationRequest.terminal.name, terminalName);
         assertEquals(authenticationRequest.action.id, actionId);
@@ -212,6 +218,7 @@ public class TestToopherAPI {
         jsonResponse.put("granted", true);
         jsonResponse.put("automated", false);
         jsonResponse.put("reason", reason);
+        jsonResponse.put("reason_code", reasonCode);
         jsonResponse.put("action", action);
         jsonResponse.put("terminal", terminal);
 
@@ -224,6 +231,7 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "GET");
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reason, reason);
+        assertEquals(authenticationRequest.reasonCode, reasonCode);
         assertEquals(authenticationRequest.terminal.id, terminalId);
         assertEquals(authenticationRequest.terminal.name, terminalName);
         assertEquals(authenticationRequest.terminal.user.id, userId);

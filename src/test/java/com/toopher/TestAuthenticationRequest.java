@@ -20,6 +20,7 @@ public class TestAuthenticationRequest {
 
     private String id;
     private String reason;
+    private int reasonCode;
     private JSONObject terminal;
     private JSONObject action;
     private JSONObject user;
@@ -29,6 +30,7 @@ public class TestAuthenticationRequest {
     public void setUp() {
         this.id = UUID.randomUUID().toString();
         this.reason = "it is a test";
+        this.reasonCode = 111;
         this.user = new JSONObject();
         this.user.put("id", UUID.randomUUID().toString());
         this.user.put("name", "userName");
@@ -46,6 +48,7 @@ public class TestAuthenticationRequest {
         jsonResponse.put("granted", true);
         jsonResponse.put("automated", true);
         jsonResponse.put("reason", reason);
+        jsonResponse.put("reason_code", reasonCode);
         jsonResponse.put("user", user);
         jsonResponse.put("terminal", terminal);
         jsonResponse.put("action", action);
@@ -84,6 +87,7 @@ public class TestAuthenticationRequest {
         authenticationRequest.refresh_from_server(toopherAPI);
 
         assertEquals(authenticationRequest.id, id);
+        assertEquals(authenticationRequest.reasonCode, reasonCode);
         assertFalse(authenticationRequest.pending);
         assertFalse(authenticationRequest.granted);
     }

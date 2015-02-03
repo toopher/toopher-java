@@ -40,26 +40,24 @@ public class TestUserTerminal {
         jsonResponse.put("name", name);
         jsonResponse.put("name_extra", requesterSpecifiedId);
         jsonResponse.put("user", user);
-        UserTerminal terminal = new UserTerminal(jsonResponse);
 
-        JSONObject newJsonResponse = jsonResponse;
-        newJsonResponse.remove("name");
-        jsonResponse.put("name", "terminalNameChanged");
-        newJsonResponse.remove("name_extra");
-        jsonResponse.put("name_extra", "terminalNameExtraChanged");
-        JSONObject newUser = newJsonResponse.getJSONObject("user");
-        newUser.remove("name");
+        JSONObject newJsonResponse = new JSONObject();
+        newJsonResponse.put("name", "terminalNameChanged");
+        newJsonResponse.put("name_extra", "terminalNameExtraChanged");
+        JSONObject newUser = new JSONObject();
         newUser.put("name", "userNameChanged");
+        newJsonResponse.put("user", newUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
+        UserTerminal terminal = new UserTerminal(jsonResponse, toopherAPI);
         assertEquals(terminal.id, id);
         assertEquals(terminal.name, name);
         assertEquals(terminal.requesterSpecifiedId, requesterSpecifiedId);
         assertEquals(terminal.user.name, userName);
 
-        terminal.refresh_from_server(toopherAPI);
+        terminal.refresh_from_server();
 
         assertEquals(terminal.id, id);
         assertEquals(terminal.name, "terminalNameChanged");

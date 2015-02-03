@@ -8,6 +8,11 @@ import org.json.JSONObject;
  */
 public class User extends ApiResponseObject {
     /**
+     * The ToopherAPI associated with this user
+     */
+    public ToopherAPI api;
+
+    /**
      * The unique id for the user
      */
     public String id;
@@ -22,9 +27,10 @@ public class User extends ApiResponseObject {
      */
     public boolean enabled;
 
-    public User (JSONObject json) throws JSONException {
+    public User (JSONObject json, ToopherAPI toopherAPI) throws JSONException {
         super(json);
 
+        this.api = toopherAPI;
         this.id = json.getString("id");
         this.name = json.getString("name");
         if (json.has("disable_toopher_auth")) {

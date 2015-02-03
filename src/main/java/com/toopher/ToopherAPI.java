@@ -129,7 +129,7 @@ public class ToopherAPI {
      *     The alternate HTTP client
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
-        this.advanced = new AdvancedApiUsageFactory(consumerKey, consumerSecret);
+        this.advanced = new AdvancedApiUsageFactory(consumerKey, consumerSecret, this);
         if (httpClient == null) {
             this.httpClient = new DefaultHttpClient();
             HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
@@ -221,7 +221,7 @@ public class ToopherAPI {
         result = advanced.raw.post(endpoint, params);
 
         try {
-            return new Pairing(result);
+            return new Pairing(result, this);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -295,7 +295,7 @@ public class ToopherAPI {
 
         JSONObject json = advanced.raw.post(endpoint, params, extras);
         try {
-            return new AuthenticationRequest(json);
+            return new AuthenticationRequest(json, this);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -307,7 +307,7 @@ public class ToopherAPI {
         params.add(new BasicNameValuePair("otp", OTP));
         JSONObject json = advanced.raw.post(endpoint, params);
         try {
-            return new AuthenticationRequest(json);
+            return new AuthenticationRequest(json, this);
         } catch (Exception e) {
             throw new RequestError(e);
         }
@@ -461,15 +461,21 @@ public class ToopherAPI {
         public final UserTerminals userTerminals;
         public final ApiRawRequester raw;
 
-        public AdvancedApiUsageFactory(String consumerKey, String consumerSecret) {
-            pairings = new Pairings();
-            authenticationRequests = new AuthenticationRequests();
-            users = new Users();
-            userTerminals = new UserTerminals();
+        public AdvancedApiUsageFactory(String consumerKey, String consumerSecret, ToopherAPI api) {
+            pairings = new Pairings(api);
+            authenticationRequests = new AuthenticationRequests(api);
+            users = new Users(api);
+            userTerminals = new UserTerminals(api);
             raw = new ApiRawRequester();
         }
 
         class Pairings {
+            public final ToopherAPI api;
+
+            public Pairings(ToopherAPI toopherAPI) {
+                api = toopherAPI;
+            }
+
             /**
              * Retrieve the current status of a pairing
              *
@@ -485,7 +491,7 @@ public class ToopherAPI {
 
                 JSONObject json = advanced.raw.get(endpoint);
                 try {
-                    return new Pairing(json);
+                    return new Pairing(json, api);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }
@@ -493,6 +499,12 @@ public class ToopherAPI {
         }
 
         class AuthenticationRequests {
+            public final ToopherAPI api;
+
+            public AuthenticationRequests(ToopherAPI toopherAPI) {
+                api = toopherAPI;
+            }
+
             /**
              * Retrieve the current status of an authentication request
              *
@@ -508,7 +520,7 @@ public class ToopherAPI {
 
                 JSONObject json = advanced.raw.get(endpoint);
                 try {
-                    return new AuthenticationRequest(json);
+                    return new AuthenticationRequest(json, api);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }
@@ -516,6 +528,12 @@ public class ToopherAPI {
         }
 
         class Users {
+            public final ToopherAPI api;
+
+            public Users(ToopherAPI toopherAPI) {
+                api = toopherAPI;
+            }
+
             /**
              * Create a new user with a userName
              *
@@ -558,7 +576,7 @@ public class ToopherAPI {
                     throw new RequestError(e);
                 }
 
-                return new User(result);
+                return new User(result, api);
             }
 
             /**
@@ -576,7 +594,7 @@ public class ToopherAPI {
 
                 JSONObject json = advanced.raw.get(endpoint);
                 try {
-                    return new User(json);
+                    return new User(json, api);
                 } catch (Exception e) {
                     throw new RequestError(e);
                 }
@@ -610,6 +628,12 @@ public class ToopherAPI {
         }
 
         class UserTerminals {
+            public final ToopherAPI api;
+
+            public UserTerminals(ToopherAPI toopherAPI) {
+                api = toopherAPI;
+            }
+
             /**
              * Retrieve the current status of a user terminal by terminal id
              *
@@ -623,7 +647,7 @@ public class ToopherAPI {
             public UserTerminal getById(String terminalId) throws RequestError {
                 final String endpoint = String.format("user_terminals/%s", terminalId);
                 JSONObject result = advanced.raw.get(endpoint);
-                return new UserTerminal(result);
+                return new UserTerminal(result, api);
             }
 
         }

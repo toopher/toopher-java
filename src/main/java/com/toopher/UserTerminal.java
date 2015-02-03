@@ -7,20 +7,22 @@ import org.json.JSONObject;
  * Created by graceyim on 1/22/15.
  */
 public class UserTerminal extends ApiResponseObject {
+    public ToopherAPI api;
     public String id;
     public String name;
     public String requesterSpecifiedId;
     public User user;
 
-    public UserTerminal (JSONObject json) throws JSONException {
+    public UserTerminal (JSONObject json, ToopherAPI toopherAPI) throws JSONException {
         super(json);
 
+        this.api = toopherAPI;
         this.id = json.getString("id");
         this.name = json.getString("name");
         if (json.has("name_extra")) {
             this.requesterSpecifiedId = json.getString("name_extra");
         }
-        this.user = new User(json.getJSONObject("user"));
+        this.user = new User(json.getJSONObject("user"), toopherAPI);
     }
 
     @Override
@@ -29,7 +31,7 @@ public class UserTerminal extends ApiResponseObject {
                 id, name, requesterSpecifiedId, user.name, user.id);
     }
 
-    public void refresh_from_server(ToopherAPI api) throws RequestError {
+    public void refresh_from_server() throws RequestError {
         String endpoint = "user_terminals/{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);

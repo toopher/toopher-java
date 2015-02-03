@@ -56,8 +56,6 @@ public class TestAuthenticationRequest {
 
     @Test
     public void testAuthenticateWithOtp() throws InterruptedException, RequestError {
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse);
-
         JSONObject newJsonResponse = jsonResponse;
         newJsonResponse.remove("reason");
         newJsonResponse.put("reason", "it is a changed test");
@@ -65,7 +63,9 @@ public class TestAuthenticationRequest {
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        authenticationRequest.authenticateWithOtp(toopherAPI, "testOtp");
+
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherAPI);
+        authenticationRequest.authenticateWithOtp("testOtp");
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reason, "it is a changed test");
@@ -73,8 +73,6 @@ public class TestAuthenticationRequest {
 
     @Test
     public void testRefreshFromServer() throws InterruptedException, RequestError {
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse);
-
         JSONObject newJsonResponse = jsonResponse;
         newJsonResponse.remove("pending");
         newJsonResponse.remove("granted");
@@ -84,7 +82,9 @@ public class TestAuthenticationRequest {
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        authenticationRequest.refreshFromServer(toopherAPI);
+
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherAPI);
+        authenticationRequest.refreshFromServer();
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reasonCode, reasonCode);

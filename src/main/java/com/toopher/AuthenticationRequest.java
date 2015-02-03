@@ -14,6 +14,10 @@ import java.util.Map;
  * 
  */
 public class AuthenticationRequest extends ApiResponseObject {
+    /**
+     * The ToopherAPI associated with this request
+     */
+    public ToopherAPI api;
 
 	/**
      * The unique id for the authentication request
@@ -63,16 +67,17 @@ public class AuthenticationRequest extends ApiResponseObject {
      */
     public Action action;
 
-    public AuthenticationRequest(JSONObject json) throws JSONException{
+    public AuthenticationRequest(JSONObject json, ToopherAPI toopherAPI) throws JSONException{
 		super(json);
-		
+
+        this.api = toopherAPI;
 		this.id = json.getString("id");
         this.pending = json.getBoolean("pending");
         this.granted = json.getBoolean("granted");
         this.automated = json.getBoolean("automated");
         this.reason = json.getString("reason");
         this.reasonCode = json.getInt("reason_code");
-        this.terminal = new UserTerminal(json.getJSONObject("terminal"));
+        this.terminal = new UserTerminal(json.getJSONObject("terminal"), toopherAPI);
         this.action = new Action(json.getJSONObject("action"));
         this.user = terminal.user;
 	}
@@ -83,7 +88,7 @@ public class AuthenticationRequest extends ApiResponseObject {
                              id, pending, granted, automated, reason, terminal.id, terminal.name);
     }
 
-    public void authenticateWithOtp(ToopherAPI api, String otp) throws RequestError {
+    public void authenticateWithOtp(String otp) throws RequestError {
         String endpoint = "authentication_requests/{0}/otp_auth".format(id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", otp));
@@ -96,7 +101,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         }
     }
 
-    public void refreshFromServer(ToopherAPI api) throws RequestError {
+    public void refreshFromServer() throws RequestError {
         String endpoint = "authentication_requests{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);

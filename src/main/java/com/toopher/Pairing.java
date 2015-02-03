@@ -16,6 +16,11 @@ import java.util.Map;
  */
 public class Pairing extends ApiResponseObject {
     /**
+     * The ToopherAPI associated with this pairing
+     */
+    public ToopherAPI api;
+
+    /**
      * The unique id for the pairing request
      */
     public String id;
@@ -42,16 +47,17 @@ public class Pairing extends ApiResponseObject {
                              user.id, user.name, pending, enabled);
     }
 
-    public Pairing(JSONObject json) throws JSONException {
+    public Pairing(JSONObject json, ToopherAPI toopherAPI) throws JSONException {
         super(json);
 
+        this.api = toopherAPI;
         this.id = json.getString("id");
         this.enabled = json.getBoolean("enabled");
         this.pending = json.getBoolean("pending");
-        this.user = new User(json.getJSONObject("user"));
+        this.user = new User(json.getJSONObject("user"), toopherAPI);
     }
 
-    public void refreshFromServer(ToopherAPI api) throws RequestError {
+    public void refreshFromServer() throws RequestError {
         String endpoint = "pairings/{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
@@ -63,13 +69,12 @@ public class Pairing extends ApiResponseObject {
         this.user.update(jsonResponse.getJSONObject("user"));
     }
 
-
-    public String getResetLink(ToopherAPI api) throws RequestError {
+    public String getResetLink() throws RequestError {
         Map<String, String> extras = new HashMap<String, String>();
-        return getResetLink(api, extras);
+        return getResetLink(extras);
     }
 
-    public String getResetLink(ToopherAPI api, Map<String, String> extras) throws RequestError {
+    public String getResetLink(Map<String, String> extras) throws RequestError {
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
@@ -81,11 +86,11 @@ public class Pairing extends ApiResponseObject {
         return result.getString("url");
     }
 
-    public void emailResetLink(ToopherAPI api, String email) throws RequestError {
-        emailResetLink(api, email, null);
+    public void emailResetLink(String email) throws RequestError {
+        emailResetLink(email, null);
     }
 
-    public void emailResetLink(ToopherAPI api, String email, Map<String, String> extras) throws RequestError {
+    public void emailResetLink(String email, Map<String, String> extras) throws RequestError {
         String endpoint = "pairings/{0}/send_reset_link".format(id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("reset_email", email));

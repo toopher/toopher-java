@@ -65,7 +65,7 @@ public class TestAuthenticationRequest {
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        authenticationRequest.authenticate_with_otp(toopherAPI, "testOtp");
+        authenticationRequest.authenticateWithOtp(toopherAPI, "testOtp");
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reason, "it is a changed test");
@@ -84,7 +84,7 @@ public class TestAuthenticationRequest {
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        authenticationRequest.refresh_from_server(toopherAPI);
+        authenticationRequest.refreshFromServer(toopherAPI);
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reasonCode, reasonCode);

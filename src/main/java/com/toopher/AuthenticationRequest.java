@@ -83,7 +83,7 @@ public class AuthenticationRequest extends ApiResponseObject {
                              id, pending, granted, automated, reason, terminal.id, terminal.name);
     }
 
-    public void authenticate_with_otp(ToopherAPI api, String otp) throws RequestError {
+    public void authenticateWithOtp(ToopherAPI api, String otp) throws RequestError {
         String endpoint = "authentication_requests/{0}/otp_auth".format(id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", otp));
@@ -96,7 +96,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         }
     }
 
-    public void refresh_from_server(ToopherAPI api) throws RequestError {
+    public void refreshFromServer(ToopherAPI api) throws RequestError {
         String endpoint = "authentication_requests{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);

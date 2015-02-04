@@ -89,4 +89,17 @@ public class TestUser {
         assertEquals(user.name, name);
         assertFalse(user.toopherAuthenticationEnabled);
     }
+
+    @Test
+    public void testReset() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, "{}");
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        User user = new User(json, toopherAPI);
+        try {
+            user.reset();
+        } catch (RequestError re) {
+            fail();
+        }
+    }
 }

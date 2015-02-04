@@ -67,6 +67,13 @@ public class User extends ApiResponseObject {
         update(result);
     }
 
+    public void reset() throws RequestError {
+        String endpoint = "/users/reset";
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("name", name));
+        api.advanced.raw.post(endpoint, params);
+    }
+
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("disable_toopher_auth")) {

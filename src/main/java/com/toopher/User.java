@@ -34,14 +34,18 @@ public class User extends ApiResponseObject {
         this.id = json.getString("id");
         this.name = json.getString("name");
         if (json.has("disable_toopher_auth")) {
-            this.toopherAuthenticationEnabled = (json.getBoolean("disable_toopher_auth") ? false : true);
+            this.toopherAuthenticationEnabled = !json.getBoolean("disable_toopher_auth");
+        } else {
+            this.toopherAuthenticationEnabled = true;
         }
     }
 
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("disable_toopher_auth")) {
-            this.toopherAuthenticationEnabled = (jsonResponse.getBoolean("disable_toopher_auth") ? false : true);
+            this.toopherAuthenticationEnabled = !jsonResponse.getBoolean("disable_toopher_auth");
+        } else {
+            this.toopherAuthenticationEnabled = true;
         }
     }
 }

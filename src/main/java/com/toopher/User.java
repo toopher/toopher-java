@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by graceyim on 1/22/15.
+ * Provides information about the status of a user
+ *
  */
 public class User extends ApiResponseObject {
     /**

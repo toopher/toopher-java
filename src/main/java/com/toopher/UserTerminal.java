@@ -4,7 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by graceyim on 1/22/15.
+ * Provides information about the status of a user terminal
+ *
  */
 public class UserTerminal extends ApiResponseObject {
     public ToopherAPI api;

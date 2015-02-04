@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Provide information about the status of an authentication request
+ * Provides information about the status of an authentication request
  * 
  */
 public class AuthenticationRequest extends ApiResponseObject {

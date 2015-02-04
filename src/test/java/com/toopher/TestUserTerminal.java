@@ -10,9 +10,6 @@ import java.util.UUID;
 import static org.junit.Assert.*;
 
 
-/**
- * Created by graceyim on 1/26/15.
- */
 public class TestUserTerminal {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
 

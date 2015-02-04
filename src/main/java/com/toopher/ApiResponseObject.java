@@ -11,10 +11,10 @@ public class ApiResponseObject {
     /**
      * A map of the raw API response data
      */
-    public Map raw;
+    public Map rawResponse;
     
     public ApiResponseObject(JSONObject json) throws JSONException {
-    	this.raw = jsonToMap(json);
+    	this.rawResponse = jsonToMap(json);
     }
 
     private Map<String, Object> jsonToMap(JSONObject json) throws JSONException{

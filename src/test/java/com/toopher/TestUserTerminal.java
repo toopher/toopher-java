@@ -57,7 +57,7 @@ public class TestUserTerminal {
         assertEquals(terminal.requesterSpecifiedId, requesterSpecifiedId);
         assertEquals(terminal.user.name, userName);
 
-        terminal.refresh_from_server();
+        terminal.refreshFromServer();
 
         assertEquals(terminal.id, id);
         assertEquals(terminal.name, "terminalNameChanged");

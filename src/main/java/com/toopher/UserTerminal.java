@@ -31,7 +31,7 @@ public class UserTerminal extends ApiResponseObject {
                 id, name, requesterSpecifiedId, user.name, user.id);
     }
 
-    public void refresh_from_server() throws RequestError {
+    public void refreshFromServer() throws RequestError {
         String endpoint = "user_terminals/{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);

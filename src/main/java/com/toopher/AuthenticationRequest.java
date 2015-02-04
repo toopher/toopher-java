@@ -88,7 +88,7 @@ public class AuthenticationRequest extends ApiResponseObject {
                              id, pending, granted, automated, reason, terminal.id, terminal.name);
     }
 
-    public void authenticateWithOtp(String otp) throws RequestError {
+    public void grantWithOtp(String otp) throws RequestError {
         String endpoint = "authentication_requests/{0}/otp_auth".format(id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", otp));

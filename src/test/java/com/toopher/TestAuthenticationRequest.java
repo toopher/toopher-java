@@ -55,7 +55,7 @@ public class TestAuthenticationRequest {
     }
 
     @Test
-    public void testAuthenticateWithOtp() throws InterruptedException, RequestError {
+    public void testGrantWithOtp() throws InterruptedException, RequestError {
         JSONObject newJsonResponse = jsonResponse;
         newJsonResponse.remove("reason");
         newJsonResponse.put("reason", "it is a changed test");
@@ -65,7 +65,7 @@ public class TestAuthenticationRequest {
                 createURI(DEFAULT_BASE_URL), httpClient);
 
         AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherAPI);
-        authenticationRequest.authenticateWithOtp("testOtp");
+        authenticationRequest.grantWithOtp("testOtp");
 
         assertEquals(authenticationRequest.id, id);
         assertEquals(authenticationRequest.reason, "it is a changed test");

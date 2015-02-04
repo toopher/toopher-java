@@ -58,7 +58,7 @@ public class Pairing extends ApiResponseObject {
     }
 
     public void refreshFromServer() throws RequestError {
-        String endpoint = "pairings/{0}".format(id);
+        String endpoint = String.format("pairings/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }

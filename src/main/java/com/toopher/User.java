@@ -39,6 +39,12 @@ public class User extends ApiResponseObject {
             this.toopherAuthenticationEnabled = true;
         }
     }
+    
+    public void refreshFromServer() throws RequestError {
+        String endpoint = "users/{0}".format(id);
+        JSONObject result = api.advanced.raw.get(endpoint);
+        update(result);
+    }
 
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");

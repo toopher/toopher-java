@@ -278,7 +278,7 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(user.id, id);
         assertEquals(user.name, name);
-        assertTrue(user.enabled);
+        assertTrue(user.toopherAuthenticationEnabled);
     }
 
     @Test
@@ -298,7 +298,7 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "GET");
         assertEquals(user.id, id);
         assertEquals(user.name, name);
-        assertFalse(user.enabled);
+        assertFalse(user.toopherAuthenticationEnabled);
     }
 
     @Test
@@ -325,7 +325,7 @@ public class TestToopherAPI {
         assertEquals(expectedResponse, actualResponse);
         assertEquals(user.id, id);
         assertEquals(user.name, name);
-        assertTrue(user.enabled);
+        assertTrue(user.toopherAuthenticationEnabled);
     }
 
     @Test

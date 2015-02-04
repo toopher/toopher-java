@@ -1,7 +1,12 @@
 package com.toopher;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by graceyim on 1/22/15.
@@ -43,6 +48,14 @@ public class User extends ApiResponseObject {
     public void refreshFromServer() throws RequestError {
         String endpoint = "users/{0}".format(id);
         JSONObject result = api.advanced.raw.get(endpoint);
+        update(result);
+    }
+
+    public void enableToopherAuthentication() throws RequestError {
+        String endpoint = "users/{0}".format(id);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("disable_toopher_auth", "false"));
+        JSONObject result = api.advanced.raw.post(endpoint, params);
         update(result);
     }
 

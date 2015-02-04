@@ -52,4 +52,23 @@ public class TestUser {
         assertEquals(user.name, "userNameChanged");
         assertFalse(user.toopherAuthenticationEnabled);
     }
+
+    @Test
+    public void testEnableToopherAuthentication() throws InterruptedException, RequestError {
+        JSONObject newJson = new JSONObject();
+        newJson.put("id", id);
+        newJson.put("name", name);
+        newJson.put("disable_toopher_auth", "false");
+
+        HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        User user = new User(json, toopherAPI);
+
+        user.enableToopherAuthentication();
+
+        assertEquals(user.id, id);
+        assertEquals(user.name, name);
+        assertTrue(user.toopherAuthenticationEnabled);
+    }
 }

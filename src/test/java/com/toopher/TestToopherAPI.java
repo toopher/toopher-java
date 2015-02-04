@@ -265,9 +265,9 @@ public class TestToopherAPI {
         JSONObject jsonResponse = new JSONObject();
         jsonResponse.put("id", id);
         jsonResponse.put("name", name);
-        jsonResponse.put("enabled", false);
+        jsonResponse.put("disable_toopher_auth", "false");
         Map<String, String> extras = new HashMap<String, String>();
-        extras.put("disable_toopher_auth", "false");
+        extras.put("foo", "bar");
 
         HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
@@ -278,7 +278,7 @@ public class TestToopherAPI {
         assertEquals(httpClient.getLastCalledMethod(), "POST");
         assertEquals(user.id, id);
         assertEquals(user.name, name);
-        assertFalse(user.enabled);
+        assertTrue(user.enabled);
     }
 
     @Test

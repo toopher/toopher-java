@@ -566,6 +566,8 @@ public class ToopherAPI {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 JSONObject result;
 
+                params.add(new BasicNameValuePair("name", userName));
+
                 for (Map.Entry<String, String> entry : extras.entrySet()) {
                     params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
                 }

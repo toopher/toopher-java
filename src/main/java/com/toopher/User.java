@@ -59,6 +59,14 @@ public class User extends ApiResponseObject {
         update(result);
     }
 
+    public void disableToopherAuthentication() throws RequestError {
+        String endpoint = "users/{0}".format(id);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("disable_toopher_auth", "true"));
+        JSONObject result = api.advanced.raw.post(endpoint, params);
+        update(result);
+    }
+
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("disable_toopher_auth")) {

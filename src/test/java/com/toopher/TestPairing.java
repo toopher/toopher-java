@@ -4,16 +4,22 @@ import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 
 public class TestPairing {
-    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
     private String id;
     private JSONObject user;
@@ -62,6 +68,26 @@ public class TestPairing {
         assertEquals(pairing.user.name, "userNameChanged");
         assertFalse(pairing.enabled);
         assertTrue(pairing.pending);
+    }
+
+    @Test
+    public void testGetQrCodeImage() throws InterruptedException, RequestError, IOException {
+        BufferedImage bi = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "png", baos);
+        baos.flush();
+        byte[] imageInByte = baos.toByteArray();
+        baos.close();
+        bi.flush();
+
+        HttpClientMock httpClient = new HttpClientMock(200, imageInByte.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        pairing.getQrCodeImage();
+
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(200, httpClient.getExpectedResponseStatus());
     }
 
     @Test

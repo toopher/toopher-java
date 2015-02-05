@@ -63,6 +63,11 @@ public class Pairing extends ApiResponseObject {
         update(result);
     }
 
+    public byte[] getQrCodeImage() throws RequestError {
+        String endpoint = String.format("qr/pairings/%s", id);
+        return api.advanced.raw.get(endpoint);
+    }
+
     private void update(JSONObject jsonResponse) {
         this.enabled = jsonResponse.getBoolean("enabled");
         this.pending = jsonResponse.getBoolean("pending");

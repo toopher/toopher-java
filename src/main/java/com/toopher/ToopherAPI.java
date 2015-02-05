@@ -409,6 +409,27 @@ public class ToopherAPI {
         }
     };
 
+    private static ResponseHandler<Object> qrResponseHandler = new ResponseHandler<Object>() {
+
+        @Override
+        public Object handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+            StatusLine statusLine = response.getStatusLine();
+            if (statusLine.getStatusCode() >= 300) {
+                parseRequestError(statusLine, response);
+            }
+
+            HttpEntity entity = response.getEntity();
+            byte[] content;
+            content = (entity != null) ? EntityUtils.toByteArray(entity) : null;
+
+            if (content != null) {
+                return content;
+            } else {
+                throw new RequestError("Empty response body returned");
+            }
+        }
+    };
+
 
     public static String getBaseURL() {
         return String.format("%s://%s%s", DEFAULT_URI_SCHEME,
@@ -701,6 +722,7 @@ public class ToopherAPI {
             }
 
             private <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError {
+                Boolean isQrImageEndpoint = endpoint.contains("qr/pairings/");
                 try {
                     URIBuilder uriBuilder = new URIBuilder().setScheme(uriScheme).setHost(uriHost)
                             .setPort(uriPort)
@@ -717,7 +739,11 @@ public class ToopherAPI {
                 }
 
                 try {
-                    return (T) httpClient.execute(httpRequest, jsonHandler);
+                    if (isQrImageEndpoint) {
+                        return (T) httpClient.execute(httpRequest, qrResponseHandler);
+                    } else {
+                        return (T) httpClient.execute(httpRequest, jsonHandler);
+                    }
                 } catch (RequestError re) {
                     throw re;
                 } catch (Exception e) {

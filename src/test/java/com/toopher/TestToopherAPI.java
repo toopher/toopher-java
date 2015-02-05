@@ -276,6 +276,7 @@ public class TestToopherAPI {
         User user = toopherAPI.advanced.users.create(name, extras);
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals("bar", httpClient.getLastCalledData("foo"));
         assertEquals(user.id, id);
         assertEquals(user.name, name);
         assertTrue(user.toopherAuthenticationEnabled);

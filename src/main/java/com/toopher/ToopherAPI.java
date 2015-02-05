@@ -361,10 +361,10 @@ public class ToopherAPI {
 
         // user name should be a unique field per requester - if more than one object is returned, this is gonna be a problem
         if (result.length() > 1) {
-            throw new RequestError("More than one user with username {0}".format(userName));
+            throw new RequestError(String.format("More than one user with username %s", userName));
         }
         if (result.length() == 0) {
-            throw new RequestError("No users with user name {0}".format(userName));
+            throw new RequestError(String.format("No users with user name %s", userName));
         }
 
         String userId;
@@ -640,10 +640,10 @@ public class ToopherAPI {
                 JSONArray result = (JSONArray) advanced.raw.get(endpoint, params);
 
                 if (result.length() > 1) {
-                    throw new RequestError("More than one user with name {0}".format(name));
+                    throw new RequestError(String.format("More than one user with name %s", name));
                 }
                 if (result.length() == 0) {
-                    throw new RequestError("No users with name {0}".format(name));
+                    throw new RequestError(String.format("No users with name %s", name));
                 }
                 String userId = result.getJSONObject(0).getString("id");
                 return getById(userId);

@@ -33,7 +33,7 @@ public class UserTerminal extends ApiResponseObject {
     }
 
     public void refreshFromServer() throws RequestError {
-        String endpoint = "user_terminals/{0}".format(id);
+        String endpoint = String.format("user_terminals/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }

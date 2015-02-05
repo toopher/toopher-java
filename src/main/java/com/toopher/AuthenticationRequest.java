@@ -89,7 +89,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     }
 
     public void grantWithOtp(String otp) throws RequestError {
-        String endpoint = "authentication_requests/{0}/otp_auth".format(id);
+        String endpoint = String.format("authentication_requests/%s/otp_auth", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", otp));
 
@@ -102,7 +102,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     }
 
     public void refreshFromServer() throws RequestError {
-        String endpoint = "authentication_requests{0}".format(id);
+        String endpoint = String.format("authentication_requests/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }

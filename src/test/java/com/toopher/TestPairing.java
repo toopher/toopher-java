@@ -93,7 +93,7 @@ public class TestPairing {
     @Test
     public void testGetResetLink() throws InterruptedException, RequestError {
         JSONObject urlJsonResponse = new JSONObject();
-        urlJsonResponse.put("url", "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
+        urlJsonResponse.put("url", String.format("http://api.toopher.test/v1/pairings/%s/reset?reset_authorization=abcde", id));
 
         HttpClientMock httpClient = new HttpClientMock(200, urlJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
@@ -101,13 +101,13 @@ public class TestPairing {
         Pairing pairing = new Pairing(jsonResponse, toopherAPI);
         String resetLink = pairing.getResetLink();
 
-        assertEquals(resetLink, "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
+        assertEquals(resetLink, String.format("http://api.toopher.test/v1/pairings/%s/reset?reset_authorization=abcde", id));
     }
 
     @Test
     public void testGetResetLinkWithExtras() throws InterruptedException, RequestError {
         JSONObject urlJsonResponse = new JSONObject();
-        urlJsonResponse.put("url", "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
+        urlJsonResponse.put("url", String.format("http://api.toopher.test/v1/pairings/%s/reset?reset_authorization=abcde", id));
 
         HttpClientMock httpClient = new HttpClientMock(200, urlJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
@@ -118,7 +118,7 @@ public class TestPairing {
         Pairing pairing = new Pairing(jsonResponse, toopherAPI);
         String resetLink = pairing.getResetLink(extras);
 
-        assertEquals(resetLink, "http://api.toopher.test/v1/pairings/{0}/reset?reset_authorization=abcde".format(id));
+        assertEquals(resetLink, String.format("http://api.toopher.test/v1/pairings/%s/reset?reset_authorization=abcde", id));
     }
 
     @Test

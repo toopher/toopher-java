@@ -86,7 +86,7 @@ public class Pairing extends ApiResponseObject {
             params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
 
-        String endpoint = "pairings/{0}/generate_reset_link".format(id);
+        String endpoint = String.format("pairings/%s/generate_reset_link", id);
         JSONObject result = api.advanced.raw.post(endpoint, params);
         return result.getString("url");
     }
@@ -96,7 +96,7 @@ public class Pairing extends ApiResponseObject {
     }
 
     public void emailResetLink(String email, Map<String, String> extras) throws RequestError {
-        String endpoint = "pairings/{0}/send_reset_link".format(id);
+        String endpoint = String.format("pairings/%s/send_reset_link", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("reset_email", email));
         api.advanced.raw.post(endpoint, params, extras);

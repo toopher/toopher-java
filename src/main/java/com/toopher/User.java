@@ -47,13 +47,13 @@ public class User extends ApiResponseObject {
     }
     
     public void refreshFromServer() throws RequestError {
-        String endpoint = "users/{0}".format(id);
+        String endpoint = String.format("users/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }
 
     public void enableToopherAuthentication() throws RequestError {
-        String endpoint = "users/{0}".format(id);
+        String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", "false"));
         JSONObject result = api.advanced.raw.post(endpoint, params);
@@ -61,7 +61,7 @@ public class User extends ApiResponseObject {
     }
 
     public void disableToopherAuthentication() throws RequestError {
-        String endpoint = "users/{0}".format(id);
+        String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", "true"));
         JSONObject result = api.advanced.raw.post(endpoint, params);

@@ -69,7 +69,7 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair("some user", "awkward turtle");
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
@@ -92,7 +92,7 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName);
 
         assertEquals(httpClient.getLastCalledMethod(), "POST");
@@ -136,7 +136,7 @@ public class TestToopherAPI {
         HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
 
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
-                createURI("https://api.toopher.test/v1"), httpClient);
+                createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherAPI.advanced.pairings.getById(id);
 
         assertEquals(httpClient.getLastCalledMethod(), "GET");
@@ -312,7 +312,7 @@ public class TestToopherAPI {
         usersJsonArray.put(usersJsonResponse);
 
         Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users/" + id), new ResponseMock(200, usersJsonResponse.toString()));
+        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users/%s", id)), new ResponseMock(200, usersJsonResponse.toString()));
         expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=name"), new ResponseMock(200, usersJsonArray.toString()));
 
         HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);

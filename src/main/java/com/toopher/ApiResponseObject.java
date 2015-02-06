@@ -17,6 +17,10 @@ public class ApiResponseObject {
     	this.rawResponse = jsonToMap(json);
     }
 
+    public void updateRawResponse(JSONObject json) {
+        this.rawResponse = jsonToMap(json);
+    }
+
     private Map<String, Object> jsonToMap(JSONObject json) throws JSONException{
     	Map<String,Object> result = new HashMap<String,Object>();
     	

@@ -71,5 +71,6 @@ public class UserTerminal extends ApiResponseObject {
         this.name = jsonResponse.getString("name");
         this.requesterSpecifiedId = jsonResponse.getString("name_extra");
         this.user.update(jsonResponse.getJSONObject("user"));
+        this.updateRawResponse(jsonResponse);
     }
 }

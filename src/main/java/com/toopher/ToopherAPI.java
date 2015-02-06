@@ -300,31 +300,6 @@ public class ToopherAPI {
             throw new RequestError(e);
         }
     }
-    /**
-     * Associates a per-user "Friendly Name" to a given terminal
-     *
-     * @param userName
-     *            The name of the user
-     * @param terminalName
-     *            The user-facing descriptive name for the terminal from which the request originates
-     * @param terminalNameExtra
-     *            The requester-specific key that uniquely identifies this terminal.  Can be shared
-     *            across multiple users.  The combination of userName and terminalNameExtra should
-     *            be unique for a requester
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered, or the
-     */
-    public void assignUserFriendlyNameToTerminal(String userName, String terminalName, String terminalNameExtra) throws RequestError {
-        final String endpoint = "user_terminals/create";
-
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("user_name", userName));
-        params.add(new BasicNameValuePair("name", terminalName));
-        params.add(new BasicNameValuePair("name_extra", terminalNameExtra));
-
-        advanced.raw.post(endpoint, params);
-    }
-
     
     private static ResponseHandler<Object> jsonHandler = new ResponseHandler<Object>() {
 
@@ -598,6 +573,62 @@ public class ToopherAPI {
 
             public UserTerminals(ToopherAPI toopherAPI) {
                 api = toopherAPI;
+            }
+
+            /**
+             *
+             * @param userName
+             *          The name of the user
+             * @param terminalName
+             *          The user-facing descriptive name for the terminal from which the request originates
+             * @param requesterSpecifiedId
+             *          The requester specified id that uniquely identifies this terminal. Can be shared
+             *          across multiple users. The combination of userName and requesterSpecifiedId should
+             *          be unique for a requester
+             * @return
+             *          A UserTerminal object
+             * @throws RequestError
+             *          Thrown when an exceptional condition is encountered
+             */
+            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId) throws RequestError {
+                return create(userName, terminalName, requesterSpecifiedId, null);
+            }
+
+            /**
+             * Create a new user terminal
+             *
+             * @param userName
+             *            The name of the user
+             * @param terminalName
+             *            The user-facing descriptive name for the terminal from which the request originates
+             * @param requesterSpecifiedId
+             *            The requester specified id that uniquely identifies this terminal.  Can be shared
+             *            across multiple users.  The combination of userName and terminalNameExtra should
+             *            be unique for a requester
+             * @param extras
+             *          An optional Map of extra parameters to provide to the API
+             * @return
+             *          A UserTerminal object
+             * @throws RequestError
+             *             Thrown when an exceptional condition is encountered
+             */
+            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId, Map<String, String> extras) throws RequestError {
+                final String endpoint = "user_terminals/create";
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                JSONObject result;
+
+                params.add(new BasicNameValuePair("user_name", userName));
+                params.add(new BasicNameValuePair("name", terminalName));
+                params.add(new BasicNameValuePair("name_extra", requesterSpecifiedId));
+
+                if (extras != null) {
+                    for (Map.Entry<String, String> entry : extras.entrySet()) {
+                        params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+                    }
+                }
+
+                result = advanced.raw.post(endpoint, params);
+                return new UserTerminal(result, api);
             }
 
             /**

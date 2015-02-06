@@ -659,9 +659,6 @@ public class ToopherAPI {
             }
 
             public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
-                if (params == null) {
-                    params = new ArrayList<NameValuePair>();
-                }
                 if (extras != null && extras.size() > 0) {
                     for (Map.Entry<String, String> e : extras.entrySet()){
                         params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
@@ -671,7 +668,7 @@ public class ToopherAPI {
             }
 
             public <T> T post(String endpoint) throws RequestError {
-                return post(endpoint, null, null);
+                return request(new HttpPost(), endpoint, null);
             }
 
             public <T> T post(String endpoint, List<NameValuePair> params) throws RequestError {
@@ -724,7 +721,6 @@ public class ToopherAPI {
                     throw new RequestError(e);
                 }
             }
-
         }
     }
 }

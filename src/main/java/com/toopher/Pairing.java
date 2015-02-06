@@ -25,7 +25,7 @@ public class Pairing extends ApiResponseObject {
     public String id;
 
     /**
-     * Indicates if the pairing has been enabled by the user
+     * Indicates if the pairing was enabled by the user
      */
     public boolean enabled;
 
@@ -35,7 +35,7 @@ public class Pairing extends ApiResponseObject {
     public boolean pending;
 
     /**
-     * The User object associated with the pairing request
+     * The User associated with the pairing request
      */
     public User user;
 

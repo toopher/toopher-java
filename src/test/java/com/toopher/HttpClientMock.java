@@ -75,7 +75,7 @@ public class HttpClientMock extends DefaultHttpClient {
         if (expectedUriResponses != null) {
             return expectedUriResponses.get(lastURI).getResponseBody();
         }
-        return null;
+        return expectedResponseBody;
     }
 
     public int getExpectedResponseStatus() {

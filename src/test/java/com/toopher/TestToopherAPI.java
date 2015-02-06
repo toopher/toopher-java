@@ -1,5 +1,7 @@
 package com.toopher;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -10,346 +12,350 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
 public class TestToopherAPI {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
-    private String id;
-    private String name;
-    private JSONObject user;
-    private String userId;
-    private String userName;
-    private JSONObject action;
-    private String actionId;
-    private String actionName;
-    private String reason;
-    private int reasonCode;
-    private JSONObject terminal;
-    private String terminalId;
-    private String terminalName;
-    private String terminalNameExtra;
+    private static String id;
+    private static JSONObject user;
+    private static String userId;
+    private static String userName;
+    private static JSONObject action;
+    private static String actionId;
+    private static String actionName;
+    private static JSONObject terminal;
+    private static String terminalId;
+    private static String terminalName;
+    private static String terminalNameExtra;
+
+    private static JSONObject pairingJsonResponse;
+    private static JSONObject authenticationJsonResponse;
+    private static JSONObject userJsonResponse;
+    private static JSONObject userTerminalJsonResponse;
+
+    @BeforeClass
+    public static void setUpBeforeClass() {
+        id = UUID.randomUUID().toString();
+
+        user = new JSONObject();
+        userId = UUID.randomUUID().toString();
+        userName = "userName";
+        user.put("id", userId);
+        user.put("name", userName);
+
+        action = new JSONObject();
+        actionId = UUID.randomUUID().toString();
+        actionName = "log in";
+        action.put("id", actionId);
+        action.put("name", actionName);
+
+        terminal = new JSONObject();
+        terminalId = UUID.randomUUID().toString();
+        terminalName = "terminalName";
+        terminalNameExtra = "terminalNameExtra";
+        terminal.put("id", terminalId);
+        terminal.put("name", terminalName);
+        terminal.put("name_extra", terminalNameExtra);
+        terminal.put("user", user);
+    }
 
     @Before
     public void setUp() {
-        this.id = UUID.randomUUID().toString();
-        this.name = "name";
-        this.user = new JSONObject();
-        this.user.put("id", UUID.randomUUID().toString());
-        this.user.put("name", "userName");
-        this.userId = this.user.getString("id");
-        this.userName = this.user.getString("name");
-        this.action = new JSONObject();
-        this.action.put("id", UUID.randomUUID().toString());
-        this.action.put("name", "log in");
-        this.actionId = this.action.getString("id");
-        this.actionName = this.action.getString("name");
-        this.reason = "it is a test";
-        this.reasonCode = 111;
-        this.terminal = new JSONObject();
-        this.terminal.put("id", UUID.randomUUID().toString());
-        this.terminal.put("name", "terminalName");
-        this.terminal.put("name_extra", "terminalNameExtra");
-        this.terminal.put("user", this.user);
-        this.terminalId = this.terminal.getString("id");
-        this.terminalName = this.terminal.getString("name");
-        this.terminalNameExtra = this.terminal.getString("name_extra");
+        this.pairingJsonResponse = new JSONObject();
+        pairingJsonResponse.put("id", id);
+        pairingJsonResponse.put("enabled", true);
+        pairingJsonResponse.put("pending", false);
+        pairingJsonResponse.put("user", user);
+
+        this.authenticationJsonResponse = new JSONObject();
+        authenticationJsonResponse.put("id", id);
+        authenticationJsonResponse.put("pending", false);
+        authenticationJsonResponse.put("granted", false);
+        authenticationJsonResponse.put("automated", false);
+        authenticationJsonResponse.put("reason", "it is a test");
+        authenticationJsonResponse.put("reason_code", 111);
+        authenticationJsonResponse.put("terminal", terminal);
+        authenticationJsonResponse.put("action", action);
+        authenticationJsonResponse.put("user", user);
+
+        this.userJsonResponse = new JSONObject();
+        userJsonResponse.put("id", userId);
+        userJsonResponse.put("name", userName);
+        userJsonResponse.put("disable_toopher_auth", false);
+
+        this.userTerminalJsonResponse = new JSONObject();
+        userTerminalJsonResponse.put("id", terminalId);
+        userTerminalJsonResponse.put("name", terminalName);
+        userTerminalJsonResponse.put("name_extra", terminalNameExtra);
+        userTerminalJsonResponse.put("user", user);
     }
 
     @Test
-    public void testCreatePairing() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("user", user);
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+    public void testCreatePairingWithPairingPhrase() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = toopherApi.pair("some user", "awkward turtle");
+        Pairing pairing = toopherApi.pair(userName, "awkward turtle");
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(httpClient.getLastCalledData("pairing_phrase"), "awkward turtle");
-        
-        assertEquals(pairing.user.id, userId);
-        assertEquals(pairing.user.name, userName);
-        assertTrue(pairing.pending);
-        assertTrue(pairing.enabled);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("pairings/create", httpClient.getLastCalledEndpoint());
+        assertEquals("awkward turtle", httpClient.getLastCalledData("pairing_phrase"));
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(id, pairing.id);
+        assertEquals(userId, pairing.user.id);
     }
 
     @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("user", user);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName);
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(pairing.user.id, userId);
-        assertEquals(pairing.user.name, userName);
-        assertTrue(pairing.pending);
-        assertTrue(pairing.enabled);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("pairings/create/qr", httpClient.getLastCalledEndpoint());
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(id, pairing.id);
+        assertEquals(userId, pairing.user.id);
     }
 
     @Test
     public void testCreateSmsPairing() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("user", user);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
+        HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
 
         ToopherAPI toopherApi = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName, "123456");
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(httpClient.getLastCalledData("phone_number"), "123456");
-
-        assertEquals(pairing.user.id, userId);
-        assertEquals(pairing.user.name, userName);
-        assertTrue(pairing.pending);
-        assertTrue(pairing.enabled);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("pairings/create/sms", httpClient.getLastCalledEndpoint());
+        assertEquals("123456", httpClient.getLastCalledData("phone_number"));
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(id, pairing.id);
+        assertEquals(userId, pairing.user.id);
     }
 
     @Test
     public void testAdvancedPairingsGetById() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("user", user);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherAPI.advanced.pairings.getById(id);
 
-        assertEquals(httpClient.getLastCalledMethod(), "GET");
-        assertEquals(pairing.user.id, userId);
-        assertEquals(pairing.user.name, userName);
-        assertTrue(pairing.pending);
-        assertTrue(pairing.enabled);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("pairings/%s", pairing.id), httpClient.getLastCalledEndpoint());
+        assertEquals(id, pairing.id);
+        assertEquals(userId, pairing.user.id);
     }
 
     @Test
     public void testCreateAuthenticationRequestWithPairingId() throws InterruptedException, RequestError {
-        JSONObject response = new JSONObject();
-        response.put("id", id);
-        response.put("pending", true);
-        response.put("granted", true);
-        response.put("automated", false);
-        response.put("reason", reason);
-        response.put("reason_code", reasonCode);
-        response.put("terminal", terminal);
-        response.put("action", action);
-
-        HttpClientMock httpClient = new HttpClientMock(200, response.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         AuthenticationRequest authenticationRequest = toopherAPI.authenticate(id, terminalName, actionName);
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(authenticationRequest.id, id);
-        assertTrue(authenticationRequest.pending);
-        assertTrue(authenticationRequest.granted);
-        assertFalse(authenticationRequest.automated);
-        assertEquals(authenticationRequest.reason, reason);
-        assertEquals(authenticationRequest.reasonCode, reasonCode);
-        assertEquals(authenticationRequest.terminal.id, terminalId);
-        assertEquals(authenticationRequest.terminal.name, terminalName);
-        assertEquals(authenticationRequest.action.id, actionId);
-        assertEquals(authenticationRequest.action.name, actionName);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
+        assertEquals(id, httpClient.getLastCalledData("pairing_id"));
+        assertEquals(terminalName, httpClient.getLastCalledData("terminal_name"));
+        assertEquals(id, authenticationRequest.id);
+        assertEquals(terminalId, authenticationRequest.terminal.id);
+        assertEquals(actionId, authenticationRequest.action.id);
+        assertEquals(userId, authenticationRequest.user.id);
     }
 
     @Test
     public void testCreateAuthenticationRequestWithUsername() throws InterruptedException, RequestError {
-        JSONObject response = new JSONObject();
-        response.put("id", id);
-        response.put("pending", true);
-        response.put("granted", true);
-        response.put("automated", false);
-        response.put("reason", reason);
-        response.put("reason_code", reasonCode);
-        response.put("terminal", terminal);
-        response.put("action", action);
-
-        HttpClientMock httpClient = new HttpClientMock(200, response.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         AuthenticationRequest authenticationRequest = toopherAPI.authenticate(userName, terminalNameExtra, actionName);
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(authenticationRequest.id, id);
-        assertTrue(authenticationRequest.pending);
-        assertTrue(authenticationRequest.granted);
-        assertFalse(authenticationRequest.automated);
-        assertEquals(authenticationRequest.reason, reason);
-        assertEquals(authenticationRequest.reasonCode, reasonCode);
-        assertEquals(authenticationRequest.terminal.id, terminalId);
-        assertEquals(authenticationRequest.terminal.name, terminalName);
-        assertEquals(authenticationRequest.action.id, actionId);
-        assertEquals(authenticationRequest.action.name, actionName);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("terminal_name_extra"));
+        assertEquals(id, authenticationRequest.id);
+        assertEquals(terminalId, authenticationRequest.terminal.id);
+        assertEquals(actionId, authenticationRequest.action.id);
+        assertEquals(userId, authenticationRequest.user.id);
     }
-
-
 
     @Test
     public void testAdvancedAuthenticationRequestsGetById() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("pending", true);
-        jsonResponse.put("granted", true);
-        jsonResponse.put("automated", false);
-        jsonResponse.put("reason", reason);
-        jsonResponse.put("reason_code", reasonCode);
-        jsonResponse.put("action", action);
-        jsonResponse.put("terminal", terminal);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         AuthenticationRequest authenticationRequest = toopherAPI.advanced.authenticationRequests.getById(id);
 
-        assertEquals(httpClient.getLastCalledMethod(), "GET");
-        assertEquals(authenticationRequest.id, id);
-        assertEquals(authenticationRequest.reason, reason);
-        assertEquals(authenticationRequest.reasonCode, reasonCode);
-        assertEquals(authenticationRequest.terminal.id, terminalId);
-        assertEquals(authenticationRequest.terminal.name, terminalName);
-        assertEquals(authenticationRequest.terminal.user.id, userId);
-        assertEquals(authenticationRequest.terminal.user.name, userName);
-        assertEquals(authenticationRequest.action.id, actionId);
-        assertEquals(authenticationRequest.action.name, actionName);
-        assertTrue(authenticationRequest.pending);
-        assertTrue(authenticationRequest.granted);
-        assertFalse(authenticationRequest.automated);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("authentication_requests/%s", authenticationRequest.id), httpClient.getLastCalledEndpoint());
+        assertEquals(id, authenticationRequest.id);
+        assertEquals(terminalId, authenticationRequest.terminal.id);
+        assertEquals(actionId, authenticationRequest.action.id);
+        assertEquals(userId, authenticationRequest.terminal.user.id);
     }
 
     @Test
     public void testAdvancedUsersCreate() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("name", name);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.create(name);
+        User user = toopherAPI.advanced.users.create(userName);
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("users/create", httpClient.getLastCalledEndpoint());
+        assertEquals(userName, httpClient.getLastCalledData("name"));
+        assertEquals(userId, user.id);
+        assertEquals(userName, user.name);
+        assertTrue("Toopher authentication should be enabled for user.", user.toopherAuthenticationEnabled);
     }
 
     @Test
     public void testAdvancedUsersCreateWithExtras() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("name", name);
-        jsonResponse.put("disable_toopher_auth", "false");
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("foo", "bar");
 
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.create(name, extras);
+        User user = toopherAPI.advanced.users.create(userName, extras);
 
-        assertEquals(httpClient.getLastCalledMethod(), "POST");
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("users/create", httpClient.getLastCalledEndpoint());
         assertEquals("bar", httpClient.getLastCalledData("foo"));
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertTrue(user.toopherAuthenticationEnabled);
+        assertEquals(userId, user.id);
+        assertEquals(userName, user.name);
+        assertTrue("Toopher authentication should be enabled for user.", user.toopherAuthenticationEnabled);
     }
 
     @Test
     public void testAdvancedUsersGetById() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("name", name);
-        jsonResponse.put("enabled", true);
-        jsonResponse.put("disable_toopher_auth", true);
-
-        HttpClientMock httpClient = new HttpClientMock(200, jsonResponse.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.getById(id);
+        User user = toopherAPI.advanced.users.getById(userId);
 
-        assertEquals(httpClient.getLastCalledMethod(), "GET");
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertFalse(user.toopherAuthenticationEnabled);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("users/%s", userId), httpClient.getLastCalledEndpoint());
+        assertEquals(userId, user.id);
+        assertEquals(userName, user.name);
+        assertTrue("Toopher authentication should be enabled for user.", user.toopherAuthenticationEnabled);
     }
 
     @Test
     public void testAdvancedUsersGetByName() throws InterruptedException, RequestError {
-        JSONObject usersJsonResponse = new JSONObject();
-        usersJsonResponse.put("id", id);
-        usersJsonResponse.put("name", name);
-        usersJsonResponse.put("enabled", true);
-        usersJsonResponse.put("disable_toopher_auth", false);
         JSONArray usersJsonArray = new JSONArray();
-        usersJsonArray.put(usersJsonResponse);
+        usersJsonArray.put(userJsonResponse);
 
         Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
-        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users/%s", id)), new ResponseMock(200, usersJsonResponse.toString()));
-        expectedUriResponses.put(createURI("https://api.toopher.test/v1/users?name=name"), new ResponseMock(200, usersJsonArray.toString()));
+        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users?name=%s", userName)), new ResponseMock(200, usersJsonArray.toString()));
+        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users/%s", userId)), new ResponseMock(200, userJsonResponse.toString()));
 
         HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.getByName(name);
-        String actualResponse = httpClient.getExpectedResponse();
-        String expectedResponse = usersJsonResponse.toString();
+        User user = toopherAPI.advanced.users.getByName(userName);
 
-        assertEquals(expectedResponse, actualResponse);
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertTrue(user.toopherAuthenticationEnabled);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("users/%s", userId), httpClient.getLastCalledEndpoint());
+        assertEquals(userId, user.id);
+        assertEquals(userName, user.name);
+        assertTrue("Toopher authentication should be enabled for user.", user.toopherAuthenticationEnabled);
+    }
+
+    @Test
+    public void testAdvancedUserTerminalsCreate() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.create(userName, terminalName, terminalNameExtra);
+
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("user_terminals/create", httpClient.getLastCalledEndpoint());
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(terminalName, httpClient.getLastCalledData("name"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("name_extra"));
+        assertEquals(terminalId, userTerminal.id);
+    }
+
+    @Test
+    public void testAdvancedUserTerminalsCreateWithExtras() throws InterruptedException, RequestError {
+        Map <String, String> extras = new HashMap<String, String>();
+        extras.put("foo", "bar");
+
+        HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.create(userName, terminalName, terminalNameExtra, extras);
+
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("user_terminals/create", httpClient.getLastCalledEndpoint());
+        assertEquals("bar", httpClient.getLastCalledData("foo"));
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
+        assertEquals(terminalName, httpClient.getLastCalledData("name"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("name_extra"));
+        assertEquals(terminalId, userTerminal.id);
     }
 
     @Test
     public void testAdvancedUserTerminalsGetById() throws InterruptedException, RequestError {
-        JSONObject response = new JSONObject();
-        response.put("id", id);
-        response.put("name", name);
-        response.put("name_extra", terminalNameExtra);
-        response.put("user", user);
-
-        HttpClientMock httpClient = new HttpClientMock(200, response.toString());
-
+        HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.getById(id);
+        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.getById(terminalId);
 
-        assertEquals(httpClient.getLastCalledMethod(), "GET");
-        assertEquals(userTerminal.id, id);
-        assertEquals(userTerminal.name, name);
-        assertEquals(userTerminal.requesterSpecifiedId, terminalNameExtra);
-        assertEquals(userTerminal.user.id, userId);
-        assertEquals(userTerminal.user.name, userName);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("user_terminals/%s", terminalId), httpClient.getLastCalledEndpoint());
+        assertEquals(terminalId, userTerminal.id);
+        assertEquals(userId, userTerminal.user.id);
+    }
+
+    @Test
+    public void testRawGet() throws InterruptedException, RequestError {
+        String endpoint = String.format("pairings/%s", id);
+
+        HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        toopherAPI.advanced.raw.get(endpoint);
+
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(endpoint, httpClient.getLastCalledEndpoint());
+        assertEquals(pairingJsonResponse.toString(), httpClient.getExpectedResponse());
+    }
+
+    @Test
+    public void testRawPost() throws InterruptedException, RequestError {
+        String endpoint = "users/create";
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("name", userName));
+
+        HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                createURI(DEFAULT_BASE_URL), httpClient);
+        toopherAPI.advanced.raw.post(endpoint, params);
+
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals(endpoint, httpClient.getLastCalledEndpoint());
+        assertEquals(userJsonResponse.toString(), httpClient.getExpectedResponse());
+    }
+
+    @Test
+    public void testBaseURL() {
+        boolean isValidURL = createURI((ToopherAPI.getBaseURL())) != null;
+
+        assertNotNull("Base URL is null.", ToopherAPI.getBaseURL());
+        assertTrue("Base URL is not valid.", isValidURL);
+    }
+
+    @Test
+    public void testVersion() {
+        assertNotNull("Version is not null.", ToopherAPI.VERSION);
     }
 
     private URI createURI(String url) {
@@ -360,20 +366,5 @@ public class TestToopherAPI {
         } catch (URISyntaxException e) {
             return null;
         }
-    }
-
-    private boolean isValidURL(String url) {
-        return createURI(url) != null;
-    }
-
-    @Test
-    public void testBaseURL() {
-        assertNotNull("Base URL is null.", ToopherAPI.getBaseURL());
-        assertTrue("Base URL is not valid.", isValidURL(ToopherAPI.getBaseURL()));
-    }
-
-    @Test
-    public void testVersion() {
-        assertNotNull("Version is not null.", ToopherAPI.VERSION);
     }
 }

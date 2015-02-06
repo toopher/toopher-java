@@ -69,7 +69,7 @@ public class User extends ApiResponseObject {
     }
 
     public void reset() throws RequestError {
-        String endpoint = "/users/reset";
+        String endpoint = "users/reset";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("name", name));
         api.advanced.raw.post(endpoint, params);

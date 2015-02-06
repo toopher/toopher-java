@@ -1,7 +1,7 @@
 package com.toopher;
 
 import org.json.JSONObject;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URI;
@@ -12,34 +12,35 @@ import static org.junit.Assert.*;
 public class TestAuthenticationRequest {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
-    private String id;
-    private String reason;
-    private JSONObject jsonResponse;
-    private String userName;
-    private String terminalName;
-    private String terminalNameExtra;
+    private static String id;
+    private static String reason;
+    private static JSONObject jsonResponse = new JSONObject();
+    private static String userName;
+    private static String terminalName;
+    private static String terminalNameExtra;
 
-    @Before
-    public void setUp() {
-        this.id = UUID.randomUUID().toString();
-        this.reason = "it is a test";
+    @BeforeClass
+    public static void setUp() {
+        id = UUID.randomUUID().toString();
+        reason = "it is a test";
 
         JSONObject user = new JSONObject();
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
-        this.userName = user.getString("name");
+        userName = user.getString("name");
+
         JSONObject terminal = new JSONObject();
         terminal.put("id", UUID.randomUUID().toString());
         terminal.put("name", "terminalName");
         terminal.put("name_extra", "terminalNameExtra");
         terminal.put("user", user);
-        this.terminalName = terminal.getString("name");
-        this.terminalNameExtra = terminal.getString("name_extra");
+        terminalName = terminal.getString("name");
+        terminalNameExtra = terminal.getString("name_extra");
+
         JSONObject action = new JSONObject();
         action.put("id", UUID.randomUUID().toString());
         action.put("name", "log in");
 
-        this.jsonResponse = new JSONObject();
         jsonResponse.put("id", id);
         jsonResponse.put("pending", true);
         jsonResponse.put("granted", false);

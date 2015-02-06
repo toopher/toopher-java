@@ -1,7 +1,7 @@
 package com.toopher;
 
 import org.json.JSONObject;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URI;
@@ -11,33 +11,33 @@ import static org.junit.Assert.*;
 
 
 public class TestUserTerminal {
-    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
-    private String id;
-    private String name;
-    private String requesterSpecifiedId;
-    public JSONObject user;
-    public String userName;
+    private static String id;
+    private static String name;
+    private static String requesterSpecifiedId;
+    private static JSONObject terminalJson = new JSONObject();
+    private static JSONObject user = new JSONObject();
+    private static String userName;
 
-    @Before
-    public void setUp() {
-        this.id = UUID.randomUUID().toString();
-        this.name = "terminalName";
-        this.requesterSpecifiedId = "terminalNameExtra";
-        this.user = new JSONObject();
-        this.user.put("id", UUID.randomUUID().toString());
-        this.user.put("name", "userName");
-        this.userName = this.user.getString("name");
+    @BeforeClass
+    public static void setUp() {
+        id = UUID.randomUUID().toString();
+        name = "terminalName";
+        requesterSpecifiedId = "terminalNameExtra";
+
+        user.put("id", UUID.randomUUID().toString());
+        user.put("name", "userName");
+        userName = user.getString("name");
+
+        terminalJson.put("id", id);
+        terminalJson.put("name", name);
+        terminalJson.put("name_extra", requesterSpecifiedId);
+        terminalJson.put("user", user);
     }
 
     @Test
     public void testRefreshFromServer() throws InterruptedException, RequestError {
-        JSONObject jsonResponse = new JSONObject();
-        jsonResponse.put("id", id);
-        jsonResponse.put("name", name);
-        jsonResponse.put("name_extra", requesterSpecifiedId);
-        jsonResponse.put("user", user);
-
         JSONObject newJsonResponse = new JSONObject();
         newJsonResponse.put("name", "terminalNameChanged");
         newJsonResponse.put("name_extra", "terminalNameExtraChanged");
@@ -48,17 +48,41 @@ public class TestUserTerminal {
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        UserTerminal terminal = new UserTerminal(jsonResponse, toopherAPI);
-        assertEquals(terminal.id, id);
-        assertEquals(terminal.name, name);
-        assertEquals(terminal.requesterSpecifiedId, requesterSpecifiedId);
-        assertEquals(terminal.user.name, userName);
+        UserTerminal terminal = new UserTerminal(terminalJson, toopherAPI);
+
+        assertEquals(id, terminal.id, id);
+        assertEquals(name, terminal.name, name);
+        assertEquals(requesterSpecifiedId, terminal.requesterSpecifiedId);
+        assertEquals(userName, terminal.user.name, userName);
 
         terminal.refreshFromServer();
 
-        assertEquals(terminal.id, id);
-        assertEquals(terminal.name, "terminalNameChanged");
-        assertEquals(terminal.requesterSpecifiedId, "terminalNameExtraChanged");
-        assertEquals(terminal.user.name, "userNameChanged");
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("user_terminals/%s", id), httpClient.getLastCalledEndpoint());
+        assertEquals(id, terminal.id);
+        assertEquals("terminalNameChanged", terminal.name);
+        assertEquals("terminalNameExtraChanged", terminal.requesterSpecifiedId);
+        assertEquals("userNameChanged", terminal.user.name);
+    }
+
+    @Test
+    public void testUpdate() throws InterruptedException {
+        JSONObject updatedJson = new JSONObject();
+        updatedJson.put("name", "terminalNameChanged");
+        updatedJson.put("name_extra", "terminalNameExtraChanged");
+        JSONObject updatedUser = new JSONObject();
+        updatedUser.put("name", "userNameChanged");
+        updatedJson.put("user", updatedUser);
+
+        HttpClientMock httpClient = new HttpClientMock(200, "{}");
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        UserTerminal terminal = new UserTerminal(terminalJson, toopherAPI);
+        terminal.update(updatedJson);
+
+        assertEquals(id, terminal.id);
+        assertEquals("terminalNameChanged", terminal.name);
+        assertEquals("terminalNameExtraChanged", terminal.requesterSpecifiedId);
+        assertEquals("userNameChanged", terminal.user.name);
     }
 }

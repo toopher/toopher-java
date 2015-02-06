@@ -300,20 +300,6 @@ public class ToopherAPI {
             throw new RequestError(e);
         }
     }
-
-    public AuthenticationRequest getAuthenticationStatusWithOTP(String authenticationRequestId,String OTP) throws RequestError {
-        final String endpoint = String.format("authentication_requests/%s/otp_auth", authenticationRequestId);
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("otp", OTP));
-        JSONObject json = advanced.raw.post(endpoint, params);
-        try {
-            return new AuthenticationRequest(json, this);
-        } catch (Exception e) {
-            throw new RequestError(e);
-        }
-    }
-
-
     /**
      * Associates a per-user "Friendly Name" to a given terminal
      *
@@ -339,49 +325,6 @@ public class ToopherAPI {
         advanced.raw.post(endpoint, params);
     }
 
-    /**
-     * Toggle whether a user is Toopher-Enabled
-     *
-     * @param userName
-     *            The name of the user
-     * @param toopherEnabled
-     *            Whether or not the user is Toopher-enabled
-     * @throws RequestError
-     *             Thrown when an exceptional condition is encountered, or the
-     */
-    public void setToopherEnabledForUser(String userName, boolean toopherEnabled) throws RequestError {
-        final String searchEndpoint = "users";
-        final String updateEndpoint = "users/%s";
-
-        // first, look up the Toopher User ID
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("name", userName));
-
-        JSONArray result = advanced.raw.get(searchEndpoint, params);
-
-        // user name should be a unique field per requester - if more than one object is returned, this is gonna be a problem
-        if (result.length() > 1) {
-            throw new RequestError(String.format("More than one user with username %s", userName));
-        }
-        if (result.length() == 0) {
-            throw new RequestError(String.format("No users with user name %s", userName));
-        }
-
-        String userId;
-        try {
-            JSONObject userJson = result.getJSONObject(0);
-            userId = userJson.getString("id");
-        } catch (JSONException e) {
-            throw new RequestError(e);
-        }
-
-
-        // now, we can use that User ID to update the disable_toopher_auth field
-        params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("disable_toopher_auth", toopherEnabled ? "false" : "true"));
-
-        advanced.raw.post(String.format(updateEndpoint, userId), params);
-    }
     
     private static ResponseHandler<Object> jsonHandler = new ResponseHandler<Object>() {
 

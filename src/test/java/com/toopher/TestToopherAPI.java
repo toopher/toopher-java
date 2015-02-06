@@ -31,10 +31,10 @@ public class TestToopherAPI {
     private static String terminalName;
     private static String terminalNameExtra;
 
-    private static JSONObject pairingJsonResponse;
-    private static JSONObject authenticationJsonResponse;
-    private static JSONObject userJsonResponse;
-    private static JSONObject userTerminalJsonResponse;
+    private static JSONObject pairingJsonResponse = new JSONObject();
+    private static JSONObject authenticationJsonResponse = new JSONObject();
+    private static JSONObject userJsonResponse = new JSONObject();
+    private static JSONObject userTerminalJsonResponse = new JSONObject();
 
     @BeforeClass
     public static void setUpBeforeClass() {
@@ -60,17 +60,12 @@ public class TestToopherAPI {
         terminal.put("name", terminalName);
         terminal.put("name_extra", terminalNameExtra);
         terminal.put("user", user);
-    }
 
-    @Before
-    public void setUp() {
-        this.pairingJsonResponse = new JSONObject();
         pairingJsonResponse.put("id", id);
         pairingJsonResponse.put("enabled", true);
         pairingJsonResponse.put("pending", false);
         pairingJsonResponse.put("user", user);
 
-        this.authenticationJsonResponse = new JSONObject();
         authenticationJsonResponse.put("id", id);
         authenticationJsonResponse.put("pending", false);
         authenticationJsonResponse.put("granted", false);
@@ -81,12 +76,10 @@ public class TestToopherAPI {
         authenticationJsonResponse.put("action", action);
         authenticationJsonResponse.put("user", user);
 
-        this.userJsonResponse = new JSONObject();
         userJsonResponse.put("id", userId);
         userJsonResponse.put("name", userName);
         userJsonResponse.put("disable_toopher_auth", false);
 
-        this.userTerminalJsonResponse = new JSONObject();
         userTerminalJsonResponse.put("id", terminalId);
         userTerminalJsonResponse.put("name", terminalName);
         userTerminalJsonResponse.put("name_extra", terminalNameExtra);

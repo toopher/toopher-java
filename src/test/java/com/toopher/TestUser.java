@@ -2,6 +2,7 @@ package com.toopher;
 
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URI;
@@ -11,43 +12,45 @@ import static org.junit.Assert.*;
 
 
 public class TestUser {
-    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1";
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
-    private String id;
-    private String name;
-    private boolean disableToopherAuthentication;
-    private JSONObject json;
+    private static String id;
+    private static String name;
+    private static JSONObject json;
 
-    @Before
-    public void setUp() {
-        this.id = UUID.randomUUID().toString();
-        this.name = "userName";
-        this.disableToopherAuthentication = false;
-        this.json = new JSONObject();
-        this.json.put("id", id);
-        this.json.put("name", name);
-        this.json.put("disable_toopher_auth", disableToopherAuthentication);
+    @BeforeClass
+    public static void setUp() {
+        id = UUID.randomUUID().toString();
+        name = "userName";
+
+        json = new JSONObject();
+        json.put("id", id);
+        json.put("name", name);
+        json.put("disable_toopher_auth", false);
     }
 
     @Test
     public void testRefreshFromServer() throws InterruptedException, RequestError {
         JSONObject newJson = new JSONObject();
         newJson.put("name", "userNameChanged");
-        newJson.put("disable_toopher_auth", "true");
+        newJson.put("disable_toopher_auth", true);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
         User user = new User(json, toopherAPI);
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertTrue(user.toopherAuthenticationEnabled);
+
+        assertEquals(id, user.id);
+        assertEquals(name, user.name);
+        assertTrue("User should be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
 
         user.refreshFromServer();
 
-        assertEquals(user.id, id);
-        assertEquals(user.name, "userNameChanged");
-        assertFalse(user.toopherAuthenticationEnabled);
+        assertEquals("GET", httpClient.getLastCalledMethod());
+        assertEquals(String.format("users/%s", id), httpClient.getLastCalledEndpoint());
+        assertEquals(id, user.id);
+        assertEquals("userNameChanged", user.name);
+        assertFalse("User should not be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
     }
 
     @Test
@@ -55,18 +58,20 @@ public class TestUser {
         JSONObject newJson = new JSONObject();
         newJson.put("id", id);
         newJson.put("name", name);
-        newJson.put("disable_toopher_auth", "false");
+        newJson.put("disable_toopher_auth", false);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
         User user = new User(json, toopherAPI);
-
         user.enableToopherAuthentication();
 
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertTrue(user.toopherAuthenticationEnabled);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals(String.format("users/%s", id), httpClient.getLastCalledEndpoint());
+        assertEquals("false", httpClient.getLastCalledData("disable_toopher_auth"));
+        assertEquals(id, user.id);
+        assertEquals(name, user.name);
+        assertTrue("User should be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
     }
 
     @Test
@@ -82,9 +87,12 @@ public class TestUser {
         User user = new User(json, toopherAPI);
         user.disableToopherAuthentication();
 
-        assertEquals(user.id, id);
-        assertEquals(user.name, name);
-        assertFalse(user.toopherAuthenticationEnabled);
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals(String.format("users/%s", id), httpClient.getLastCalledEndpoint());
+        assertEquals("true", httpClient.getLastCalledData("disable_toopher_auth"));
+        assertEquals(id, user.id);
+        assertEquals(name, user.name);
+        assertFalse("User should not be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
     }
 
     @Test
@@ -93,10 +101,30 @@ public class TestUser {
         ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
         User user = new User(json, toopherAPI);
-        try {
-            user.reset();
-        } catch (RequestError re) {
-            fail();
-        }
+        user.reset();
+
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("users/reset", httpClient.getLastCalledEndpoint());
+        assertEquals(name, httpClient.getLastCalledData("name"));
+    }
+
+    @Test
+    public void testUpdate() throws InterruptedException {
+        JSONObject updatedJson = new JSONObject();
+        updatedJson.put("name", "userNameChanged");
+        updatedJson.put("disable_toopher_auth", true);
+
+        HttpClientMock httpClient = new HttpClientMock(200, "{}");
+        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        User user = new User(json, toopherAPI);
+
+        assertEquals(name, user.name);
+        assertTrue("User should be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
+
+        user.update(updatedJson);
+
+        assertEquals("userNameChanged", user.name);
+        assertFalse("User should not be Toopher authentication enabled.", user.toopherAuthenticationEnabled);
     }
 }

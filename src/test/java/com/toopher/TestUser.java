@@ -1,7 +1,6 @@
 package com.toopher;
 
 import org.json.JSONObject;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class User extends ApiResponseObject {
     /**
-     * The ToopherAPI associated with this user
+     * The ToopherAPI object associated with this user
      */
     public ToopherAPI api;
 
@@ -29,7 +29,7 @@ public class User extends ApiResponseObject {
     public String name;
 
     /**
-     * Whether or not the user is Toopher-enabled
+     * The Toopher-enabled status of the user
      */
     public boolean toopherAuthenticationEnabled;
 
@@ -45,13 +45,31 @@ public class User extends ApiResponseObject {
             this.toopherAuthenticationEnabled = true;
         }
     }
-    
+
+    @Override
+    public String toString() {
+        return String.format("[User: id=%s, name=%s, toopherAuthenticationEnabled=%b]",
+                id, name, toopherAuthenticationEnabled);
+    }
+
+    /**
+     * Update the User object with JSON response from the API
+     *
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
     public void refreshFromServer() throws RequestError {
         String endpoint = String.format("users/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }
 
+    /**
+     * Enable Toopher authentication for the user
+     *
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
     public void enableToopherAuthentication() throws RequestError {
         String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -60,6 +78,12 @@ public class User extends ApiResponseObject {
         update(result);
     }
 
+    /**
+     * Disable Toopher authentication for the user
+     *
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
     public void disableToopherAuthentication() throws RequestError {
         String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -68,6 +92,12 @@ public class User extends ApiResponseObject {
         update(result);
     }
 
+    /**
+     * Remove all pairings for the user
+     *
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
     public void reset() throws RequestError {
         String endpoint = "users/reset";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -75,6 +105,12 @@ public class User extends ApiResponseObject {
         api.advanced.raw.post(endpoint, params);
     }
 
+    /**
+     * Update the User object with JSON response
+     *
+     * @param jsonResponse
+     *          The JSON response from the API
+     */
     public void update(JSONObject jsonResponse) {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("disable_toopher_auth")) {
@@ -82,5 +118,6 @@ public class User extends ApiResponseObject {
         } else {
             this.toopherAuthenticationEnabled = true;
         }
+        this.updateRawResponse(jsonResponse);
     }
 }

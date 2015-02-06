@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Provides information about the status of an authentication request
@@ -15,7 +14,7 @@ import java.util.Map;
  */
 public class AuthenticationRequest extends ApiResponseObject {
     /**
-     * The ToopherAPI associated with this request
+     * The ToopherAPI object associated with this authentication request
      */
     public ToopherAPI api;
 
@@ -25,47 +24,44 @@ public class AuthenticationRequest extends ApiResponseObject {
     public String id;
 
     /**
-     * Indicates if the request is still pending
+     * Indicates if the user has responded to the authentication request
      */
     public boolean pending;
 
     /**
-     * Indicates if the request was granted
+     * Indicates if the authentication request was granted
      */
     public boolean granted;
 
     /**
-     * Indicates if the request was automated
+     * Indicates if the authentication request was automated
      */
     public boolean automated;
 
     /**
-     * Indicates the reason (if any) for the request's outcome
+     * Indicates the reason (if any) for the authentication request's outcome
      */
     public String reason;
 
     /**
-     * Indicates the code associated with the reason for the request's outcome
+     * Indicates the code associated with the reason for the authentication request's outcome
      */
     public int reasonCode;
 
     /**
-     * Contains the unique id and descriptive name for the terminal
-     * associated with the request
+     * The UserTerminal associated with the authentication request
      */
     public UserTerminal terminal;
 
     /**
-     * Contains the unique id and descriptive name for the user
-     * associated with the request
-     */
-    public User user;
-
-    /**
-     * Contains the unique id and descriptive name for the action
-     * associated with the request
+     * The Action associated with the request
      */
     public Action action;
+
+    /**
+     * The User associated with the authentication request
+     */
+    public User user;
 
     public AuthenticationRequest(JSONObject json, ToopherAPI toopherAPI) throws JSONException{
 		super(json);
@@ -79,34 +75,49 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.reasonCode = json.getInt("reason_code");
         this.terminal = new UserTerminal(json.getJSONObject("terminal"), toopherAPI);
         this.action = new Action(json.getJSONObject("action"));
-        this.user = terminal.user;
+        this.user = new User(json.getJSONObject("user"), toopherAPI);
 	}
 
     @Override
     public String toString() {
-        return String.format("[AuthenticationRequest: id=%s; pending=%b; granted=%b; automated=%b; reason=%s; terminalId=%s; terminalName=%s]",
-                             id, pending, granted, automated, reason, terminal.id, terminal.name);
+        return String.format("[AuthenticationRequest: id=%s; pending=%b; granted=%b; automated=%b; reason=%s; reasonCode=%d; terminalId=%s, terminalName=%s, terminalRequesterSpecifiedId=%s, actionId=%s, actionName=%s, userId=%s, userName=%s, userToopherAuthenticationEnabled=%b]",
+                id, pending, granted, automated, reason, reasonCode, terminal.id, terminal.name, terminal.requesterSpecifiedId, action.id, action.name, user.id, user.name, user.toopherAuthenticationEnabled);
     }
 
-    public void grantWithOtp(String otp) throws RequestError {
-        String endpoint = String.format("authentication_requests/%s/otp_auth", id);
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("otp", otp));
-
-        JSONObject json = api.advanced.raw.post(endpoint, params, null);
-        try {
-            update(json);
-        } catch (Exception e) {
-            throw new RequestError(e);
-        }
-    }
-
+    /**
+     * Update the AuthenticationRequest object with JSON response from the API
+     *
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
     public void refreshFromServer() throws RequestError {
         String endpoint = String.format("authentication_requests/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
     }
 
+    /**
+     * Grants authentication request with OTP
+     *
+     * @param otp
+     *          One-time password for authentication request
+     * @throws RequestError
+     *          Thrown when an exceptional condition is encountered
+     */
+    public void grantWithOtp(String otp) throws RequestError {
+        String endpoint = String.format("authentication_requests/%s/otp_auth", id);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("otp", otp));
+        JSONObject result = api.advanced.raw.post(endpoint, params);
+        update(result);
+    }
+
+    /**
+     * Update the AuthenticationRequest object with JSON response
+     *
+     * @param jsonResponse
+     *          The JSON response from the API
+     */
     private void update(JSONObject jsonResponse) {
         this.pending = jsonResponse.getBoolean("pending");
         this.granted = jsonResponse.getBoolean("granted");
@@ -116,6 +127,6 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.terminal.update(jsonResponse.getJSONObject("terminal"));
         this.action.update(jsonResponse.getJSONObject("action"));
         this.user.update(jsonResponse.getJSONObject("user"));
+        this.updateRawResponse(jsonResponse);
     }
-
 }

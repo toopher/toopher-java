@@ -25,6 +25,8 @@ import java.util.concurrent.Semaphore;
 
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
+
     public HttpParams lastParams;
     public Semaphore done;
 
@@ -64,8 +66,9 @@ public class HttpClientMock extends DefaultHttpClient {
         return null;
     }
 
-    public URI getLastCalledEndpoint() {
-        return lastURI;
+    public String getLastCalledEndpoint() {
+        String fullUri = lastURI.toString();
+        return fullUri.replace(DEFAULT_BASE_URL, "");
     }
 
     public String getExpectedResponse() {

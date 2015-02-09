@@ -24,7 +24,7 @@ public class Action extends ApiResponseObject {
         this.name = json.getString("name");
     }
 
-    public void update(JSONObject jsonResponse) {
+    public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");
     }
 }

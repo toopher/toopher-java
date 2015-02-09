@@ -55,7 +55,7 @@ public class UserTerminal extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void refreshFromServer() throws RequestError {
+    public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("user_terminals/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
@@ -67,7 +67,7 @@ public class UserTerminal extends ApiResponseObject {
      * @param jsonResponse
      *          The JSON response received from the server
      */
-    public void update(JSONObject jsonResponse) {
+    public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");
         this.requesterSpecifiedId = jsonResponse.getString("name_extra");
         this.user.update(jsonResponse.getJSONObject("user"));

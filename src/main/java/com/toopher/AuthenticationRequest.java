@@ -90,7 +90,7 @@ public class AuthenticationRequest extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void refreshFromServer() throws RequestError {
+    public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("authentication_requests/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
@@ -104,7 +104,7 @@ public class AuthenticationRequest extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void grantWithOtp(String otp) throws RequestError {
+    public void grantWithOtp(String otp) throws RequestError, JSONException {
         String endpoint = String.format("authentication_requests/%s/otp_auth", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("otp", otp));
@@ -118,7 +118,7 @@ public class AuthenticationRequest extends ApiResponseObject {
      * @param jsonResponse
      *          The JSON response from the API
      */
-    private void update(JSONObject jsonResponse) {
+    private void update(JSONObject jsonResponse) throws JSONException {
         this.pending = jsonResponse.getBoolean("pending");
         this.granted = jsonResponse.getBoolean("granted");
         this.automated = jsonResponse.getBoolean("automated");

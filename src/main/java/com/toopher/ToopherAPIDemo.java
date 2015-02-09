@@ -16,7 +16,7 @@ public class ToopherAPIDemo {
 	    Scanner in = new Scanner(System.in);
 	    
         System.out.println("======================================");
-        System.out.println("Library Usage Demo");
+        System.out.println("Toopher Library Demo");
         System.out.println("======================================");
         
         URI base_uri = null;
@@ -36,72 +36,76 @@ public class ToopherAPIDemo {
 	        System.out.println("");
 	        System.out.println("Setup Credentials");
 	        System.out.println("--------------------------------------");
-	        System.out.println("Enter your requester credentials (from https://dev.toopher.com)");
-	        System.out.print("Consumer key: ");
+	        System.out.println("Enter your requester credential details (from https://dev.toopher.com)");
+	        System.out.print("Toopher Consumer Key: ");
 	        String consumerKey = in.nextLine();
-	        System.out.print("Consumer secret: ");
+	        System.out.print("Toopher Consumer Secret: ");
 	        String consumerSecret = in.nextLine();
 	
 			api = new ToopherAPI (consumerKey, consumerSecret, base_uri);
         }
-        
+
 		String pairingId;
-		while (true) {
-			String pairingPhrase;
-			while (true) {
-				System.out.println("Step 1: Pair requester with phone");
-				System.out.println("--------------------------------------");
-				System.out.println("Pairing phrases are generated on the mobile app");
-				System.out.print("Enter pairing phrase: ");
-				pairingPhrase = in.nextLine();
+        while (true) {
+            String pairingPhrase;
+            while (true) {
+                System.out.println("Step 1: Pair requester with phone");
+                System.out.println("--------------------------------------");
+                System.out.println("Pairing phrases are generated on the mobile app");
+                System.out.print("Enter pairing phrase: ");
+                pairingPhrase = in.nextLine();
 
-				if (pairingPhrase.length() == 0) {
-					System.out.println("Please enter a pairing phrase to continue");
-				} else {
-					break;
-				}
-			}
+                if (pairingPhrase.replaceAll("\\s", "").length() == 0) {
+                    System.out.println("Please enter a pairing phrase to continue");
+                } else {
+                    break;
+                }
+            }
 
-			System.out.print(String.format("Enter a username for this pairing [%s]: ", DEFAULT_USERNAME));
-			String userName = in.nextLine();
-			if (userName.length() == 0) {
-				userName = DEFAULT_USERNAME;
-			}
+            System.out.print(String.format("Enter a username for this pairing [%s]: ", DEFAULT_USERNAME));
+            String userName = in.nextLine();
 
-			System.out.println("Sending pairing request...");
+            if (userName.length() == 0) {
+                userName = DEFAULT_USERNAME;
+            }
 
-			try {
-				Pairing pairing = api.pair(pairingPhrase, userName);
-				pairingId = pairing.id;
-				break;
-			} catch (RequestError err) {
-				System.out.println(String.format("The pairing phrase was not accepted (reason:%s)", err.getMessage()));
-			}
-		}
+            System.out.println("Sending pairing request...");
 
-		while (true) {
-			System.out.println("Authorize pairing on phone and then press return to continue.");
-			in.nextLine();
-			System.out.println("Checking status of pairing request...");
+            try {
+                Pairing pairing = api.pair(userName, pairingPhrase);
+                pairingId = pairing.id;
+                break;
+            } catch (RequestError err) {
+                System.out.println(String.format("The pairing phrase was not accepted (reason:%s)", err.getMessage()));
+            }
+        }
 
-			try {
-				Pairing pairing = api.advanced.pairings.getById(pairingId);
-				if (pairing.enabled) {
-					System.out.println("Pairing complete");
+        while (true) {
+            System.out.println("Authorize pairing on phone and then press return to continue.");
+            in.nextLine();
+            System.out.println("Checking status of pairing request...");
+
+            try {
+                Pairing pairing = api.advanced.pairings.getById(pairingId);
+                if (pairing.pending) {
+                    System.out.println("The pairing has not been authorized by the phone yet.");
+                } else if (pairing.enabled) {
+                    System.out.println("Pairing complete");
                     System.out.println();
-					break;
-				} else {
-					System.out.println("The pairing has not been authorized by the phone yet.");
-				}
-			} catch (RequestError err) {
-				System.out.println(String.format("Could not check pairing status (reason:%s)", err.getMessage()));
-			}
-		}
+                    break;
+                } else {
+                    System.out.println("The pairing has been denied");
+                    System.exit(0);
+                }
+            } catch (RequestError err) {
+                System.out.println(String.format("Could not check pairing status (reason:%s)", err.getMessage()));
+            }
+        }
 
 		while (true) {
 			System.out.println("Step 2: Authenticate log in");
 			System.out.println("--------------------------------------");
-			System.out.print(String.format("Enter a terminal name for this authentication request [\"%s\"]: ", DEFAULT_TERMINAL_NAME));
+			System.out.print(String.format("Enter a terminal name for this authentication request [%s]: ", DEFAULT_TERMINAL_NAME));
 			String terminalName = in.nextLine();
 			if (terminalName.length() == 0) {
 				terminalName = DEFAULT_TERMINAL_NAME;
@@ -125,7 +129,7 @@ public class ToopherAPIDemo {
 
 				AuthenticationRequest requestStatus;
 				try {
-					requestStatus = api.authenticate(requestId, terminalName);
+					requestStatus = api.advanced.authenticationRequests.getById(requestId);
 				} catch (RequestError err) {
 					System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
 					continue;

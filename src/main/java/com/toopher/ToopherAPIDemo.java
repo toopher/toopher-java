@@ -1,5 +1,7 @@
 package com.toopher;
 
+import org.json.JSONException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -77,6 +79,8 @@ public class ToopherAPIDemo {
                 break;
             } catch (RequestError err) {
                 System.out.println(String.format("The pairing phrase was not accepted (reason:%s)", err.getMessage()));
+            } catch (JSONException je) {
+                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
             }
         }
 
@@ -99,6 +103,8 @@ public class ToopherAPIDemo {
                 }
             } catch (RequestError err) {
                 System.out.println(String.format("Could not check pairing status (reason:%s)", err.getMessage()));
+            } catch (JSONException je) {
+                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
             }
         }
 
@@ -120,7 +126,10 @@ public class ToopherAPIDemo {
 			} catch (RequestError err) {
 				System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
 				continue;
-			}
+			} catch (JSONException je) {
+                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                continue;
+            }
 
 			while (true) {
                 System.out.println("Respond to authentication request on phone (if prompted) and then press return to continue.");
@@ -133,7 +142,10 @@ public class ToopherAPIDemo {
 				} catch (RequestError err) {
 					System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
 					continue;
-				}
+				} catch (JSONException je) {
+                    System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                    continue;
+                }
 
 				if (requestStatus.pending) {
 					System.out.println("The authentication request has not received a response from the phone yet.");

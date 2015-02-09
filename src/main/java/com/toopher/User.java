@@ -58,7 +58,7 @@ public class User extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void refreshFromServer() throws RequestError {
+    public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
@@ -70,7 +70,7 @@ public class User extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void enableToopherAuthentication() throws RequestError {
+    public void enableToopherAuthentication() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", "false"));
@@ -84,7 +84,7 @@ public class User extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void disableToopherAuthentication() throws RequestError {
+    public void disableToopherAuthentication() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("disable_toopher_auth", "true"));
@@ -98,7 +98,7 @@ public class User extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void reset() throws RequestError {
+    public void reset() throws RequestError, JSONException {
         String endpoint = "users/reset";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("name", name));
@@ -111,7 +111,7 @@ public class User extends ApiResponseObject {
      * @param jsonResponse
      *          The JSON response from the API
      */
-    public void update(JSONObject jsonResponse) {
+    public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");
         if (jsonResponse.has("disable_toopher_auth")) {
             this.toopherAuthenticationEnabled = !jsonResponse.getBoolean("disable_toopher_auth");

@@ -159,7 +159,7 @@ public class ToopherAPI {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public Pairing pair(String userName) throws RequestError {
+    public Pairing pair(String userName) throws RequestError, JSONException {
         return this.pair(userName, null, null);
     }
     
@@ -174,7 +174,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError {
+    public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError, JSONException {
         return this.pair(userName, pairingPhraseOrNum, null);
     }
 
@@ -191,7 +191,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public Pairing pair( String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError {
+    public Pairing pair( String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError, JSONException {
         String endpoint;
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -224,7 +224,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError, JSONException {
         return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, null, null);
     }
 
@@ -241,7 +241,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError, JSONException {
         return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, actionName, null);
     }
 
@@ -261,7 +261,7 @@ public class ToopherAPI {
      * @throws RequestError
      *             Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError {
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError, JSONException {
         final String endpoint = "authentication_requests/initiate";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -418,7 +418,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public Pairing getById(String pairingId) throws RequestError {
+            public Pairing getById(String pairingId) throws RequestError, JSONException {
                 final String endpoint = String.format("pairings/%s", pairingId);
                 JSONObject json = advanced.raw.get(endpoint);
                 return new Pairing(json, api);
@@ -441,7 +441,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public AuthenticationRequest getById(String authenticationRequestId) throws RequestError {
+            public AuthenticationRequest getById(String authenticationRequestId) throws RequestError, JSONException {
                 final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
                 JSONObject json = advanced.raw.get(endpoint);
                 return new AuthenticationRequest(json, api);
@@ -464,7 +464,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public User create(String userName) throws RequestError {
+            public User create(String userName) throws RequestError, JSONException {
                 return create(userName, null);
             }
 
@@ -479,7 +479,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public User create(String userName, Map<String, String> extras) throws RequestError {
+            public User create(String userName, Map<String, String> extras) throws RequestError, JSONException {
                 final String endpoint = "users/create";
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", userName));
@@ -497,7 +497,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public User getById(String userId) throws RequestError {
+            public User getById(String userId) throws RequestError, JSONException {
                 final String endpoint = String.format("users/%s", userId);
                 JSONObject json = advanced.raw.get(endpoint);
                 return new User(json, api);
@@ -511,7 +511,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public User getByName(String name) throws RequestError {
+            public User getByName(String name) throws RequestError, JSONException {
                 final String endpoint = "users";
                 List params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", name));
@@ -552,7 +552,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId) throws RequestError {
+            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId) throws RequestError, JSONException {
                 return create(userName, terminalName, requesterSpecifiedId, null);
             }
 
@@ -573,7 +573,7 @@ public class ToopherAPI {
              * @throws RequestError
              *             Thrown when an exceptional condition is encountered
              */
-            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId, Map<String, String> extras) throws RequestError {
+            public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId, Map<String, String> extras) throws RequestError, JSONException {
                 final String endpoint = "user_terminals/create";
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -594,7 +594,7 @@ public class ToopherAPI {
              * @throws RequestError
              *          Thrown when an exceptional condition is encountered
              */
-            public UserTerminal getById(String terminalId) throws RequestError {
+            public UserTerminal getById(String terminalId) throws RequestError, JSONException {
                 final String endpoint = String.format("user_terminals/%s", terminalId);
                 JSONObject result = advanced.raw.get(endpoint);
                 return new UserTerminal(result, api);
@@ -602,15 +602,15 @@ public class ToopherAPI {
         }
 
         class ApiRawRequester {
-            public <T> T get(String endpoint) throws RequestError {
+            public <T> T get(String endpoint) throws RequestError, JSONException {
                 return request(new HttpGet(), endpoint, null);
             }
 
-            public <T> T get(String endpoint, List<NameValuePair> params) throws RequestError {
+            public <T> T get(String endpoint, List<NameValuePair> params) throws RequestError, JSONException {
                 return request(new HttpGet(), endpoint, params);
             }
 
-            public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
+            public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError, JSONException {
                 if (extras != null && extras.size() > 0) {
                     for (Map.Entry<String, String> e : extras.entrySet()){
                         params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
@@ -619,19 +619,19 @@ public class ToopherAPI {
                 return request(new HttpGet(), endpoint, params);
             }
 
-            public <T> T post(String endpoint) throws RequestError {
+            public <T> T post(String endpoint) throws RequestError, JSONException {
                 return request(new HttpPost(), endpoint, null);
             }
 
-            public <T> T post(String endpoint, List<NameValuePair> params) throws RequestError {
+            public <T> T post(String endpoint, List<NameValuePair> params) throws RequestError, JSONException {
                 return post(endpoint, params, null);
             }
 
-            public <T> T post(String endpoint, Map<String, String> extras) throws RequestError {
+            public <T> T post(String endpoint, Map<String, String> extras) throws RequestError, JSONException {
                 return post(endpoint, null, extras);
             }
 
-            public <T> T post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError {
+            public <T> T post(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError, JSONException {
                 HttpPost post = new HttpPost();
                 if (params == null) {
                     params = new ArrayList<NameValuePair>();
@@ -651,7 +651,7 @@ public class ToopherAPI {
                 return request(post, endpoint, null);
             }
 
-            private <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError {
+            private <T> T request(HttpRequestBase httpRequest, String endpoint, List<NameValuePair> queryStringParameters) throws RequestError, JSONException {
                 Boolean isQrImageEndpoint = endpoint.contains("qr/pairings/");
                 try {
                     URIBuilder uriBuilder = new URIBuilder().setScheme(uriScheme).setHost(uriHost)

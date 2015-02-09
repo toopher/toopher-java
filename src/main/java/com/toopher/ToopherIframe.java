@@ -328,7 +328,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
+    public Map<String, String> validatePostback(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
         return validatePostback(params, sessionToken, DEFAULT_TTL);
     }
 

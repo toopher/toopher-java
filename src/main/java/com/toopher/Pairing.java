@@ -60,7 +60,7 @@ public class Pairing extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public void refreshFromServer() throws RequestError {
+    public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("pairings/%s", id);
         JSONObject result = api.advanced.raw.get(endpoint);
         update(result);
@@ -83,7 +83,7 @@ public class Pairing extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public String getResetLink() throws RequestError {
+    public String getResetLink() throws RequestError, JSONException {
         return getResetLink(null);
     }
 
@@ -95,7 +95,7 @@ public class Pairing extends ApiResponseObject {
      * @throws RequestError
      *          Thrown when an exceptional condition is encountered
      */
-    public String getResetLink(Map<String, String> extras) throws RequestError {
+    public String getResetLink(Map<String, String> extras) throws RequestError, JSONException {
         String endpoint = String.format("pairings/%s/generate_reset_link", id);
         JSONObject result = api.advanced.raw.post(endpoint, extras);
         return result.getString("url");
@@ -134,7 +134,7 @@ public class Pairing extends ApiResponseObject {
      * @param jsonResponse
      *          The JSON response from the API
      */
-    private void update(JSONObject jsonResponse) {
+    private void update(JSONObject jsonResponse) throws JSONException {
         this.enabled = jsonResponse.getBoolean("enabled");
         this.pending = jsonResponse.getBoolean("pending");
         this.user.update(jsonResponse.getJSONObject("user"));

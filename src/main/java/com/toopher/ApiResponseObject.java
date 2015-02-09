@@ -17,7 +17,7 @@ public class ApiResponseObject {
     	this.rawResponse = jsonToMap(json);
     }
 
-    public void updateRawResponse(JSONObject json) {
+    public void updateRawResponse(JSONObject json) throws JSONException {
         this.rawResponse = jsonToMap(json);
     }
 

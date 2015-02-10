@@ -34,7 +34,7 @@ public class HttpClientMock extends DefaultHttpClient {
     private int expectedResponseStatus;
     private String expectedResponseBody;
     private Map<URI, ResponseMock> expectedUriResponses;
-    private java.net.URI lastURI;
+    private URI lastURI;
 
     public HttpClientMock(int responseStatus, String responseBody) throws InterruptedException {
         this.expectedResponseStatus = responseStatus;

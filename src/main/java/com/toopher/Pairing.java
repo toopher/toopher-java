@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class Pairing extends ApiResponseObject {
     /**
-     * The ToopherAPI object associated with this pairing
+     * The {@link com.toopher.ToopherApi} associated with this pairing
      */
     public ToopherApi api;
 
@@ -34,7 +34,7 @@ public class Pairing extends ApiResponseObject {
     public boolean pending;
 
     /**
-     * The User associated with the pairing request
+     * The {@link com.toopher.User} associated with the pairing request
      */
     public User user;
 

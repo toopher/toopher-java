@@ -139,7 +139,7 @@ public class ToopherApi {
      * Create a QR pairing
      *
      * @param userName A user-facing descriptive name for the user (displayed in requests)
-     * @return A Pairing object
+     * @return An {@link com.toopher.Pairing} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public Pairing pair(String userName) throws RequestError, JSONException {
@@ -151,7 +151,7 @@ public class ToopherApi {
      *
      * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
      * @param userName           A user-facing descriptive name for the user (displayed in requests)
-     * @return A Pairing object
+     * @return A {@link com.toopher.Pairing} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError, JSONException {
@@ -164,7 +164,7 @@ public class ToopherApi {
      * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
      * @param userName           A user-facing descriptive name for the user (displayed in requests)
      * @param extras             An optional Map of extra parameters to provide to the API
-     * @return A Pairing object
+     * @return A {@link com.toopher.Pairing} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public Pairing pair(String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError, JSONException {
@@ -194,7 +194,7 @@ public class ToopherApi {
      *
      * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
      * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
-     * @return An AuthenticationRequest object
+     * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError, JSONException {
@@ -207,7 +207,7 @@ public class ToopherApi {
      * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
      * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
      * @param actionName                      The user-facing descriptive name for the action which is being authenticated
-     * @return An AuthenticationRequest object
+     * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError, JSONException {
@@ -222,7 +222,7 @@ public class ToopherApi {
      *                                        or the unique identifier for this terminal.  Not displayed to the user.
      * @param actionName                      The user-facing descriptive name for the action which is being authenticated
      * @param extras                          An optional Map of extra parameters to provide to the API
-     * @return An AuthenticationRequest object
+     * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError, JSONException {
@@ -374,7 +374,7 @@ public class ToopherApi {
              * Retrieve the current status of a pairing
              *
              * @param pairingId The unique id for a pairing
-             * @return A Pairing object
+             * @return A {@link com.toopher.Pairing} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public Pairing getById(String pairingId) throws RequestError, JSONException {
@@ -395,7 +395,7 @@ public class ToopherApi {
              * Retrieve the current status of an authentication request
              *
              * @param authenticationRequestId The unique id for an authentication request
-             * @return An AuthenticationRequest object
+             * @return An {@link com.toopher.AuthenticationRequest} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public AuthenticationRequest getById(String authenticationRequestId) throws RequestError, JSONException {
@@ -416,7 +416,7 @@ public class ToopherApi {
              * Create a new user with a userName
              *
              * @param userName The name of the user
-             * @return A User object
+             * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User create(String userName) throws RequestError, JSONException {
@@ -428,7 +428,7 @@ public class ToopherApi {
              *
              * @param userName The name of the user
              * @param extras   An optional Map of extra parameters to provide to the API
-             * @return A User object
+             * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User create(String userName, Map<String, String> extras) throws RequestError, JSONException {
@@ -444,7 +444,7 @@ public class ToopherApi {
              * Retrieve the current status of a user with the user id
              *
              * @param userId The unique id for a user
-             * @return A User object
+             * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User getById(String userId) throws RequestError, JSONException {
@@ -457,7 +457,7 @@ public class ToopherApi {
              * Retrieve the current status of a user with the user name
              *
              * @param name The name of the user
-             * @return A User object
+             * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User getByName(String name) throws RequestError, JSONException {
@@ -492,7 +492,7 @@ public class ToopherApi {
              * @param requesterSpecifiedId The requester specified id that uniquely identifies this terminal. Can be shared
              *                             across multiple users. The combination of userName and requesterSpecifiedId should
              *                             be unique for a requester
-             * @return A UserTerminal object
+             * @return A {@link com.toopher.UserTerminal} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId) throws RequestError, JSONException {
@@ -508,7 +508,7 @@ public class ToopherApi {
              *                             across multiple users.  The combination of userName and terminalNameExtra should
              *                             be unique for a requester
              * @param extras               An optional Map of extra parameters to provide to the API
-             * @return A UserTerminal object
+             * @return A {@link com.toopher.UserTerminal} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId, Map<String, String> extras) throws RequestError, JSONException {
@@ -527,7 +527,7 @@ public class ToopherApi {
              * Retrieve the current status of a user terminal by terminal id
              *
              * @param terminalId The unique id for a user terminal
-             * @return A UserTerminal object
+             * @return A {@link com.toopher.UserTerminal} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal getById(String terminalId) throws RequestError, JSONException {

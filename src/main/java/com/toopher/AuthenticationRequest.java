@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class AuthenticationRequest extends ApiResponseObject {
     /**
-     * The ToopherAPI object associated with this authentication request
+     * The {@link com.toopher.ToopherApi} associated with this authentication request
      */
     public ToopherApi api;
 
@@ -48,17 +48,17 @@ public class AuthenticationRequest extends ApiResponseObject {
     public int reasonCode;
 
     /**
-     * The UserTerminal associated with the authentication request
+     * The {@link com.toopher.UserTerminal} associated with the authentication request
      */
     public UserTerminal terminal;
 
     /**
-     * The Action associated with the request
+     * The {@link com.toopher.Action} associated with the request
      */
     public Action action;
 
     /**
-     * The User associated with the authentication request
+     * The {@link com.toopher.User} associated with the authentication request
      */
     public User user;
 

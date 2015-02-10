@@ -8,7 +8,7 @@ import org.json.JSONObject;
  */
 public class UserTerminal extends ApiResponseObject {
     /**
-     * The ToopherAPI object associated with this user terminal
+     * The {@link com.toopher.ToopherApi} associated with this user terminal
      */
     public ToopherApi api;
 
@@ -28,7 +28,7 @@ public class UserTerminal extends ApiResponseObject {
     public String requesterSpecifiedId;
 
     /**
-     * The User object associated with the user terminal
+     * The {@link com.toopher.User} object associated with the user terminal
      */
     public User user;
 

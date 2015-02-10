@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class User extends ApiResponseObject {
     /**
-     * The ToopherAPI object associated with this user
+     * The {@link com.toopher.ToopherApi} associated with this user
      */
     public ToopherApi api;
 

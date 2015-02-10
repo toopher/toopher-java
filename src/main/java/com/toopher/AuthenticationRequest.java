@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * Provides information about the status of an authentication request
- * 
  */
 public class AuthenticationRequest extends ApiResponseObject {
     /**
@@ -18,7 +17,7 @@ public class AuthenticationRequest extends ApiResponseObject {
      */
     public ToopherApi api;
 
-	/**
+    /**
      * The unique id for the authentication request
      */
     public String id;
@@ -64,7 +63,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     public User user;
 
     public AuthenticationRequest(JSONObject json, ToopherApi toopherApi) throws JSONException{
-		super(json);
+        super(json);
 
         this.api = toopherApi;
 		this.id = json.getString("id");

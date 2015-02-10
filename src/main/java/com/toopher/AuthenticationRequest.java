@@ -16,7 +16,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     /**
      * The ToopherAPI object associated with this authentication request
      */
-    public ToopherAPI api;
+    public ToopherApi api;
 
 	/**
      * The unique id for the authentication request
@@ -63,19 +63,19 @@ public class AuthenticationRequest extends ApiResponseObject {
      */
     public User user;
 
-    public AuthenticationRequest(JSONObject json, ToopherAPI toopherAPI) throws JSONException{
+    public AuthenticationRequest(JSONObject json, ToopherApi toopherApi) throws JSONException{
 		super(json);
 
-        this.api = toopherAPI;
+        this.api = toopherApi;
 		this.id = json.getString("id");
         this.pending = json.getBoolean("pending");
         this.granted = json.getBoolean("granted");
         this.automated = json.getBoolean("automated");
         this.reason = json.getString("reason");
         this.reasonCode = json.getInt("reason_code");
-        this.terminal = new UserTerminal(json.getJSONObject("terminal"), toopherAPI);
+        this.terminal = new UserTerminal(json.getJSONObject("terminal"), toopherApi);
         this.action = new Action(json.getJSONObject("action"));
-        this.user = new User(json.getJSONObject("user"), toopherAPI);
+        this.user = new User(json.getJSONObject("user"), toopherApi);
 	}
 
     @Override

@@ -16,7 +16,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-public class TestToopherAPI {
+public class TestToopherApi {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
     private static String id;
@@ -89,7 +89,7 @@ public class TestToopherAPI {
     @Test
     public void testCreatePairingWithPairingPhrase() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
-        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName, "awkward turtle");
 
@@ -104,7 +104,7 @@ public class TestToopherAPI {
     @Test
     public void testCreateQrPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
-        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName);
 
@@ -119,7 +119,7 @@ public class TestToopherAPI {
     public void testCreateSmsPairing() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
 
-        ToopherAPI toopherApi = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
         Pairing pairing = toopherApi.pair(userName, "123456");
 
@@ -134,9 +134,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedPairingsGetById() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = toopherAPI.advanced.pairings.getById(id);
+        Pairing pairing = toopherApi.advanced.pairings.getById(id);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(String.format("pairings/%s", pairing.id), httpClient.getLastCalledEndpoint());
@@ -147,9 +147,9 @@ public class TestToopherAPI {
     @Test
     public void testCreateAuthenticationRequestWithPairingId() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        AuthenticationRequest authenticationRequest = toopherAPI.authenticate(id, terminalName, actionName);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, terminalName, actionName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
@@ -164,9 +164,9 @@ public class TestToopherAPI {
     @Test
     public void testCreateAuthenticationRequestWithUsername() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        AuthenticationRequest authenticationRequest = toopherAPI.authenticate(userName, terminalNameExtra, actionName);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName, terminalNameExtra, actionName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
@@ -181,9 +181,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedAuthenticationRequestsGetById() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        AuthenticationRequest authenticationRequest = toopherAPI.advanced.authenticationRequests.getById(id);
+        AuthenticationRequest authenticationRequest = toopherApi.advanced.authenticationRequests.getById(id);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(String.format("authentication_requests/%s", authenticationRequest.id), httpClient.getLastCalledEndpoint());
@@ -196,9 +196,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedUsersCreate() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.create(userName);
+        User user = toopherApi.advanced.users.create(userName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("users/create", httpClient.getLastCalledEndpoint());
@@ -214,9 +214,9 @@ public class TestToopherAPI {
         extras.put("foo", "bar");
 
         HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.create(userName, extras);
+        User user = toopherApi.advanced.users.create(userName, extras);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("users/create", httpClient.getLastCalledEndpoint());
@@ -229,9 +229,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedUsersGetById() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.getById(userId);
+        User user = toopherApi.advanced.users.getById(userId);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(String.format("users/%s", userId), httpClient.getLastCalledEndpoint());
@@ -250,9 +250,9 @@ public class TestToopherAPI {
         expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users/%s", userId)), new ResponseMock(200, userJsonResponse.toString()));
 
         HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        User user = toopherAPI.advanced.users.getByName(userName);
+        User user = toopherApi.advanced.users.getByName(userName);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(String.format("users/%s", userId), httpClient.getLastCalledEndpoint());
@@ -264,9 +264,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedUserTerminalsCreate() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.create(userName, terminalName, terminalNameExtra);
+        UserTerminal userTerminal = toopherApi.advanced.userTerminals.create(userName, terminalName, terminalNameExtra);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("user_terminals/create", httpClient.getLastCalledEndpoint());
@@ -282,9 +282,9 @@ public class TestToopherAPI {
         extras.put("foo", "bar");
 
         HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.create(userName, terminalName, terminalNameExtra, extras);
+        UserTerminal userTerminal = toopherApi.advanced.userTerminals.create(userName, terminalName, terminalNameExtra, extras);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("user_terminals/create", httpClient.getLastCalledEndpoint());
@@ -298,9 +298,9 @@ public class TestToopherAPI {
     @Test
     public void testAdvancedUserTerminalsGetById() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        UserTerminal userTerminal = toopherAPI.advanced.userTerminals.getById(terminalId);
+        UserTerminal userTerminal = toopherApi.advanced.userTerminals.getById(terminalId);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(String.format("user_terminals/%s", terminalId), httpClient.getLastCalledEndpoint());
@@ -313,9 +313,9 @@ public class TestToopherAPI {
         String endpoint = String.format("pairings/%s", id);
 
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        toopherAPI.advanced.raw.get(endpoint);
+        toopherApi.advanced.raw.get(endpoint);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
         assertEquals(endpoint, httpClient.getLastCalledEndpoint());
@@ -329,9 +329,9 @@ public class TestToopherAPI {
         params.add(new BasicNameValuePair("name", userName));
 
         HttpClientMock httpClient = new HttpClientMock(200, userJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        toopherAPI.advanced.raw.post(endpoint, params);
+        toopherApi.advanced.raw.post(endpoint, params);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals(endpoint, httpClient.getLastCalledEndpoint());
@@ -340,15 +340,15 @@ public class TestToopherAPI {
 
     @Test
     public void testBaseURL() {
-        boolean isValidURL = createURI((ToopherAPI.getBaseURL())) != null;
+        boolean isValidURL = createURI((ToopherApi.getBaseURL())) != null;
 
-        assertNotNull("Base URL is null.", ToopherAPI.getBaseURL());
+        assertNotNull("Base URL is null.", ToopherApi.getBaseURL());
         assertTrue("Base URL is not valid.", isValidURL);
     }
 
     @Test
     public void testVersion() {
-        assertNotNull("Version is not null.", ToopherAPI.VERSION);
+        assertNotNull("Version is not null.", ToopherApi.VERSION);
     }
 
     private URI createURI(String url) {

@@ -11,7 +11,7 @@ public class UserTerminal extends ApiResponseObject {
     /**
      * The ToopherAPI object associated with this user terminal
      */
-    public ToopherAPI api;
+    public ToopherApi api;
 
     /**
      * The unique id for the user terminal
@@ -33,14 +33,14 @@ public class UserTerminal extends ApiResponseObject {
      */
     public User user;
 
-    public UserTerminal (JSONObject json, ToopherAPI toopherAPI) throws JSONException {
+    public UserTerminal (JSONObject json, ToopherApi toopherApi) throws JSONException {
         super(json);
 
-        this.api = toopherAPI;
+        this.api = toopherApi;
         this.id = json.getString("id");
         this.name = json.getString("name");
         this.requesterSpecifiedId = json.getString("name_extra");
-        this.user = new User(json.getJSONObject("user"), toopherAPI);
+        this.user = new User(json.getJSONObject("user"), toopherApi);
     }
 
     @Override

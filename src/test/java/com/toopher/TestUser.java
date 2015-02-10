@@ -35,9 +35,9 @@ public class TestUser {
         newJson.put("disable_toopher_auth", true);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        User user = new User(json, toopherAPI);
+        User user = new User(json, toopherApi);
 
         assertEquals(id, user.id);
         assertEquals(name, user.name);
@@ -60,9 +60,9 @@ public class TestUser {
         newJson.put("disable_toopher_auth", false);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        User user = new User(json, toopherAPI);
+        User user = new User(json, toopherApi);
         user.enableToopherAuthentication();
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -81,9 +81,9 @@ public class TestUser {
         newJson.put("disable_toopher_auth", "true");
 
         HttpClientMock httpClient = new HttpClientMock(200, newJson.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        User user = new User(json, toopherAPI);
+        User user = new User(json, toopherApi);
         user.disableToopherAuthentication();
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -97,9 +97,9 @@ public class TestUser {
     @Test
     public void testReset() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, "{}");
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        User user = new User(json, toopherAPI);
+        User user = new User(json, toopherApi);
         user.reset();
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -114,9 +114,9 @@ public class TestUser {
         updatedJson.put("disable_toopher_auth", true);
 
         HttpClientMock httpClient = new HttpClientMock(200, "{}");
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        User user = new User(json, toopherAPI);
+        User user = new User(json, toopherApi);
 
         assertEquals(name, user.name);
         assertTrue("User should be Toopher authentication enabled.", user.toopherAuthenticationEnabled);

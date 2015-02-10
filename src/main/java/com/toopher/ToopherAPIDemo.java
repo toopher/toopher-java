@@ -31,9 +31,9 @@ public class ToopherAPIDemo {
 			}
         }
         
-        ToopherAPI api;
+        ToopherApi api;
         if(env.containsKey("TOOPHER_CONSUMER_KEY") && env.containsKey("TOOPHER_CONSUMER_SECRET")){
-        	api = new ToopherAPI(env.get("TOOPHER_CONSUMER_KEY"), env.get("TOOPHER_CONSUMER_SECRET"), base_uri);
+        	api = new ToopherApi(env.get("TOOPHER_CONSUMER_KEY"), env.get("TOOPHER_CONSUMER_SECRET"), base_uri);
         } else {
 	        System.out.println("");
 	        System.out.println("Setup Credentials");
@@ -44,7 +44,7 @@ public class ToopherAPIDemo {
 	        System.out.print("Toopher Consumer Secret: ");
 	        String consumerSecret = in.nextLine();
 	
-			api = new ToopherAPI (consumerKey, consumerSecret, base_uri);
+			api = new ToopherApi(consumerKey, consumerSecret, base_uri);
         }
 
 		String pairingId;

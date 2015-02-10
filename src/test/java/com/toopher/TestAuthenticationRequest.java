@@ -62,9 +62,9 @@ public class TestAuthenticationRequest {
 
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherAPI);
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherApi);
 
         assertEquals(id, authenticationRequest.id);
         assertTrue("Authentication request pending should be True.", authenticationRequest.pending);
@@ -100,9 +100,9 @@ public class TestAuthenticationRequest {
         newJsonResponse.put("action", newAction);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherAPI);
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, toopherApi);
 
         assertEquals(userName, authenticationRequest.user.name);
         assertEquals(reason, authenticationRequest.reason);

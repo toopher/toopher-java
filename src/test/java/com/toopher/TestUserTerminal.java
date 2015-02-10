@@ -46,9 +46,9 @@ public class TestUserTerminal {
         newJsonResponse.put("user", newUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        UserTerminal terminal = new UserTerminal(terminalJson, toopherAPI);
+        UserTerminal terminal = new UserTerminal(terminalJson, toopherApi);
 
         assertEquals(id, terminal.id, id);
         assertEquals(name, terminal.name, name);
@@ -75,9 +75,9 @@ public class TestUserTerminal {
         updatedJson.put("user", updatedUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, "{}");
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        UserTerminal terminal = new UserTerminal(terminalJson, toopherAPI);
+        UserTerminal terminal = new UserTerminal(terminalJson, toopherApi);
         terminal.update(updatedJson);
 
         assertEquals(id, terminal.id);

@@ -46,9 +46,9 @@ public class TestPairing {
         newJsonResponse.put("user", newUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
 
         assertEquals(id, pairing.id);
         assertEquals(userName, pairing.user.name);
@@ -70,9 +70,9 @@ public class TestPairing {
         bi.flush();
 
         HttpClientMock httpClient = new HttpClientMock(200, imageInByte.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
         pairing.getQrCodeImage();
 
         assertEquals("GET", httpClient.getLastCalledMethod());
@@ -86,9 +86,9 @@ public class TestPairing {
         urlJsonResponse.put("url", resetLink);
 
         HttpClientMock httpClient = new HttpClientMock(200, urlJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
         String returnedResetLink = pairing.getResetLink();
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -105,9 +105,9 @@ public class TestPairing {
         extras.put("security_answer", "yes!");
 
         HttpClientMock httpClient = new HttpClientMock(200, urlJsonResponse.toString());
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
         String returnedResetLink = pairing.getResetLink(extras);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -119,9 +119,9 @@ public class TestPairing {
     @Test
     public void testEmailResetLink() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(201, "[]");
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
         pairing.emailResetLink("email");
 
         assertEquals("POST", httpClient.getLastCalledMethod());
@@ -134,9 +134,9 @@ public class TestPairing {
         extras.put("one_extra_key", "one_extra_value");
 
         HttpClientMock httpClient = new HttpClientMock(201, "[]");
-        ToopherAPI toopherAPI = new ToopherAPI("key", "secret",
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
                 URI.create(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = new Pairing(jsonResponse, toopherAPI);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
         pairing.emailResetLink("email", extras);
 
         assertEquals("POST", httpClient.getLastCalledMethod());

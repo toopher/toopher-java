@@ -16,7 +16,7 @@ public class User extends ApiResponseObject {
     /**
      * The ToopherAPI object associated with this user
      */
-    public ToopherAPI api;
+    public ToopherApi api;
 
     /**
      * The unique id for the user
@@ -33,10 +33,10 @@ public class User extends ApiResponseObject {
      */
     public boolean toopherAuthenticationEnabled;
 
-    public User (JSONObject json, ToopherAPI toopherAPI) throws JSONException {
+    public User (JSONObject json, ToopherApi toopherApi) throws JSONException {
         super(json);
 
-        this.api = toopherAPI;
+        this.api = toopherApi;
         this.id = json.getString("id");
         this.name = json.getString("name");
         if (json.has("disable_toopher_auth")) {

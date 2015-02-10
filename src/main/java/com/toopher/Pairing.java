@@ -17,7 +17,7 @@ public class Pairing extends ApiResponseObject {
     /**
      * The ToopherAPI object associated with this pairing
      */
-    public ToopherAPI api;
+    public ToopherApi api;
 
     /**
      * The unique id for the pairing request
@@ -39,14 +39,14 @@ public class Pairing extends ApiResponseObject {
      */
     public User user;
 
-    public Pairing(JSONObject json, ToopherAPI toopherAPI) throws JSONException {
+    public Pairing(JSONObject json, ToopherApi toopherApi) throws JSONException {
         super(json);
 
-        this.api = toopherAPI;
+        this.api = toopherApi;
         this.id = json.getString("id");
         this.enabled = json.getBoolean("enabled");
         this.pending = json.getBoolean("pending");
-        this.user = new User(json.getJSONObject("user"), toopherAPI);
+        this.user = new User(json.getJSONObject("user"), toopherApi);
     }
 
     @Override

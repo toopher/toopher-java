@@ -34,7 +34,7 @@ import org.json.JSONTokener;
  * A Java binding for the Toopher API
  *
  */
-public class ToopherAPI {
+public class ToopherApi {
     private static final String DEFAULT_URI_SCHEME = "https";
     private static final String DEFAULT_URI_HOST = "api.toopher.com";
     private static final String DEFAULT_URI_BASE = "/v1/";
@@ -61,7 +61,7 @@ public class ToopherAPI {
      * @param consumerSecret
      *            The consumer secret for a requester (obtained from the developer portal)
      */
-    public ToopherAPI(String consumerKey, String consumerSecret) {
+    public ToopherApi(String consumerKey, String consumerSecret) {
     	this(consumerKey, consumerSecret, (URI)null);
     }
 
@@ -77,7 +77,7 @@ public class ToopherAPI {
      *            The uri of the Toopher API
      * @throws URISyntaxException
      */
-    public ToopherAPI(String consumerKey, String consumerSecret, String uri) throws URISyntaxException {
+    public ToopherApi(String consumerKey, String consumerSecret, String uri) throws URISyntaxException {
     	this(consumerKey, consumerSecret, new URI(uri));
     }
 
@@ -96,7 +96,7 @@ public class ToopherAPI {
      *            The uri base ( /v1/ )
      * @throws URISyntaxException
      */
-    public ToopherAPI(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
+    public ToopherApi(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
     	this(consumerKey, consumerSecret, new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build());
     }
 
@@ -110,7 +110,7 @@ public class ToopherAPI {
      * @param uri
      *            The alternate URI
      */
-    public ToopherAPI(String consumerKey, String consumerSecret, URI uri) {
+    public ToopherApi(String consumerKey, String consumerSecret, URI uri) {
         this(consumerKey, consumerSecret, uri, null);
     }
 
@@ -127,7 +127,7 @@ public class ToopherAPI {
      * @param httpClient
      *     The alternate HTTP client
      */
-    public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
+    public ToopherApi(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
         this.advanced = new AdvancedApiUsageFactory(this);
         if (httpClient == null) {
             this.httpClient = new DefaultHttpClient();
@@ -139,10 +139,10 @@ public class ToopherAPI {
 
         consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
         if (uri == null){
-            this.uriScheme = ToopherAPI.DEFAULT_URI_SCHEME;
-        	this.uriHost = ToopherAPI.DEFAULT_URI_HOST;
-        	this.uriPort = ToopherAPI.DEFAULT_URI_PORT;
-        	this.uriBase = ToopherAPI.DEFAULT_URI_BASE;
+            this.uriScheme = ToopherApi.DEFAULT_URI_SCHEME;
+        	this.uriHost = ToopherApi.DEFAULT_URI_HOST;
+        	this.uriPort = ToopherApi.DEFAULT_URI_PORT;
+        	this.uriBase = ToopherApi.DEFAULT_URI_BASE;
     	} else {
 	        this.uriScheme = uri.getScheme();
 	        this.uriHost = uri.getHost();
@@ -394,7 +394,7 @@ public class ToopherAPI {
         public final UserTerminals userTerminals;
         public final ApiRawRequester raw;
 
-        public AdvancedApiUsageFactory(ToopherAPI api) {
+        public AdvancedApiUsageFactory(ToopherApi api) {
             pairings = new Pairings(api);
             authenticationRequests = new AuthenticationRequests(api);
             users = new Users(api);
@@ -403,10 +403,10 @@ public class ToopherAPI {
         }
 
         class Pairings {
-            public final ToopherAPI api;
+            public final ToopherApi api;
 
-            public Pairings(ToopherAPI toopherAPI) {
-                api = toopherAPI;
+            public Pairings(ToopherApi toopherApi) {
+                api = toopherApi;
             }
 
             /**
@@ -426,10 +426,10 @@ public class ToopherAPI {
         }
 
         class AuthenticationRequests {
-            public final ToopherAPI api;
+            public final ToopherApi api;
 
-            public AuthenticationRequests(ToopherAPI toopherAPI) {
-                api = toopherAPI;
+            public AuthenticationRequests(ToopherApi toopherApi) {
+                api = toopherApi;
             }
 
             /**
@@ -449,10 +449,10 @@ public class ToopherAPI {
         }
 
         class Users {
-            public final ToopherAPI api;
+            public final ToopherApi api;
 
-            public Users(ToopherAPI toopherAPI) {
-                api = toopherAPI;
+            public Users(ToopherApi toopherApi) {
+                api = toopherApi;
             }
 
             /**
@@ -531,10 +531,10 @@ public class ToopherAPI {
         }
 
         class UserTerminals {
-            public final ToopherAPI api;
+            public final ToopherApi api;
 
-            public UserTerminals(ToopherAPI toopherAPI) {
-                api = toopherAPI;
+            public UserTerminals(ToopherApi toopherApi) {
+                api = toopherApi;
             }
 
             /**

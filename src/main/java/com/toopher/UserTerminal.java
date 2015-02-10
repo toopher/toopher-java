@@ -5,7 +5,6 @@ import org.json.JSONObject;
 
 /**
  * Provides information about the status of a user terminal
- *
  */
 public class UserTerminal extends ApiResponseObject {
     /**
@@ -33,7 +32,7 @@ public class UserTerminal extends ApiResponseObject {
      */
     public User user;
 
-    public UserTerminal (JSONObject json, ToopherApi toopherApi) throws JSONException {
+    public UserTerminal(JSONObject json, ToopherApi toopherApi) throws JSONException {
         super(json);
 
         this.api = toopherApi;
@@ -52,8 +51,7 @@ public class UserTerminal extends ApiResponseObject {
     /**
      * Update the UserTerminal object with JSON response from the server
      *
-     * @throws RequestError
-     *          Thrown when an exceptional condition is encountered
+     * @throws RequestError Thrown when an exceptional condition is encountered
      */
     public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("user_terminals/%s", id);
@@ -64,8 +62,7 @@ public class UserTerminal extends ApiResponseObject {
     /**
      * Update the UserTerminal object with JSON response
      *
-     * @param jsonResponse
-     *          The JSON response received from the server
+     * @param jsonResponse The JSON response received from the server
      */
     public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");

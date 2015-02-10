@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.junit.*;
 import org.apache.http.client.utils.URLEncodedUtils;
+
 import static org.junit.Assert.*;
 
 public class TestToopherIframe {
@@ -23,19 +24,20 @@ public class TestToopherIframe {
     private ToopherIframe iframeApi;
 
     static Map<String, String> nvp2map(List<NameValuePair> lnvp) {
-        HashMap<String,String> result = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<String, String>();
         for (NameValuePair nvp : lnvp) {
             result.put(nvp.getName(), nvp.getValue());
         }
         return result;
     }
+
     @Before
     public void setUp() {
         this.iframeApi = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET, DEFAULT_BASE_URL);
     }
 
     @Test
-    public void testGetAuthenticationUrl(){
+    public void testGetAuthenticationUrl() {
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
         Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN), Charset.forName("UTF-8")));
@@ -95,10 +97,10 @@ public class TestToopherIframe {
     @Test
     public void testValidateGoodSignatureIsSuccessful() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] {"bar"});
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[] { REQUEST_TOKEN });
-        data.put("toopher_sig", new String[] { "6d2c7GlQssGmeYYGpcf+V/kirOI=" });
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -109,12 +111,12 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testValidateBadSignatureFails(){
+    public void testValidateBadSignatureFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000) });
-        data.put("session_token", new String[] { REQUEST_TOKEN });
-        data.put("toopher_sig", new String[] { "invalid" });
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"invalid"});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -128,10 +130,10 @@ public class TestToopherIframe {
     @Test
     public void testValidateExpiredSignatureFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000) });
-        data.put("session_token", new String[] { REQUEST_TOKEN });
-        data.put("toopher_sig", new String[] { "6d2c7GlQssGmeYYGpcf+V/kirOI=" });
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
 
         // set ToopherIframe reference clock 6 seconds ahead
         ToopherIframe.setDateOverride(new Date(TEST_DATE.getTime() + (1000 * 6)));
@@ -146,9 +148,9 @@ public class TestToopherIframe {
     @Test
     public void testValidateMissingTimestampFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("session_token", new String[] { REQUEST_TOKEN });
-        data.put("toopher_sig", new String[] { "6d2c7GlQssGmeYYGpcf+V/kirOI=" });
+        data.put("foo", new String[]{"bar"});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -162,9 +164,9 @@ public class TestToopherIframe {
     @Test
     public void testValidateMissingSignatureFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("session_token", new String[] { REQUEST_TOKEN });
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000) });
+        data.put("foo", new String[]{"bar"});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -178,10 +180,10 @@ public class TestToopherIframe {
     @Test
     public void testInvalidSessionTokenFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000) });
-        data.put("session_token", new String[] { "invalid token" });
-        data.put("toopher_sig", new String[] { "6d2c7GlQssGmeYYGpcf+V/kirOI=" });
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{"invalid token"});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -195,9 +197,9 @@ public class TestToopherIframe {
     @Test
     public void testMissingSessionTokenFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[] { "bar" });
-        data.put("timestamp", new String[] { String.valueOf(TEST_DATE.getTime() / 1000) });
-        data.put("toopher_sig", new String[] { "6d2c7GlQssGmeYYGpcf+V/kirOI=" });
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {

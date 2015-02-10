@@ -34,7 +34,6 @@ import java.util.UUID;
 
 /**
  * A Java binding for the Toopher API
- *
  */
 public class ToopherApi {
     private static final String DEFAULT_URI_SCHEME = "https";
@@ -58,59 +57,46 @@ public class ToopherApi {
     /**
      * Create an API object with the supplied credentials
      *
-     * @param consumerKey
-     *            The consumer key for a requester (obtained from the developer portal)
-     * @param consumerSecret
-     *            The consumer secret for a requester (obtained from the developer portal)
+     * @param consumerKey    The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
      */
     public ToopherApi(String consumerKey, String consumerSecret) {
-    	this(consumerKey, consumerSecret, (URI)null);
+        this(consumerKey, consumerSecret, (URI) null);
     }
 
 
     /**
      * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
      *
-     * @param consumerKey
-     *            The consumer key for a requester (obtained from the developer portal)
-     * @param consumerSecret
-     *            The consumer secret for a requester (obtained from the developer portal)
-     * @param uri
-     *            The uri of the Toopher API
+     * @param consumerKey    The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
+     * @param uri            The uri of the Toopher API
      * @throws java.net.URISyntaxException
      */
     public ToopherApi(String consumerKey, String consumerSecret, String uri) throws URISyntaxException {
-    	this(consumerKey, consumerSecret, new URI(uri));
+        this(consumerKey, consumerSecret, new URI(uri));
     }
 
     /**
      * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
      *
-     * @param consumerKey
-     *            The consumer key for a requester (obtained from the developer portal)
-     * @param consumerSecret
-     *            The consumer secret for a requester (obtained from the developer portal)
-     * @param uriScheme
-     *            The uri scheme ( http or https )
-     * @param uriHost
-     *            The uri host ( api.toopher.com )
-     * @param uriScheme
-     *            The uri base ( /v1/ )
+     * @param consumerKey    The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
+     * @param uriScheme      The uri scheme ( http or https )
+     * @param uriHost        The uri host ( api.toopher.com )
+     * @param uriScheme      The uri base ( /v1/ )
      * @throws java.net.URISyntaxException
      */
     public ToopherApi(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
-    	this(consumerKey, consumerSecret, new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build());
+        this(consumerKey, consumerSecret, new URIBuilder().setScheme(uriScheme).setHost(uriHost).setPath(uriBase).build());
     }
 
     /**
      * Create an API object with the supplied credentials, overriding the default API URI of https://api.toopher.com/v1/
      *
-     * @param consumerKey
-     *            The consumer key for a requester (obtained from the developer portal)
-     * @param consumerSecret
-     *            The consumer secret for a requester (obtained from the developer portal)
-     * @param uri
-     *            The alternate URI
+     * @param consumerKey    The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
+     * @param uri            The alternate URI
      */
     public ToopherApi(String consumerKey, String consumerSecret, URI uri) {
         this(consumerKey, consumerSecret, uri, null);
@@ -120,46 +106,41 @@ public class ToopherApi {
      * Create an API object with the supplied credentials and API URI,
      * overriding the default HTTP client.
      *
-     * @param consumerKey
-     *     The consumer key for a requester (obtained from the developer portal)
-     * @param consumerSecret
-     *     The consumer secret for a requester (obtained from the developer portal)
-     * @param uri
-     *     The alternate URI
-     * @param httpClient
-     *     The alternate HTTP client
+     * @param consumerKey    The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
+     * @param uri            The alternate URI
+     * @param httpClient     The alternate HTTP client
      */
     public ToopherApi(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
         this.advanced = new AdvancedApiUsageFactory(this);
         if (httpClient == null) {
             this.httpClient = new DefaultHttpClient();
             HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
-                                            String.format("Toopher-Java/%s", VERSION));
+                    String.format("Toopher-Java/%s", VERSION));
         } else {
             this.httpClient = httpClient;
         }
 
         consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
-        if (uri == null){
+        if (uri == null) {
             this.uriScheme = ToopherApi.DEFAULT_URI_SCHEME;
-        	this.uriHost = ToopherApi.DEFAULT_URI_HOST;
-        	this.uriPort = ToopherApi.DEFAULT_URI_PORT;
-        	this.uriBase = ToopherApi.DEFAULT_URI_BASE;
-    	} else {
-	        this.uriScheme = uri.getScheme();
-	        this.uriHost = uri.getHost();
-	        this.uriPort = uri.getPort();
-	        this.uriBase = uri.getPath();
-	    }
+            this.uriHost = ToopherApi.DEFAULT_URI_HOST;
+            this.uriPort = ToopherApi.DEFAULT_URI_PORT;
+            this.uriBase = ToopherApi.DEFAULT_URI_BASE;
+        } else {
+            this.uriScheme = uri.getScheme();
+            this.uriHost = uri.getHost();
+            this.uriPort = uri.getPort();
+            this.uriBase = uri.getPath();
+        }
     }
 
     /**
      * Create a QR pairing
-     * @param userName
-     *          A user-facing descriptive name for the user (displayed in requests)
-     * @return  A Pairing object
-     * @throws com.toopher.RequestError
-     *          Thrown when an exceptional condition is encountered
+     *
+     * @param userName A user-facing descriptive name for the user (displayed in requests)
+     * @return A Pairing object
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public Pairing pair(String userName) throws RequestError, JSONException {
         return this.pair(userName, null, null);
@@ -168,13 +149,10 @@ public class ToopherApi {
     /**
      * Create an SMS pairing or regular pairing
      *
-     * @param pairingPhraseOrNum
-     *            The pairing phrase or phone number supplied by the user
-     * @param userName
-     *            A user-facing descriptive name for the user (displayed in requests)
+     * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
+     * @param userName           A user-facing descriptive name for the user (displayed in requests)
      * @return A Pairing object
-     * @throws com.toopher.RequestError
-     *             Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError, JSONException {
         return this.pair(userName, pairingPhraseOrNum, null);
@@ -183,17 +161,13 @@ public class ToopherApi {
     /**
      * Create an SMS pairing, QR pairing or regular pairing
      *
-     * @param pairingPhraseOrNum
-     *            The pairing phrase or phone number supplied by the user
-     * @param userName
-     *            A user-facing descriptive name for the user (displayed in requests)
-     * @param extras
-     *            An optional Map of extra parameters to provide to the API
+     * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
+     * @param userName           A user-facing descriptive name for the user (displayed in requests)
+     * @param extras             An optional Map of extra parameters to provide to the API
      * @return A Pairing object
-     * @throws com.toopher.RequestError
-     *             Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
-    public Pairing pair( String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError, JSONException {
+    public Pairing pair(String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError, JSONException {
         String endpoint;
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -218,13 +192,10 @@ public class ToopherApi {
     /**
      * Initiate a login authentication request
      *
-     * @param pairingIdOrUsername
-     *            The pairing id indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra
-     *            The user-facing descriptive name for the terminal from which the request originates
+     * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
+     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
      * @return An AuthenticationRequest object
-     * @throws com.toopher.RequestError
-     *             Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError, JSONException {
         return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, null, null);
@@ -233,15 +204,11 @@ public class ToopherApi {
     /**
      * Initiate a login authentication request
      *
-     * @param pairingIdOrUsername
-     *            The pairing id indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra
-     *            The user-facing descriptive name for the terminal from which the request originates
-     * @param actionName
-     *            The user-facing descriptive name for the action which is being authenticated
+     * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
+     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
+     * @param actionName                      The user-facing descriptive name for the action which is being authenticated
      * @return An AuthenticationRequest object
-     * @throws com.toopher.RequestError
-     *             Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError, JSONException {
         return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, actionName, null);
@@ -250,18 +217,13 @@ public class ToopherApi {
     /**
      * Initiate an authentication request by pairing id or username
      *
-     * @param pairingIdOrUsername
-     *            The pairing id or username indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra
-     *            The user-facing descriptive name for the terminal from which the request originates
-     *            or the unique identifier for this terminal.  Not displayed to the user.
-     * @param actionName
-     *            The user-facing descriptive name for the action which is being authenticated
-     * @param extras
-     *            An optional Map of extra parameters to provide to the API
+     * @param pairingIdOrUsername             The pairing id or username indicating to whom the request should be sent
+     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
+     *                                        or the unique identifier for this terminal.  Not displayed to the user.
+     * @param actionName                      The user-facing descriptive name for the action which is being authenticated
+     * @param extras                          An optional Map of extra parameters to provide to the API
      * @return An AuthenticationRequest object
-     * @throws com.toopher.RequestError
-     *             Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError, JSONException {
         final String endpoint = "authentication_requests/initiate";
@@ -271,7 +233,7 @@ public class ToopherApi {
             UUID.fromString(pairingIdOrUsername);
             params.add(new BasicNameValuePair("pairing_id", pairingIdOrUsername));
             params.add(new BasicNameValuePair("terminal_name", terminalNameOrTerminalNameExtra));
-        }   catch (Exception e) {
+        } catch (Exception e) {
             params.add(new BasicNameValuePair("user_name", pairingIdOrUsername));
             params.add(new BasicNameValuePair("terminal_name_extra", terminalNameOrTerminalNameExtra));
         }
@@ -344,12 +306,9 @@ public class ToopherApi {
     /**
      * Throws new error message based on status code provided in API response
      *
-     * @param statusLine
-     *          StatusLine object from API response
-     * @param response
-     *          API response
-     * @throws com.toopher.RequestError
-     *          Thrown when exceptional condition is encountered
+     * @param statusLine StatusLine object from API response
+     * @param response   API response
+     * @throws com.toopher.RequestError Thrown when exceptional condition is encountered
      */
     private static void parseRequestError(StatusLine statusLine, HttpResponse response) throws RequestError {
         HttpEntity errEntity = response.getEntity();
@@ -385,7 +344,7 @@ public class ToopherApi {
         } else {
             // Complete error info is in the HTTP StatusLine
             throw new RequestError(new HttpResponseException(statusLine.getStatusCode(),
-                        statusLine.getReasonPhrase()));
+                    statusLine.getReasonPhrase()));
         }
     }
 
@@ -414,11 +373,9 @@ public class ToopherApi {
             /**
              * Retrieve the current status of a pairing
              *
-             * @param pairingId
-             *          The unique id for a pairing
-             * @return  A Pairing object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param pairingId The unique id for a pairing
+             * @return A Pairing object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public Pairing getById(String pairingId) throws RequestError, JSONException {
                 final String endpoint = String.format("pairings/%s", pairingId);
@@ -437,11 +394,9 @@ public class ToopherApi {
             /**
              * Retrieve the current status of an authentication request
              *
-             * @param authenticationRequestId
-             *          The unique id for an authentication request
-             * @return  An AuthenticationRequest object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param authenticationRequestId The unique id for an authentication request
+             * @return An AuthenticationRequest object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public AuthenticationRequest getById(String authenticationRequestId) throws RequestError, JSONException {
                 final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
@@ -460,11 +415,9 @@ public class ToopherApi {
             /**
              * Create a new user with a userName
              *
-             * @param userName
-             *          The name of the user
-             * @return  A User object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param userName The name of the user
+             * @return A User object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User create(String userName) throws RequestError, JSONException {
                 return create(userName, null);
@@ -473,13 +426,10 @@ public class ToopherApi {
             /**
              * Create a new user with a userName
              *
-             * @param userName
-             *          The name of the user
-             * @param extras
-             *          An optional Map of extra parameters to provide to the API
-             * @return  A User object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param userName The name of the user
+             * @param extras   An optional Map of extra parameters to provide to the API
+             * @return A User object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User create(String userName, Map<String, String> extras) throws RequestError, JSONException {
                 final String endpoint = "users/create";
@@ -493,11 +443,9 @@ public class ToopherApi {
             /**
              * Retrieve the current status of a user with the user id
              *
-             * @param userId
-             *          The unique id for a user
-             * @return  A User object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param userId The unique id for a user
+             * @return A User object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User getById(String userId) throws RequestError, JSONException {
                 final String endpoint = String.format("users/%s", userId);
@@ -507,11 +455,10 @@ public class ToopherApi {
 
             /**
              * Retrieve the current status of a user with the user name
-             * @param name
-             *          The name of the user
-             * @return  A User object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             *
+             * @param name The name of the user
+             * @return A User object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public User getByName(String name) throws RequestError, JSONException {
                 final String endpoint = "users";
@@ -540,19 +487,13 @@ public class ToopherApi {
             }
 
             /**
-             *
-             * @param userName
-             *          The name of the user
-             * @param terminalName
-             *          The user-facing descriptive name for the terminal from which the request originates
-             * @param requesterSpecifiedId
-             *          The requester specified id that uniquely identifies this terminal. Can be shared
-             *          across multiple users. The combination of userName and requesterSpecifiedId should
-             *          be unique for a requester
-             * @return
-             *          A UserTerminal object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param userName             The name of the user
+             * @param terminalName         The user-facing descriptive name for the terminal from which the request originates
+             * @param requesterSpecifiedId The requester specified id that uniquely identifies this terminal. Can be shared
+             *                             across multiple users. The combination of userName and requesterSpecifiedId should
+             *                             be unique for a requester
+             * @return A UserTerminal object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId) throws RequestError, JSONException {
                 return create(userName, terminalName, requesterSpecifiedId, null);
@@ -561,19 +502,14 @@ public class ToopherApi {
             /**
              * Create a new user terminal
              *
-             * @param userName
-             *            The name of the user
-             * @param terminalName
-             *            The user-facing descriptive name for the terminal from which the request originates
-             * @param requesterSpecifiedId
-             *            The requester specified id that uniquely identifies this terminal.  Can be shared
-             *            across multiple users.  The combination of userName and terminalNameExtra should
-             *            be unique for a requester
-             * @param extras
-             *          An optional Map of extra parameters to provide to the API
-             * @return  A UserTerminal object
-             * @throws com.toopher.RequestError
-             *             Thrown when an exceptional condition is encountered
+             * @param userName             The name of the user
+             * @param terminalName         The user-facing descriptive name for the terminal from which the request originates
+             * @param requesterSpecifiedId The requester specified id that uniquely identifies this terminal.  Can be shared
+             *                             across multiple users.  The combination of userName and terminalNameExtra should
+             *                             be unique for a requester
+             * @param extras               An optional Map of extra parameters to provide to the API
+             * @return A UserTerminal object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal create(String userName, String terminalName, String requesterSpecifiedId, Map<String, String> extras) throws RequestError, JSONException {
                 final String endpoint = "user_terminals/create";
@@ -590,11 +526,9 @@ public class ToopherApi {
             /**
              * Retrieve the current status of a user terminal by terminal id
              *
-             * @param terminalId
-             *          The unique id for a user terminal
-             * @return  A UserTerminal object
-             * @throws com.toopher.RequestError
-             *          Thrown when an exceptional condition is encountered
+             * @param terminalId The unique id for a user terminal
+             * @return A UserTerminal object
+             * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
              */
             public UserTerminal getById(String terminalId) throws RequestError, JSONException {
                 final String endpoint = String.format("user_terminals/%s", terminalId);
@@ -614,7 +548,7 @@ public class ToopherApi {
 
             public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError, JSONException {
                 if (extras != null && extras.size() > 0) {
-                    for (Map.Entry<String, String> e : extras.entrySet()){
+                    for (Map.Entry<String, String> e : extras.entrySet()) {
                         params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
                     }
                 }
@@ -639,7 +573,7 @@ public class ToopherApi {
                     params = new ArrayList<NameValuePair>();
                 }
                 if (extras != null && extras.size() > 0) {
-                    for (Map.Entry<String, String> e : extras.entrySet()){
+                    for (Map.Entry<String, String> e : extras.entrySet()) {
                         params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
                     }
                 }

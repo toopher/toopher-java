@@ -277,7 +277,7 @@ public class TestToopherApi {
 
     @Test
     public void testAdvancedUserTerminalsCreateWithExtras() throws InterruptedException, RequestError {
-        Map <String, String> extras = new HashMap<String, String>();
+        Map<String, String> extras = new HashMap<String, String>();
         extras.put("foo", "bar");
 
         HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());

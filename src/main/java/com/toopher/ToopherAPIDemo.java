@@ -8,46 +8,46 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class ToopherAPIDemo {
-	public final static String DEFAULT_USERNAME = "demo@toopher.com";
-	public final static String DEFAULT_TERMINAL_NAME = "my computer";
+    public final static String DEFAULT_USERNAME = "demo@toopher.com";
+    public final static String DEFAULT_TERMINAL_NAME = "my computer";
 
-	public static void main(String[] args) {
-		
-		Map<String, String> env = System.getenv();
-		
-	    Scanner in = new Scanner(System.in);
-	    
+    public static void main(String[] args) {
+
+        Map<String, String> env = System.getenv();
+
+        Scanner in = new Scanner(System.in);
+
         System.out.println("======================================");
         System.out.println("Toopher Library Demo");
         System.out.println("======================================");
-        
+
         URI base_uri = null;
-        if(env.containsKey("TOOPHER_BASE_URL")){
-        	try {
-				base_uri = new URI(env.get("TOOPHER_BASE_URL"));
-			} catch (URISyntaxException e) {
-				System.out.println("Error parsing environment arg TOOPHER_BASE_URL!  Using default (https://api.toopher.com/v1/)");
-				base_uri = null;
-			}
-        }
-        
-        ToopherApi api;
-        if(env.containsKey("TOOPHER_CONSUMER_KEY") && env.containsKey("TOOPHER_CONSUMER_SECRET")){
-        	api = new ToopherApi(env.get("TOOPHER_CONSUMER_KEY"), env.get("TOOPHER_CONSUMER_SECRET"), base_uri);
-        } else {
-	        System.out.println("");
-	        System.out.println("Setup Credentials");
-	        System.out.println("--------------------------------------");
-	        System.out.println("Enter your requester credential details (from https://dev.toopher.com)");
-	        System.out.print("Toopher Consumer Key: ");
-	        String consumerKey = in.nextLine();
-	        System.out.print("Toopher Consumer Secret: ");
-	        String consumerSecret = in.nextLine();
-	
-			api = new ToopherApi(consumerKey, consumerSecret, base_uri);
+        if (env.containsKey("TOOPHER_BASE_URL")) {
+            try {
+                base_uri = new URI(env.get("TOOPHER_BASE_URL"));
+            } catch (URISyntaxException e) {
+                System.out.println("Error parsing environment arg TOOPHER_BASE_URL!  Using default (https://api.toopher.com/v1/)");
+                base_uri = null;
+            }
         }
 
-		String pairingId;
+        ToopherApi api;
+        if (env.containsKey("TOOPHER_CONSUMER_KEY") && env.containsKey("TOOPHER_CONSUMER_SECRET")) {
+            api = new ToopherApi(env.get("TOOPHER_CONSUMER_KEY"), env.get("TOOPHER_CONSUMER_SECRET"), base_uri);
+        } else {
+            System.out.println("");
+            System.out.println("Setup Credentials");
+            System.out.println("--------------------------------------");
+            System.out.println("Enter your requester credential details (from https://dev.toopher.com)");
+            System.out.print("Toopher Consumer Key: ");
+            String consumerKey = in.nextLine();
+            System.out.print("Toopher Consumer Secret: ");
+            String consumerSecret = in.nextLine();
+
+            api = new ToopherApi(consumerKey, consumerSecret, base_uri);
+        }
+
+        String pairingId;
         while (true) {
             String pairingPhrase;
             while (true) {
@@ -108,58 +108,58 @@ public class ToopherAPIDemo {
             }
         }
 
-		while (true) {
-			System.out.println("Step 2: Authenticate log in");
-			System.out.println("--------------------------------------");
-			System.out.print(String.format("Enter a terminal name for this authentication request [%s]: ", DEFAULT_TERMINAL_NAME));
-			String terminalName = in.nextLine();
-			if (terminalName.length() == 0) {
-				terminalName = DEFAULT_TERMINAL_NAME;
-			}
+        while (true) {
+            System.out.println("Step 2: Authenticate log in");
+            System.out.println("--------------------------------------");
+            System.out.print(String.format("Enter a terminal name for this authentication request [%s]: ", DEFAULT_TERMINAL_NAME));
+            String terminalName = in.nextLine();
+            if (terminalName.length() == 0) {
+                terminalName = DEFAULT_TERMINAL_NAME;
+            }
 
-			System.out.println("Sending authentication request...");
+            System.out.println("Sending authentication request...");
 
-			String requestId;
-			try {
-				AuthenticationRequest requestStatus = api.authenticate(pairingId, terminalName);
-				requestId = requestStatus.id;
-			} catch (RequestError err) {
-				System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
-				continue;
-			} catch (JSONException je) {
+            String requestId;
+            try {
+                AuthenticationRequest requestStatus = api.authenticate(pairingId, terminalName);
+                requestId = requestStatus.id;
+            } catch (RequestError err) {
+                System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
+                continue;
+            } catch (JSONException je) {
                 System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
                 continue;
             }
 
-			while (true) {
+            while (true) {
                 System.out.println("Respond to authentication request on phone (if prompted) and then press return to continue.");
-				in.nextLine();
-				System.out.println("Checking status of authentication request...");
+                in.nextLine();
+                System.out.println("Checking status of authentication request...");
 
-				AuthenticationRequest requestStatus;
-				try {
-					requestStatus = api.advanced.authenticationRequests.getById(requestId);
-				} catch (RequestError err) {
-					System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
-					continue;
-				} catch (JSONException je) {
+                AuthenticationRequest requestStatus;
+                try {
+                    requestStatus = api.advanced.authenticationRequests.getById(requestId);
+                } catch (RequestError err) {
+                    System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
+                    continue;
+                } catch (JSONException je) {
                     System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
                     continue;
                 }
 
-				if (requestStatus.pending) {
-					System.out.println("The authentication request has not received a response from the phone yet.");
-				} else {
-					String automation = requestStatus.automated ? "automatically " : "";
-					String result = requestStatus.granted ? "granted" : "denied";
-					System.out.println("The request was " + automation + result + "!");
+                if (requestStatus.pending) {
+                    System.out.println("The authentication request has not received a response from the phone yet.");
+                } else {
+                    String automation = requestStatus.automated ? "automatically " : "";
+                    String result = requestStatus.granted ? "granted" : "denied";
+                    System.out.println("The request was " + automation + result + "!");
                     System.out.println();
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
-			System.out.println("Press return to authenticate again, or Ctrl-C to exit");
-			in.nextLine();
-		}
-	}
+            System.out.println("Press return to authenticate again, or Ctrl-C to exit");
+            in.nextLine();
+        }
+    }
 }

@@ -15,6 +15,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthException;
+
 import java.io.UnsupportedEncodingException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -26,15 +27,15 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * Java helper library to generate Toopher iframe requests and validate responses.
- *
+ * <p/>
  * Register at https://dev.toopher.com to get your Toopher Developer API Credentials.
- *
  */
 public final class ToopherIframe {
     public class SignatureValidationError extends Exception {
         public SignatureValidationError(String message) {
             super(message);
         }
+
         public SignatureValidationError(String message, Exception cause) {
             super(message, cause);
         }
@@ -62,9 +63,11 @@ public final class ToopherIframe {
      * testability: injection point for Date() object used to validate signatures
      */
     private static Date dateOverride = null;
-    public static void setDateOverride(Date dateOverride){
+
+    public static void setDateOverride(Date dateOverride) {
         ToopherIframe.dateOverride = dateOverride;
     }
+
     private static Date getDate() {
         if (dateOverride == null) {
             return new Date();
@@ -74,6 +77,7 @@ public final class ToopherIframe {
     }
 
     private static String nonceOverride = null;
+
     public static void setNonceOverride(String nonceOverride) {
         ToopherIframe.nonceOverride = nonceOverride;
     }
@@ -84,10 +88,9 @@ public final class ToopherIframe {
 
     /**
      * Creates an instance of the ToopherIframe helper for the default API (https://api.toopher.com/v1)
-     * @param consumerKey
-     *          Your Toopher API OAuth Consumer Key
-     * @param consumerSecret
-     *          Your Toopher API OAuth Consumer Secret
+     *
+     * @param consumerKey    Your Toopher API OAuth Consumer Key
+     * @param consumerSecret Your Toopher API OAuth Consumer Secret
      */
     public ToopherIframe(String consumerKey, String consumerSecret) {
         this(consumerKey, consumerSecret, DEFAULT_BASE_URI);
@@ -95,12 +98,10 @@ public final class ToopherIframe {
 
     /**
      * Creates an instance of the ToopherIframe helper for the specified API url
-     * @param consumerKey
-     *          Your Toopher API OAuth Consumer Key
-     * @param consumerSecret
-     *          Your Toopher API OAuth Consumer Secret
-     * @param baseUri
-     *          The base uri of the Toopher API to target
+     *
+     * @param consumerKey    Your Toopher API OAuth Consumer Key
+     * @param consumerSecret Your Toopher API OAuth Consumer Secret
+     * @param baseUri        The base uri of the Toopher API to target
      */
     public ToopherIframe(String consumerKey, String consumerSecret, String baseUri) {
         this.consumerKey = consumerKey;
@@ -111,17 +112,13 @@ public final class ToopherIframe {
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @return
-     *          URL that can be used to retrieve the Authentication iframe by the user's browser
+     * @param userName     Unique name that identifies this user.  This will be displayed to the user on
+     *                     their mobile device when they pair or authenticate
+     * @param resetEmail   Email address that the user has access to.  In case the user has lost or cannot
+     *                     access their mobile device, Toopher will send a reset email to this address
+     * @param requestToken Optional, can be empty.  Toopher will include this token in the signed data returned
+     *                     with the iframe response.
+     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken) {
         Map<String, String> extras = new HashMap<String, String>();
@@ -131,19 +128,14 @@ public final class ToopherIframe {
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @param extras
-     *          An optional Map of extra parameters to provide to the API
-     * @return
-     *          URL that can be used to retrieve the Authentication iframe by the user's browser
+     * @param userName     Unique name that identifies this user.  This will be displayed to the user on
+     *                     their mobile device when they pair or authenticate
+     * @param resetEmail   Email address that the user has access to.  In case the user has lost or cannot
+     *                     access their mobile device, Toopher will send a reset email to this address
+     * @param requestToken Optional, can be empty.  Toopher will include this token in the signed data returned
+     *                     with the iframe response.
+     * @param extras       An optional Map of extra parameters to provide to the API
+     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, Map<String, String> extras) {
         return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
@@ -152,25 +144,18 @@ public final class ToopherIframe {
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @param actionName
-     *          The name of the action to authenticate; will be shown to the user.  If blank,
-     *          the Toopher API will default the action to "Log In".
-     * @param requesterMetadata
-     *          Optional, can be empty.  Toopher will include this value in the signed data returned
-     *          with the iframe response
-     * @param extras
-     *          An optional Map of extra parameters to provide to the API
-     * @return
-     *          URL that can be used to retrieve the Authentication iframe by the user's browser
+     * @param userName          Unique name that identifies this user.  This will be displayed to the user on
+     *                          their mobile device when they pair or authenticate
+     * @param resetEmail        Email address that the user has access to.  In case the user has lost or cannot
+     *                          access their mobile device, Toopher will send a reset email to this address
+     * @param requestToken      Optional, can be empty.  Toopher will include this token in the signed data returned
+     *                          with the iframe response.
+     * @param actionName        The name of the action to authenticate; will be shown to the user.  If blank,
+     *                          the Toopher API will default the action to "Log In".
+     * @param requesterMetadata Optional, can be empty.  Toopher will include this value in the signed data returned
+     *                          with the iframe response
+     * @param extras            An optional Map of extra parameters to provide to the API
+     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, String actionName, String requesterMetadata, Map<String, String> extras) {
         final long ttl;
@@ -185,7 +170,7 @@ public final class ToopherIframe {
 
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("action_name", actionName ));
+        params.add(new BasicNameValuePair("action_name", actionName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
@@ -201,14 +186,11 @@ public final class ToopherIframe {
     /**
      * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @return
-     *          URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
+     * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
+     *                   access their mobile device, Toopher will send a reset email to this address
+     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, String resetEmail) {
         Map<String, String> extras = new HashMap<String, String>();
@@ -218,20 +200,16 @@ public final class ToopherIframe {
     /**
      * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param extras
-     *          ttl:
-     *              IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *              API will no longer allow the iframe to be fetched by the browser
-     * @return
-     *          URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
+     * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
+     *                   access their mobile device, Toopher will send a reset email to this address
+     * @param extras     ttl:
+     *                   IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
+     *                   API will no longer allow the iframe to be fetched by the browser
+     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
      */
-    public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras)  {
+    public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras) {
         final long ttl;
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
 
@@ -251,13 +229,10 @@ public final class ToopherIframe {
     /**
      * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
-     * @param params
-     *          The data returned from the Iframe
-     * @param ttl
-     *          Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
-     *          between the Toopher API creating the signature and the signature being validated on your server
-     * @return
-     *          A map of the validated data if the signature is valid, or null if the signature is invalid
+     * @param params The data returned from the Iframe
+     * @param ttl    Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
+     *               between the Toopher API creating the signature and the signature being validated on your server
+     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
     public Map<String, String> validatePostback(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
         Map<String, String> data = flattenParams(params);
@@ -323,10 +298,8 @@ public final class ToopherIframe {
     /**
      * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
      *
-     * @param params
-     *          The data returned from the Iframe
-     * @return
-     *          A map of the validated data if the signature is valid, or null if the signature is invalid
+     * @param params The data returned from the Iframe
+     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
     public Map<String, String> validatePostback(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
         return validatePostback(params, sessionToken, DEFAULT_TTL);
@@ -334,7 +307,7 @@ public final class ToopherIframe {
 
     private static Map<String, String> flattenParams(Map<String, String[]> params) {
         Map<String, String> result = new HashMap<String, String>();
-        for(String key : params.keySet()) {
+        for (String key : params.keySet()) {
             String[] val = params.get(key);
             if (val.length > 0) {
                 result.put(key, val[0]);
@@ -347,7 +320,7 @@ public final class ToopherIframe {
     private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
         TreeSet<String> sortedKeys = new TreeSet<String>(data.keySet());
         List<NameValuePair> sortedParams = new ArrayList<NameValuePair>(data.size());
-        for(String key : sortedKeys) {
+        for (String key : sortedKeys) {
             sortedParams.add(new BasicNameValuePair(key, data.get(key)));
         }
         String toSign = URLEncodedUtils.format(sortedParams, "UTF-8");

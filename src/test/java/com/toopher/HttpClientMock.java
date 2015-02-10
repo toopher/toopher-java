@@ -88,10 +88,10 @@ public class HttpClientMock extends DefaultHttpClient {
     @Override
     public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) throws IOException {
         lastRequest = req;
-        if (req instanceof HttpPost){
+        if (req instanceof HttpPost) {
             try {
                 lastParams = new BasicHttpParams();
-                for(NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())){
+                for (NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())) {
                     lastParams.setParameter(nvp.getName(), nvp.getValue());
                 }
             } catch (IOException e) {
@@ -101,7 +101,7 @@ public class HttpClientMock extends DefaultHttpClient {
             lastParams = req.getParams();
         }
         BasicHttpEntity entity = new BasicHttpEntity();
-        if ( req == lastRequest && expectedUriResponses != null) {
+        if (req == lastRequest && expectedUriResponses != null) {
             expectedResponseBody = expectedUriResponses.get(req.getURI()).getResponseBody();
             expectedResponseStatus = expectedUriResponses.get(req.getURI()).getStatusCode();
         }

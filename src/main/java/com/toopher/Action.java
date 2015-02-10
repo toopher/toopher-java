@@ -17,7 +17,7 @@ public class Action extends ApiResponseObject {
      */
     public String name;
 
-    public Action (JSONObject json) throws JSONException {
+    public Action(JSONObject json) throws JSONException {
         super(json);
 
         this.id = json.getString("id");

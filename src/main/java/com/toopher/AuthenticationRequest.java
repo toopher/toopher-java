@@ -62,11 +62,11 @@ public class AuthenticationRequest extends ApiResponseObject {
      */
     public User user;
 
-    public AuthenticationRequest(JSONObject json, ToopherApi toopherApi) throws JSONException{
+    public AuthenticationRequest(JSONObject json, ToopherApi toopherApi) throws JSONException {
         super(json);
 
         this.api = toopherApi;
-		this.id = json.getString("id");
+        this.id = json.getString("id");
         this.pending = json.getBoolean("pending");
         this.granted = json.getBoolean("granted");
         this.automated = json.getBoolean("automated");
@@ -75,7 +75,7 @@ public class AuthenticationRequest extends ApiResponseObject {
         this.terminal = new UserTerminal(json.getJSONObject("terminal"), toopherApi);
         this.action = new Action(json.getJSONObject("action"));
         this.user = new User(json.getJSONObject("user"), toopherApi);
-	}
+    }
 
     @Override
     public String toString() {
@@ -86,8 +86,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     /**
      * Update the AuthenticationRequest object with JSON response from the API
      *
-     * @throws RequestError
-     *          Thrown when an exceptional condition is encountered
+     * @throws RequestError Thrown when an exceptional condition is encountered
      */
     public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("authentication_requests/%s", id);
@@ -98,10 +97,8 @@ public class AuthenticationRequest extends ApiResponseObject {
     /**
      * Grants authentication request with OTP
      *
-     * @param otp
-     *          One-time password for authentication request
-     * @throws RequestError
-     *          Thrown when an exceptional condition is encountered
+     * @param otp One-time password for authentication request
+     * @throws RequestError Thrown when an exceptional condition is encountered
      */
     public void grantWithOtp(String otp) throws RequestError, JSONException {
         String endpoint = String.format("authentication_requests/%s/otp_auth", id);
@@ -114,8 +111,7 @@ public class AuthenticationRequest extends ApiResponseObject {
     /**
      * Update the AuthenticationRequest object with JSON response
      *
-     * @param jsonResponse
-     *          The JSON response from the API
+     * @param jsonResponse The JSON response from the API
      */
     private void update(JSONObject jsonResponse) throws JSONException {
         this.pending = jsonResponse.getBoolean("pending");

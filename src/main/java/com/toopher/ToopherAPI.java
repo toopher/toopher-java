@@ -395,11 +395,11 @@ public class ToopherApi {
         public final ApiRawRequester raw;
 
         public AdvancedApiUsageFactory(ToopherApi api) {
-            pairings = new Pairings(api);
-            authenticationRequests = new AuthenticationRequests(api);
-            users = new Users(api);
-            userTerminals = new UserTerminals(api);
-            raw = new ApiRawRequester();
+            this.pairings = new Pairings(api);
+            this.authenticationRequests = new AuthenticationRequests(api);
+            this.users = new Users(api);
+            this.userTerminals = new UserTerminals(api);
+            this.raw = new ApiRawRequester();
         }
 
         class Pairings {

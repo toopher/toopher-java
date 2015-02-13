@@ -27,6 +27,7 @@ public class TestAuthenticationRequest {
         JSONObject user = new JSONObject();
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
+        user.put("toopher_authentication_enabled", true);
         userName = user.getString("name");
 
         JSONObject terminal = new JSONObject();
@@ -89,6 +90,7 @@ public class TestAuthenticationRequest {
         newJsonResponse.put("reason_code", 200);
         JSONObject newUser = new JSONObject();
         newUser.put("name", "userNameChanged");
+        newUser.put("toopher_authentication_enabled", true);
         newJsonResponse.put("user", newUser);
         JSONObject newTerminal = new JSONObject();
         newTerminal.put("name", "terminalNameChanged");

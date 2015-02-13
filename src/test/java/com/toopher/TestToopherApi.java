@@ -44,6 +44,7 @@ public class TestToopherApi {
         userName = "userName";
         user.put("id", userId);
         user.put("name", userName);
+        user.put("toopher_authentication_enabled", true);
 
         action = new JSONObject();
         actionId = UUID.randomUUID().toString();
@@ -77,7 +78,7 @@ public class TestToopherApi {
 
         userJsonResponse.put("id", userId);
         userJsonResponse.put("name", userName);
-        userJsonResponse.put("disable_toopher_auth", false);
+        userJsonResponse.put("toopher_authentication_enabled", true);
 
         userTerminalJsonResponse.put("id", terminalId);
         userTerminalJsonResponse.put("name", terminalName);

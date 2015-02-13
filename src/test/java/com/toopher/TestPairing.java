@@ -27,6 +27,7 @@ public class TestPairing {
         JSONObject user = new JSONObject();
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
+        user.put("toopher_authentication_enabled", true);
         this.userName = user.getString("name");
 
         this.jsonResponse = new JSONObject();
@@ -43,6 +44,7 @@ public class TestPairing {
         newJsonResponse.put("pending", false);
         JSONObject newUser = new JSONObject();
         newUser.put("name", "userNameChanged");
+        newUser.put("toopher_authentication_enabled", true);
         newJsonResponse.put("user", newUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());

@@ -28,6 +28,7 @@ public class TestUserTerminal {
 
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
+        user.put("toopher_authentication_enabled", true);
         userName = user.getString("name");
 
         terminalJson.put("id", id);
@@ -43,6 +44,7 @@ public class TestUserTerminal {
         newJsonResponse.put("name_extra", "terminalNameExtraChanged");
         JSONObject newUser = new JSONObject();
         newUser.put("name", "userNameChanged");
+        newUser.put("toopher_authentication_enabled", true);
         newJsonResponse.put("user", newUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, newJsonResponse.toString());
@@ -72,6 +74,7 @@ public class TestUserTerminal {
         updatedJson.put("name_extra", "terminalNameExtraChanged");
         JSONObject updatedUser = new JSONObject();
         updatedUser.put("name", "userNameChanged");
+        updatedUser.put("toopher_authentication_enabled", true);
         updatedJson.put("user", updatedUser);
 
         HttpClientMock httpClient = new HttpClientMock(200, "{}");

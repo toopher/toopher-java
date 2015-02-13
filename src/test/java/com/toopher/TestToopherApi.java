@@ -58,7 +58,7 @@ public class TestToopherApi {
         terminalNameExtra = "terminalNameExtra";
         terminal.put("id", terminalId);
         terminal.put("name", terminalName);
-        terminal.put("name_extra", terminalNameExtra);
+        terminal.put("requester_specified_id", terminalNameExtra);
         terminal.put("user", user);
 
         pairingJsonResponse.put("id", id);
@@ -82,7 +82,7 @@ public class TestToopherApi {
 
         userTerminalJsonResponse.put("id", terminalId);
         userTerminalJsonResponse.put("name", terminalName);
-        userTerminalJsonResponse.put("name_extra", terminalNameExtra);
+        userTerminalJsonResponse.put("requester_specified_id", terminalNameExtra);
         userTerminalJsonResponse.put("user", user);
     }
 
@@ -272,7 +272,7 @@ public class TestToopherApi {
         assertEquals("user_terminals/create", httpClient.getLastCalledEndpoint());
         assertEquals(userName, httpClient.getLastCalledData("user_name"));
         assertEquals(terminalName, httpClient.getLastCalledData("name"));
-        assertEquals(terminalNameExtra, httpClient.getLastCalledData("name_extra"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("requester_specified_id"));
         assertEquals(terminalId, userTerminal.id);
     }
 
@@ -291,7 +291,7 @@ public class TestToopherApi {
         assertEquals("bar", httpClient.getLastCalledData("foo"));
         assertEquals(userName, httpClient.getLastCalledData("user_name"));
         assertEquals(terminalName, httpClient.getLastCalledData("name"));
-        assertEquals(terminalNameExtra, httpClient.getLastCalledData("name_extra"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("requester_specified_id"));
         assertEquals(terminalId, userTerminal.id);
     }
 

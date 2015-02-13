@@ -33,7 +33,7 @@ public class TestUserTerminal {
 
         terminalJson.put("id", id);
         terminalJson.put("name", name);
-        terminalJson.put("name_extra", requesterSpecifiedId);
+        terminalJson.put("requester_specified_id", requesterSpecifiedId);
         terminalJson.put("user", user);
     }
 
@@ -41,7 +41,7 @@ public class TestUserTerminal {
     public void testRefreshFromServer() throws InterruptedException, RequestError {
         JSONObject newJsonResponse = new JSONObject();
         newJsonResponse.put("name", "terminalNameChanged");
-        newJsonResponse.put("name_extra", "terminalNameExtraChanged");
+        newJsonResponse.put("requester_specified_id", "terminalNameExtraChanged");
         JSONObject newUser = new JSONObject();
         newUser.put("name", "userNameChanged");
         newUser.put("toopher_authentication_enabled", true);
@@ -71,7 +71,7 @@ public class TestUserTerminal {
     public void testUpdate() throws InterruptedException {
         JSONObject updatedJson = new JSONObject();
         updatedJson.put("name", "terminalNameChanged");
-        updatedJson.put("name_extra", "terminalNameExtraChanged");
+        updatedJson.put("requester_specified_id", "terminalNameExtraChanged");
         JSONObject updatedUser = new JSONObject();
         updatedUser.put("name", "userNameChanged");
         updatedUser.put("toopher_authentication_enabled", true);

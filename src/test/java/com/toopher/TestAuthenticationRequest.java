@@ -33,10 +33,10 @@ public class TestAuthenticationRequest {
         JSONObject terminal = new JSONObject();
         terminal.put("id", UUID.randomUUID().toString());
         terminal.put("name", "terminalName");
-        terminal.put("name_extra", "terminalNameExtra");
+        terminal.put("requester_specified_id", "terminalNameExtra");
         terminal.put("user", user);
         terminalName = terminal.getString("name");
-        terminalNameExtra = terminal.getString("name_extra");
+        terminalNameExtra = terminal.getString("requester_specified_id");
 
         JSONObject action = new JSONObject();
         action.put("id", UUID.randomUUID().toString());
@@ -94,7 +94,7 @@ public class TestAuthenticationRequest {
         newJsonResponse.put("user", newUser);
         JSONObject newTerminal = new JSONObject();
         newTerminal.put("name", "terminalNameChanged");
-        newTerminal.put("name_extra", "terminalNameExtraChanged");
+        newTerminal.put("requester_specified_id", "terminalNameExtraChanged");
         newTerminal.put("user", newUser);
         newJsonResponse.put("terminal", newTerminal);
         JSONObject newAction = new JSONObject();

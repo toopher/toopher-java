@@ -517,7 +517,7 @@ public class ToopherApi {
 
                 params.add(new BasicNameValuePair("user_name", userName));
                 params.add(new BasicNameValuePair("name", terminalName));
-                params.add(new BasicNameValuePair("name_extra", requesterSpecifiedId));
+                params.add(new BasicNameValuePair("requester_specified_id", requesterSpecifiedId));
 
                 JSONObject result = advanced.raw.post(endpoint, params, extras);
                 return new UserTerminal(result, api);

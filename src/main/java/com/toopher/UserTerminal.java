@@ -38,7 +38,7 @@ public class UserTerminal extends ApiResponseObject {
         this.api = toopherApi;
         this.id = json.getString("id");
         this.name = json.getString("name");
-        this.requesterSpecifiedId = json.getString("name_extra");
+        this.requesterSpecifiedId = json.getString("requester_specified_id");
         this.user = new User(json.getJSONObject("user"), toopherApi);
     }
 
@@ -66,7 +66,7 @@ public class UserTerminal extends ApiResponseObject {
      */
     public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");
-        this.requesterSpecifiedId = jsonResponse.getString("name_extra");
+        this.requesterSpecifiedId = jsonResponse.getString("requester_specified_id");
         this.user.update(jsonResponse.getJSONObject("user"));
         this.updateRawResponse(jsonResponse);
     }

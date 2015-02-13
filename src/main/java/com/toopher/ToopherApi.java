@@ -235,7 +235,7 @@ public class ToopherApi {
             params.add(new BasicNameValuePair("terminal_name", terminalNameOrTerminalNameExtra));
         } catch (Exception e) {
             params.add(new BasicNameValuePair("user_name", pairingIdOrUsername));
-            params.add(new BasicNameValuePair("terminal_name_extra", terminalNameOrTerminalNameExtra));
+            params.add(new BasicNameValuePair("requester_specified_terminal_id", terminalNameOrTerminalNameExtra));
         }
 
         if (actionName != null && actionName.length() > 0) {

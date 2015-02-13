@@ -171,7 +171,7 @@ public class TestToopherApi {
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
         assertEquals(userName, httpClient.getLastCalledData("user_name"));
-        assertEquals(terminalNameExtra, httpClient.getLastCalledData("terminal_name_extra"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("requester_specified_terminal_id"));
         assertEquals(id, authenticationRequest.id);
         assertEquals(terminalId, authenticationRequest.terminal.id);
         assertEquals(actionId, authenticationRequest.action.id);

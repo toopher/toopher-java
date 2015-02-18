@@ -204,9 +204,7 @@ public final class ToopherIframe {
      *                   their mobile device when they pair or authenticate
      * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
      *                   access their mobile device, Toopher will send a reset email to this address
-     * @param extras     ttl:
-     *                   IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *                   API will no longer allow the iframe to be fetched by the browser
+     * @param extras     An optional Map of extra parameters to provide to the API
      * @return URL that can be used to retrieve the Pairing iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras) {

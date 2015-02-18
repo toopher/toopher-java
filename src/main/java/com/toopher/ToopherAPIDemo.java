@@ -47,6 +47,7 @@ public class ToopherAPIDemo {
             api = new ToopherApi(consumerKey, consumerSecret, base_uri);
         }
 
+        Pairing pairing;
         String pairingId;
         while (true) {
             String pairingPhrase;
@@ -74,7 +75,7 @@ public class ToopherAPIDemo {
             System.out.println("Sending pairing request...");
 
             try {
-                Pairing pairing = api.pair(userName, pairingPhrase);
+                pairing = api.pair(userName, pairingPhrase);
                 pairingId = pairing.id;
                 break;
             } catch (RequestError err) {
@@ -90,7 +91,7 @@ public class ToopherAPIDemo {
             System.out.println("Checking status of pairing request...");
 
             try {
-                Pairing pairing = api.advanced.pairings.getById(pairingId);
+                pairing.refreshFromServer();
                 if (pairing.pending) {
                     System.out.println("The pairing has not been authorized by the phone yet.");
                 } else if (pairing.enabled) {
@@ -119,10 +120,9 @@ public class ToopherAPIDemo {
 
             System.out.println("Sending authentication request...");
 
-            String requestId;
+            AuthenticationRequest authenticationRequest;
             try {
-                AuthenticationRequest requestStatus = api.authenticate(pairingId, terminalName);
-                requestId = requestStatus.id;
+                authenticationRequest = api.authenticate(pairingId, terminalName);
             } catch (RequestError err) {
                 System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
                 continue;
@@ -136,9 +136,8 @@ public class ToopherAPIDemo {
                 in.nextLine();
                 System.out.println("Checking status of authentication request...");
 
-                AuthenticationRequest requestStatus;
                 try {
-                    requestStatus = api.advanced.authenticationRequests.getById(requestId);
+                    authenticationRequest.refreshFromServer();
                 } catch (RequestError err) {
                     System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
                     continue;
@@ -147,11 +146,11 @@ public class ToopherAPIDemo {
                     continue;
                 }
 
-                if (requestStatus.pending) {
+                if (authenticationRequest.pending) {
                     System.out.println("The authentication request has not received a response from the phone yet.");
                 } else {
-                    String automation = requestStatus.automated ? "automatically " : "";
-                    String result = requestStatus.granted ? "granted" : "denied";
+                    String automation = authenticationRequest.automated ? "automatically " : "";
+                    String result = authenticationRequest.granted ? "granted" : "denied";
                     System.out.println("The request was " + automation + result + "!");
                     System.out.println();
                     break;

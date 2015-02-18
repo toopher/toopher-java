@@ -113,8 +113,7 @@ public class HttpClientMock extends DefaultHttpClient {
         HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         resp.setEntity(entity);
         lastURI = req.getURI();
-        T result;
-        result = responseHandler.handleResponse(resp);
+        T result = responseHandler.handleResponse(resp);
 
         done.release();
         return result;

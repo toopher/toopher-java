@@ -56,8 +56,6 @@ public class TestAuthenticationRequest {
     @Test
     public void testGrantWithOtp() throws InterruptedException, RequestError {
         JSONObject newJsonResponse = new JSONObject(jsonResponse, JSONObject.getNames(jsonResponse));
-        newJsonResponse.remove("pending");
-        newJsonResponse.remove("granted");
         newJsonResponse.put("pending", false);
         newJsonResponse.put("granted", true);
 

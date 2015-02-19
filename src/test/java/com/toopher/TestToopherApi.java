@@ -239,16 +239,12 @@ public class TestToopherApi {
         JSONArray usersJsonArray = new JSONArray();
         usersJsonArray.put(userJsonResponse);
 
-        Map<URI, ResponseMock> expectedUriResponses = new HashMap<URI, ResponseMock>();
-        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users?name=%s", userName)), new ResponseMock(200, usersJsonArray.toString()));
-        expectedUriResponses.put(createURI(String.format("https://api.toopher.test/v1/users/%s", userId)), new ResponseMock(200, userJsonResponse.toString()));
-
-        HttpClientMock httpClient = new HttpClientMock(expectedUriResponses);
+        HttpClientMock httpClient = new HttpClientMock(200, usersJsonArray.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
         User user = toopherApi.advanced.users.getByName(userName);
 
         assertEquals("GET", httpClient.getLastCalledMethod());
-        assertEquals(String.format("users/%s", userId), httpClient.getLastCalledEndpoint());
+        assertEquals("users", httpClient.getLastCalledEndpoint());
         assertEquals(userId, user.id);
         assertEquals(userName, user.name);
         assertTrue("Toopher authentication should be enabled for user.", user.toopherAuthenticationEnabled);

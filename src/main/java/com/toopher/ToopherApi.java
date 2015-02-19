@@ -476,8 +476,7 @@ public class ToopherApi {
                     throw new RequestError(String.format("No users with name %s", name));
                 }
 
-                String userId = result.getJSONObject(0).getString("id");
-                return getById(userId);
+                return new User(result.getJSONObject(0), api);
             }
         }
 

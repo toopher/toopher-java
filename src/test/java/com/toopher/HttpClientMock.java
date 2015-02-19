@@ -68,7 +68,12 @@ public class HttpClientMock extends DefaultHttpClient {
 
     public String getLastCalledEndpoint() {
         String fullUri = lastURI.toString();
+        int param = lastURI.toString().lastIndexOf('?');
+        if (param != -1) {
+            fullUri = fullUri.substring(0, param);
+        }
         return fullUri.replace(DEFAULT_BASE_URL, "");
+
     }
 
     public String getExpectedResponse() {

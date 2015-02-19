@@ -332,6 +332,8 @@ public class ToopherApi {
                         throw new ToopherUnknownUserError(toopherErrorMessage);
                     case ToopherUnknownTerminalError.ERROR_CODE:
                         throw new ToopherUnknownTerminalError(toopherErrorMessage);
+                    case ToopherPairingDeactivatedError.ERROR_CODE:
+                        throw new ToopherPairingDeactivatedError(toopherErrorMessage);
                     default:
                         throw new ToopherClientError(toopherErrorCode, toopherErrorMessage,
                                 new HttpResponseException(statusLine.getStatusCode(), statusLine.getReasonPhrase()));

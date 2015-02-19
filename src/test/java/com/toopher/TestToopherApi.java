@@ -121,11 +121,11 @@ public class TestToopherApi {
 
         ToopherApi toopherApi = new ToopherApi("key", "secret",
                 createURI(DEFAULT_BASE_URL), httpClient);
-        Pairing pairing = toopherApi.pair(userName, "123456");
+        Pairing pairing = toopherApi.pair(userName, "555-555-5555");
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("pairings/create/sms", httpClient.getLastCalledEndpoint());
-        assertEquals("123456", httpClient.getLastCalledData("phone_number"));
+        assertEquals("555-555-5555", httpClient.getLastCalledData("phone_number"));
         assertEquals(userName, httpClient.getLastCalledData("user_name"));
         assertEquals(id, pairing.id);
         assertEquals(userId, pairing.user.id);

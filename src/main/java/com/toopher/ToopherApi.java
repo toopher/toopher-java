@@ -174,7 +174,7 @@ public class ToopherApi {
         params.add(new BasicNameValuePair("user_name", userName));
 
         if (pairingPhraseOrNum != null) {
-            if (pairingPhraseOrNum.matches("\\d+")) {
+            if (pairingPhraseOrNum.matches(".*[0-9].*")) {
                 params.add(new BasicNameValuePair("phone_number", pairingPhraseOrNum));
                 endpoint = "pairings/create/sms";
             } else {

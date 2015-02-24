@@ -464,7 +464,7 @@ public class ToopherApi {
              */
             public User getByName(String name) throws RequestError, JSONException {
                 final String endpoint = "users";
-                List params = new ArrayList<NameValuePair>();
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("name", name));
 
                 JSONArray result = (JSONArray) advanced.raw.get(endpoint, params);

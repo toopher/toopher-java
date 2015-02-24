@@ -71,7 +71,7 @@ public class Pairing extends ApiResponseObject {
      * @return QR code image stored in a byte[]
      * @throws RequestError Thrown when an exceptional condition is encountered
      */
-    public byte[] getQrCodeImage() throws RequestError {
+    public byte[] getQrCodeImage() throws RequestError, JSONException {
         String endpoint = String.format("qr/pairings/%s", id);
         return api.advanced.raw.get(endpoint);
     }
@@ -105,7 +105,7 @@ public class Pairing extends ApiResponseObject {
      * @param email The email address where the reset link is sent
      * @throws RequestError Thrown when an exceptional condition is encountered
      */
-    public void emailResetLink(String email) throws RequestError {
+    public void emailResetLink(String email) throws RequestError, JSONException {
         emailResetLink(email, null);
     }
 
@@ -116,7 +116,7 @@ public class Pairing extends ApiResponseObject {
      * @param extras An optional Map of extra parameters to provide to the API
      * @throws RequestError Thrown when an exceptional condition is encountered
      */
-    public void emailResetLink(String email, Map<String, String> extras) throws RequestError {
+    public void emailResetLink(String email, Map<String, String> extras) throws RequestError, JSONException {
         String endpoint = String.format("pairings/%s/send_reset_link", id);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("reset_email", email));

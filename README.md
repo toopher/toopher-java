@@ -70,8 +70,17 @@ Alternatively, you can consume this library using Maven:
     </dependency>
 
 #### Try it out
-Check out `com.toopher.ToopherAPIDemo.java` for an example program that walks you through the whole process!  A runnable jar for the demo can be built and executed as follows:
+Check out `com.toopher.ToopherAPIDemo.java` for an example program that walks you through the whole process!
+
+###Ant
+A runnable jar for the demo can be built and executed in Ant as follows:
 ```shell
 $ ant
 $ java -jar dist/toopher-1.0.0.jar
+```
+
+###Maven
+The demo can be executed in Maven as follows:
+```shell
+$ mvn exec:java -Dexec.mainClass="com.toopher.ToopherAPIDemo"
 ```

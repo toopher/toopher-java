@@ -79,9 +79,9 @@ public class ToopherAPIDemo {
                 pairingId = pairing.id;
                 break;
             } catch (RequestError err) {
-                System.out.println(String.format("The pairing phrase was not accepted (reason:%s)", err.getMessage()));
+                System.out.println(String.format("The pairing phrase was not accepted (Reason:%s)", err.getMessage()));
             } catch (JSONException je) {
-                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
             }
         }
 
@@ -103,9 +103,9 @@ public class ToopherAPIDemo {
                     System.exit(0);
                 }
             } catch (RequestError err) {
-                System.out.println(String.format("Could not check pairing status (reason:%s)", err.getMessage()));
+                System.out.println(String.format("Could not check pairing status (Reason:%s)", err.getMessage()));
             } catch (JSONException je) {
-                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
             }
         }
 
@@ -122,12 +122,12 @@ public class ToopherAPIDemo {
 
             AuthenticationRequest authenticationRequest;
             try {
-                authenticationRequest = api.authenticate(pairingId, terminalName);
+                authenticationRequest = api.authenticate(pairing.id, terminalName);
             } catch (RequestError err) {
-                System.out.println(String.format("Error initiating authentication (reason:%s)", err.getMessage()));
+                System.out.println(String.format("Error initiating authentication (Reason:%s)", err.getMessage()));
                 continue;
             } catch (JSONException je) {
-                System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
                 continue;
             }
 
@@ -139,10 +139,10 @@ public class ToopherAPIDemo {
                 try {
                     authenticationRequest.refreshFromServer();
                 } catch (RequestError err) {
-                    System.out.println(String.format("Could not check authentication status (reason:%s)", err.getMessage()));
+                    System.out.println(String.format("Could not check authentication status (Reason:%s)", err.getMessage()));
                     continue;
                 } catch (JSONException je) {
-                    System.out.println(String.format("The JSON response could not be processed (reason: %s)", je.getMessage()));
+                    System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
                     continue;
                 }
 

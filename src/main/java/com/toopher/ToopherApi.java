@@ -15,9 +15,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,9 +113,7 @@ public class ToopherApi {
     public ToopherApi(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
         this.advanced = new AdvancedApiUsageFactory(this);
         if (httpClient == null) {
-            this.httpClient = new DefaultHttpClient();
-            HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
-                    String.format("Toopher-Java/%s", VERSION));
+            this.httpClient = HttpClients.custom().setUserAgent(String.format("Toopher-Java/%s", VERSION)).build();
         } else {
             this.httpClient = httpClient;
         }

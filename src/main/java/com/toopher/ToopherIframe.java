@@ -174,7 +174,6 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("reset_email", resetEmail == null ? "" : resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
-        System.out.println(params);
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
@@ -222,7 +221,6 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail == null ? "" : resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        System.out.println(params);
         return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
     }
 

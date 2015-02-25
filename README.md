@@ -42,9 +42,9 @@ Pairing pairing = api.pair("username@yourservice.com", "555-555-5555")
 Pairing pairing = api.pair("username@yourservice.com")
 
 // Step 2 - Authenticate a log in
-// With pairingId
+// With pairingId and terminal name
 AuthenticationRequest auth = api.authenticate(pairing.id, "my computer");
-// With username
+// With username and requester specified Id
 AuthenticationRequest auth = api.authenticate("username", "requesterSpecifiedId")
 
 // Once they've responded you can then check the status

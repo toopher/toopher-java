@@ -68,7 +68,7 @@ public final class ToopherIframe {
         ToopherIframe.dateOverride = dateOverride;
     }
 
-    private static Date getDate() {
+    public static Date getDate() {
         if (dateOverride == null) {
             return new Date();
         } else {
@@ -81,6 +81,8 @@ public final class ToopherIframe {
     public static void setNonceOverride(String nonceOverride) {
         ToopherIframe.nonceOverride = nonceOverride;
     }
+
+    public static String getNonce() { return nonceOverride; }
 
     private String baseUri;
     private String consumerKey;
@@ -335,7 +337,7 @@ public final class ToopherIframe {
 
         HttpParameters additionalParameters = new HttpParameters();
         additionalParameters.put("oauth_timestamp", String.valueOf(getDate().getTime() / 1000));
-        if (ToopherIframe.nonceOverride != null) {
+        if (ToopherIframe.getNonce() != null) {
             additionalParameters.put("oauth_nonce", ToopherIframe.nonceOverride);
         }
         consumer.setAdditionalParameters(additionalParameters);

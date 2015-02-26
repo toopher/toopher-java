@@ -37,6 +37,18 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testDateOverride() {
+        ToopherIframe.setDateOverride(TEST_DATE);
+        assertEquals(TEST_DATE, ToopherIframe.getDate());
+    }
+
+    @Test
+    public void testNonceOverride() {
+        ToopherIframe.setNonceOverride(OAUTH_NONCE);
+        assertEquals(OAUTH_NONCE, ToopherIframe.getNonce());
+    }
+
+    @Test
     public void testGetAuthenticationUrl() {
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);

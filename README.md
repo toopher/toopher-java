@@ -44,8 +44,12 @@ Pairing pairing = api.pair("username@yourservice.com")
 // Step 2 - Authenticate a log in
 // With pairingId and terminal name
 AuthenticationRequest auth = api.authenticate(pairing.id, "my computer");
-// With username and requester specified Id
-AuthenticationRequest auth = api.authenticate("username", "requesterSpecifiedId")
+// With username and requester specified Id (Returns exception if terminal is not found)
+AuthenticationRequest auth = api.authenticate("username", null, "requesterSpecifiedId")
+// With username, terminal name and requester specified Id (Returns exception if terminal is not found)
+AuthenticationRequest auth = api.authenticate("username", "my computer", "requesterSpecifiedId")
+// With username and terminal name (New terminal is created if terminal is not found)
+AuthenticationRequest auth = api.authenticate("username", "my computer")
 
 // Once they've responded you can then check the status
 auth.refreshFromServer()

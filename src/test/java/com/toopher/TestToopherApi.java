@@ -148,7 +148,7 @@ public class TestToopherApi {
     public void testCreateAuthenticationRequestWithPairingId() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
-        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, terminalName, actionName);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, terminalName, null, actionName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
@@ -164,7 +164,7 @@ public class TestToopherApi {
     public void testCreateAuthenticationRequestWithUsername() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
-        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName, terminalNameExtra, actionName);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName, null, terminalNameExtra, actionName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());

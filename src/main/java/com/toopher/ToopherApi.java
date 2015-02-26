@@ -190,54 +190,59 @@ public class ToopherApi {
      * Initiate a login authentication request
      *
      * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
+     * @param terminalName                    The user-facing descriptive name for the terminal from which the request originates
      * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra) throws RequestError, JSONException {
-        return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, null, null);
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalName) throws RequestError, JSONException {
+        return authenticate(pairingIdOrUsername, terminalName, null, null, null);
     }
 
     /**
      * Initiate a login authentication request
      *
      * @param pairingIdOrUsername             The pairing id indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
+     * @param terminalName                    The user-facing descriptive name for the terminal from which the request originates
      * @param actionName                      The user-facing descriptive name for the action which is being authenticated
      * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName) throws RequestError, JSONException {
-        return authenticate(pairingIdOrUsername, terminalNameOrTerminalNameExtra, actionName, null);
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalName, String requesterSpecifiedId, String actionName) throws RequestError, JSONException {
+        return authenticate(pairingIdOrUsername, terminalName, requesterSpecifiedId, actionName, null);
     }
 
     /**
      * Initiate an authentication request by pairing id or username
      *
      * @param pairingIdOrUsername             The pairing id or username indicating to whom the request should be sent
-     * @param terminalNameOrTerminalNameExtra The user-facing descriptive name for the terminal from which the request originates
-     *                                        or the unique identifier for this terminal.  Not displayed to the user.
+     * @param terminalName                    The user-facing descriptive name for the terminal from which the request originates.
+     * @param requesterSpecifiedId            The unique identifier for this terminal.  Not displayed to the user.
      * @param actionName                      The user-facing descriptive name for the action which is being authenticated
      * @param extras                          An optional Map of extra parameters to provide to the API
      * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
      */
-    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalNameOrTerminalNameExtra, String actionName, Map<String, String> extras) throws RequestError, JSONException {
+    public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalName, String requesterSpecifiedId, String actionName, Map<String, String> extras) throws RequestError, JSONException {
         final String endpoint = "authentication_requests/initiate";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
 
         try {
             UUID.fromString(pairingIdOrUsername);
             params.add(new BasicNameValuePair("pairing_id", pairingIdOrUsername));
-            params.add(new BasicNameValuePair("terminal_name", terminalNameOrTerminalNameExtra));
         } catch (Exception e) {
             params.add(new BasicNameValuePair("user_name", pairingIdOrUsername));
-            params.add(new BasicNameValuePair("requester_specified_terminal_id", terminalNameOrTerminalNameExtra));
         }
 
         if (actionName != null && actionName.length() > 0) {
             params.add(new BasicNameValuePair("action_name", actionName));
         }
+        if (terminalName != null && terminalName.length() > 0) {
+            params.add(new BasicNameValuePair("terminal_name", terminalName));
+        }
+        if (requesterSpecifiedId != null && requesterSpecifiedId.length() > 0) {
+            params.add(new BasicNameValuePair("requester_specified_terminal_id", requesterSpecifiedId));
+        }
+
 
         JSONObject json = advanced.raw.post(endpoint, params, extras);
         return new AuthenticationRequest(json, this);

@@ -549,19 +549,6 @@ public class ToopherApi {
                 return request(new HttpGet(), endpoint, params);
             }
 
-            public <T> T get(String endpoint, List<NameValuePair> params, Map<String, String> extras) throws RequestError, JSONException {
-                if (extras != null && extras.size() > 0) {
-                    for (Map.Entry<String, String> e : extras.entrySet()) {
-                        params.add(new BasicNameValuePair(e.getKey(), e.getValue()));
-                    }
-                }
-                return request(new HttpGet(), endpoint, params);
-            }
-
-            public <T> T post(String endpoint) throws RequestError, JSONException {
-                return request(new HttpPost(), endpoint, null);
-            }
-
             public <T> T post(String endpoint, List<NameValuePair> params) throws RequestError, JSONException {
                 return post(endpoint, params, null);
             }

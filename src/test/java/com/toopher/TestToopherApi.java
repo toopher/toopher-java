@@ -425,6 +425,7 @@ public class TestToopherApi {
             fail();
         } catch (ToopherUnknownTerminalError e) {
             assertEquals("No matching terminal exists", e.getMessage());
+            assertEquals(706, e.getToopherErrorCode());
         }
     }
 
@@ -440,6 +441,7 @@ public class TestToopherApi {
             fail();
         } catch (ToopherUnknownUserError e) {
             assertEquals("No matching user exists", e.getMessage());
+            assertEquals(705, e.getToopherErrorCode());
         }
     }
 
@@ -455,6 +457,7 @@ public class TestToopherApi {
             fail();
         } catch (ToopherUserDisabledError e) {
             assertEquals("The specified user has disabled Toopher authentication.", e.getMessage());
+            assertEquals(704, e.getToopherErrorCode());
         }
     }
 
@@ -470,6 +473,7 @@ public class TestToopherApi {
             fail();
         } catch (ToopherClientError e) {
             assertEquals("User requires OTP authentication", e.getMessage());
+            assertEquals(708, e.getToopherErrorCode());
         }
     }
 

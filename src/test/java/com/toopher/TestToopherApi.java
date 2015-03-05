@@ -304,6 +304,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.users.getByName(userName);
+            fail();
         } catch (RequestError e) {
             assertEquals("No users with name userName", e.getMessage());
         }
@@ -319,6 +320,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.users.getByName(userName);
+            fail();
         } catch (RequestError e) {
             assertEquals("More than one user with name userName", e.getMessage());
         }
@@ -405,6 +407,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (ToopherPairingDeactivatedError e) {
             assertEquals("Not allowed: This pairing has been deactivated.", e.getMessage());
         }
@@ -419,6 +422,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (ToopherUnknownTerminalError e) {
             assertEquals("No matching terminal exists", e.getMessage());
         }
@@ -433,6 +437,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (ToopherUnknownUserError e) {
             assertEquals("No matching user exists", e.getMessage());
         }
@@ -447,6 +452,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (ToopherUserDisabledError e) {
             assertEquals("The specified user has disabled Toopher authentication.", e.getMessage());
         }
@@ -461,6 +467,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (ToopherClientError e) {
             assertEquals("User requires OTP authentication", e.getMessage());
         }
@@ -472,6 +479,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (RequestError e) {
             assertEquals("Http protocol error", e.getMessage());
         }
@@ -483,6 +491,7 @@ public class TestToopherApi {
         ToopherApi toopherApi = getToopherApi(httpClient);
         try {
             toopherApi.advanced.raw.get("pairings/1");
+            fail();
         } catch (RequestError e) {
             assertEquals("Request error", e.getMessage());
         }

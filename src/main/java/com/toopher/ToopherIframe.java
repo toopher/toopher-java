@@ -111,16 +111,31 @@ public final class ToopherIframe {
         this.baseUri = baseUri;
     }
 
+    /**
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
+     *
+     * @param username     Unique name that identifies this user.  This will be displayed to the user on
+     *                     their mobile device when they pair or authenticate
+     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
+     */
     public String getAuthenticationUrl(String username) {
         return getAuthenticationUrl(username, "None", "None", "Log In", "None", new HashMap<String, String>());
     }
 
+    /**
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
+     *
+     * @param username     Unique name that identifies this user.  This will be displayed to the user on
+     *                     their mobile device when they pair or authenticate
+     * @param extras       An optional Map of extra parameters to provide to the API
+     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
+     */
     public String getAuthenticationUrl(String username, Map<String, String> extras) {
         return getAuthenticationUrl(username, "None", "None", "Log In", "None", extras);
     }
 
     /**
-     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
      *
      * @param userName     Unique name that identifies this user.  This will be displayed to the user on
      *                     their mobile device when they pair or authenticate
@@ -135,7 +150,7 @@ public final class ToopherIframe {
     }
 
     /**
-     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
      *
      * @param userName     Unique name that identifies this user.  This will be displayed to the user on
      *                     their mobile device when they pair or authenticate

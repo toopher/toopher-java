@@ -15,9 +15,12 @@ public class TestAuthenticationRequest {
     private static String id;
     private static String reason;
     private static JSONObject jsonResponse = new JSONObject();
+    private static String userId;
     private static String userName;
+    private static String terminalId;
     private static String terminalName;
     private static String terminalNameExtra;
+    private static String actionId;
 
     @BeforeClass
     public static void setUp() {
@@ -28,6 +31,7 @@ public class TestAuthenticationRequest {
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
         user.put("toopher_authentication_enabled", true);
+        userId = user.getString("id");
         userName = user.getString("name");
 
         JSONObject terminal = new JSONObject();
@@ -35,12 +39,14 @@ public class TestAuthenticationRequest {
         terminal.put("name", "terminalName");
         terminal.put("requester_specified_id", "terminalNameExtra");
         terminal.put("user", user);
+        terminalId = terminal.getString("id");
         terminalName = terminal.getString("name");
         terminalNameExtra = terminal.getString("requester_specified_id");
 
         JSONObject action = new JSONObject();
         action.put("id", UUID.randomUUID().toString());
         action.put("name", "log in");
+        actionId = action.getString("id");
 
         jsonResponse.put("id", id);
         jsonResponse.put("pending", true);
@@ -51,6 +57,14 @@ public class TestAuthenticationRequest {
         jsonResponse.put("user", user);
         jsonResponse.put("terminal", terminal);
         jsonResponse.put("action", action);
+    }
+
+    @Test
+    public void testAuthenticationRequestToString() {
+        AuthenticationRequest authenticationRequest = new AuthenticationRequest(jsonResponse, new ToopherApi("key", "secret"));
+        String authenticationRequestToString = authenticationRequest.toString();
+        String expectedString = String.format("[AuthenticationRequest: id=%s; pending=true; granted=false; automated=false; reason=it is a test; reasonCode=200; terminalId=%s, terminalName=terminalName, terminalRequesterSpecifiedId=terminalNameExtra, actionId=%s, actionName=log in, userId=%s, userName=userName, userToopherAuthenticationEnabled=true]", id, terminalId, actionId, userId);
+        assertEquals(expectedString, authenticationRequestToString);
     }
 
     @Test

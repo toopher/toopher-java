@@ -17,6 +17,7 @@ public class TestPairing {
     private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
 
     private String id;
+    private String userId;
     private String userName;
     private JSONObject jsonResponse;
 
@@ -28,6 +29,7 @@ public class TestPairing {
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
         user.put("toopher_authentication_enabled", true);
+        this.userId = user.getString("id");
         this.userName = user.getString("name");
 
         this.jsonResponse = new JSONObject();
@@ -35,6 +37,14 @@ public class TestPairing {
         jsonResponse.put("enabled", true);
         jsonResponse.put("pending", false);
         jsonResponse.put("user", user);
+    }
+
+    @Test
+    public void testPairingToString() {
+        Pairing pairing = new Pairing(jsonResponse, new ToopherApi("key", "secret"));
+        String pairingToString = pairing.toString();
+        String expectedString = String.format("[Pairing: id=%s; enabled=true; pending=false; userId=%s, userName=userName, userToopherAuthenticationEnabled=true]", id, userId);
+        assertEquals(expectedString, pairingToString);
     }
 
     @Test

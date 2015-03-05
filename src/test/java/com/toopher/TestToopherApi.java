@@ -323,6 +323,76 @@ public class TestToopherApi {
     }
 
     @Test
+    public void testDeactivatedPairingRaisesCorrectError() throws InterruptedException, RequestError {
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("error_code", "707");
+        errorJson.put("error_message", "Not allowed: This pairing has been deactivated.");
+        HttpClientMock httpClient = new HttpClientMock(409, errorJson.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (ToopherPairingDeactivatedError e) {
+            assertEquals("Not allowed: This pairing has been deactivated.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUnknownTerminalRaisesCorrectError() throws InterruptedException, RequestError {
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("error_code", "706");
+        errorJson.put("error_message", "No matching terminal exists");
+        HttpClientMock httpClient = new HttpClientMock(409, errorJson.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (ToopherUnknownTerminalError e) {
+            assertEquals("No matching terminal exists", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUnknownUserRaisesCorrectError() throws InterruptedException, RequestError {
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("error_code", "705");
+        errorJson.put("error_message", "No matching user exists");
+        HttpClientMock httpClient = new HttpClientMock(409, errorJson.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (ToopherUnknownUserError e) {
+            assertEquals("No matching user exists", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testUserDisabledRaisesCorrectError() throws InterruptedException, RequestError {
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("error_code", "704");
+        errorJson.put("error_message", "The specified user has disabled Toopher authentication.");
+        HttpClientMock httpClient = new HttpClientMock(409, errorJson.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (ToopherUserDisabledError e) {
+            assertEquals("The specified user has disabled Toopher authentication.", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testClientErrorRaisedForOtherErrorCodes() throws InterruptedException, RequestError {
+        JSONObject errorJson = new JSONObject();
+        errorJson.put("error_code", "708");
+        errorJson.put("error_message", "User requires OTP authentication");
+        HttpClientMock httpClient = new HttpClientMock(409, errorJson.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (ToopherClientError e) {
+            assertEquals("User requires OTP authentication", e.getMessage());
+        }
+    }
+
+    @Test
     public void testBaseURL() {
         boolean isValidURL = createURI((ToopherApi.getBaseURL())) != null;
 

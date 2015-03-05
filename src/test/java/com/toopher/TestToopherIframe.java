@@ -93,6 +93,21 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testGetAuthenticationUrlWithUsernameResetEmailRequestTokenAndExtras() {
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("allow_inline_pairing", "false");
+        extras.put("automation_allowed", "false");
+        extras.put("challenge_required", "true");
+        extras.put("ttl", Long.toString(REQUEST_TTL));
+
+        ToopherIframe.setDateOverride(TEST_DATE);
+        ToopherIframe.setNonceOverride(OAUTH_NONCE);
+
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, extras), Charset.forName("UTF-8")));
+        assertEquals("TUgywVd77mWpffzdwjjQJ7ooYPM=", params.get("oauth_signature"));
+    }
+
+    @Test
     public void testGetAuthenticationUrlWithOptionalArgsAndExtras() {
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("allow_inline_pairing", "false");

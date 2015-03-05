@@ -18,6 +18,7 @@ public class TestUserTerminal {
     private static String requesterSpecifiedId;
     private static JSONObject terminalJson = new JSONObject();
     private static JSONObject user = new JSONObject();
+    private static String userId;
     private static String userName;
 
     @BeforeClass
@@ -29,12 +30,21 @@ public class TestUserTerminal {
         user.put("id", UUID.randomUUID().toString());
         user.put("name", "userName");
         user.put("toopher_authentication_enabled", true);
+        userId = user.getString("id");
         userName = user.getString("name");
 
         terminalJson.put("id", id);
         terminalJson.put("name", name);
         terminalJson.put("requester_specified_id", requesterSpecifiedId);
         terminalJson.put("user", user);
+    }
+
+    @Test
+    public void testUserTerminalToString() {
+        UserTerminal userTerminal = new UserTerminal(terminalJson, new ToopherApi("key", "secret"));
+        String userTerminalToString = userTerminal.toString();
+        String expectedString = String.format("[UserTerminal: id=%s; name=terminalName; requesterSpecifiedId=terminalNameExtra; userId=%s; userName=userName; userToopherAuthenticationEnabled=true]", id, userId);
+        assertEquals(expectedString, userTerminalToString);
     }
 
     @Test

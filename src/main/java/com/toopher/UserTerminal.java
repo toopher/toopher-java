@@ -44,8 +44,8 @@ public class UserTerminal extends ApiResponseObject {
 
     @Override
     public String toString() {
-        return String.format("[UserTerminal: id=%s; name=%s; requesterSpecifiedId=%s; userName=%s; userId=%s; userToopherAuthenticationEnabled=%b]",
-                id, name, requesterSpecifiedId, user.name, user.id, user.toopherAuthenticationEnabled);
+        return String.format("[UserTerminal: id=%s; name=%s; requesterSpecifiedId=%s; userId=%s; userName=%s; userToopherAuthenticationEnabled=%b]",
+                id, name, requesterSpecifiedId, user.id, user.name, user.toopherAuthenticationEnabled);
     }
 
     /**

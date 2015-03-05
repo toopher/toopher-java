@@ -86,7 +86,7 @@
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                     <excludes>
-                        <exclude>**/ToopherAPIDemo.java</exclude>
+                        <exclude>**/ToopherAPIDemo.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -125,7 +125,7 @@
                         <version>0.7.1.201405082137 </version>
                         <configuration>
                             <excludes>
-                                <exclude>**/ToopherAPIDemo.java</exclude>
+                                <exclude>**/ToopherAPIDemo.class</exclude>
                             </excludes>
                         </configuration>
                         <executions>

@@ -233,13 +233,13 @@ public class ToopherApi {
             params.add(new BasicNameValuePair("user_name", pairingIdOrUsername));
         }
 
-        if (actionName != null && actionName.length() > 0) {
+        if (actionName != null) {
             params.add(new BasicNameValuePair("action_name", actionName));
         }
-        if (terminalName != null && terminalName.length() > 0) {
+        if (terminalName != null) {
             params.add(new BasicNameValuePair("terminal_name", terminalName));
         }
-        if (requesterSpecifiedId != null && requesterSpecifiedId.length() > 0) {
+        if (requesterSpecifiedId != null) {
             params.add(new BasicNameValuePair("requester_specified_terminal_id", requesterSpecifiedId));
         }
 

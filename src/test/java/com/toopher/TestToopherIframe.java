@@ -37,6 +37,18 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testCreateToopherIframe() {
+        ToopherIframe iframe = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET);
+        assertTrue(iframe instanceof ToopherIframe);
+    }
+
+    @Test
+    public void testGetDateNoOverride() {
+        iframeApi.setDateOverride(null);
+        assertEquals(new Date(), iframeApi.getDate());
+    }
+
+    @Test
     public void testDateOverride() {
         ToopherIframe.setDateOverride(TEST_DATE);
         assertEquals(TEST_DATE, ToopherIframe.getDate());

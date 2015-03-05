@@ -91,6 +91,41 @@ public class TestToopherApi {
     }
 
     @Test
+    public void testBaseURL() {
+        boolean isValidURL = createURI((ToopherApi.getBaseURL())) != null;
+
+        assertNotNull("Base URL is null.", ToopherApi.getBaseURL());
+        assertTrue("Base URL is not valid.", isValidURL);
+    }
+
+    @Test
+    public void testVersion() {
+        assertNotNull("Version is not null.", ToopherApi.VERSION);
+    }
+
+    private URI createURI(String url) {
+        try {
+            return new URL(url).toURI();
+        } catch (MalformedURLException e) {
+            return null;
+        } catch (URISyntaxException e) {
+            return null;
+        }
+    }
+
+    @Test
+    public void testCreateToopherApiWithUrl() throws URISyntaxException {
+        ToopherApi toopherApi = new ToopherApi("key", "secret", DEFAULT_BASE_URL);
+        assertTrue(toopherApi instanceof ToopherApi);
+    }
+
+    @Test
+    public void testCreateToopherApiWithUriSchemeHostAndBase() throws URISyntaxException {
+        ToopherApi toopherApi = new ToopherApi("key", "secret", "https:", "api.toopher.test", "/v1/");
+        assertTrue(toopherApi instanceof ToopherApi);
+    }
+
+    @Test
     public void testCreatePairingWithPairingPhrase() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, pairingJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
@@ -416,29 +451,6 @@ public class TestToopherApi {
             toopherApi.advanced.raw.get("pairings/1");
         } catch (ToopherClientError e) {
             assertEquals("User requires OTP authentication", e.getMessage());
-        }
-    }
-
-    @Test
-    public void testBaseURL() {
-        boolean isValidURL = createURI((ToopherApi.getBaseURL())) != null;
-
-        assertNotNull("Base URL is null.", ToopherApi.getBaseURL());
-        assertTrue("Base URL is not valid.", isValidURL);
-    }
-
-    @Test
-    public void testVersion() {
-        assertNotNull("Version is not null.", ToopherApi.VERSION);
-    }
-
-    private URI createURI(String url) {
-        try {
-            return new URL(url).toURI();
-        } catch (MalformedURLException e) {
-            return null;
-        } catch (URISyntaxException e) {
-            return null;
         }
     }
 }

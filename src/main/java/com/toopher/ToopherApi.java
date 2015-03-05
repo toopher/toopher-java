@@ -297,7 +297,9 @@ public class ToopherApi {
             byte[] content;
             content = (entity != null) ? EntityUtils.toByteArray(entity) : null;
 
-            if (content != null) {
+
+
+            if (content.length > 0) {
                 return content;
             } else {
                 throw new RequestError("Empty response body returned");

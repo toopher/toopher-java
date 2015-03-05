@@ -92,6 +92,30 @@ public class TestPairing {
     }
 
     @Test
+    public void testRequestErrorRaisedWhenQrResponseBodyEmpty() throws InterruptedException {
+        JSONObject user = new JSONObject();
+        user.put("id", UUID.randomUUID().toString());
+        user.put("name", "userName");
+        user.put("toopher_authentication_enabled", true);
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("id", id);
+        jsonResponse.put("enabled", true);
+        jsonResponse.put("pending", false);
+        jsonResponse.put("user", user);
+
+        HttpClientMock httpClient = new HttpClientMock(200, "");
+        ToopherApi toopherApi = new ToopherApi("key", "secret",
+                URI.create(DEFAULT_BASE_URL), httpClient);
+        Pairing pairing = new Pairing(jsonResponse, toopherApi);
+        try {
+            pairing.getQrCodeImage();
+            fail();
+        } catch (RequestError e) {
+            assertEquals("Empty response body returned", e.getMessage());
+        }
+    }
+    
+    @Test
     public void testGetResetLink() throws InterruptedException, RequestError {
         String resetLink = String.format("http://api.toopher.test/v1/pairings/%s/reset?reset_authorization=abcde", id);
         JSONObject urlJsonResponse = new JSONObject();

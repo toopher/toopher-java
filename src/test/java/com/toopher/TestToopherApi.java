@@ -251,6 +251,33 @@ public class TestToopherApi {
     }
 
     @Test
+    public void testAdvancedUsersGetByNameNoUserRaisesRequestError() throws InterruptedException {
+        JSONArray usersJsonArray = new JSONArray();
+        HttpClientMock httpClient = new HttpClientMock(200, usersJsonArray.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.users.getByName(userName);
+        } catch (RequestError e) {
+            assertEquals("No users with name userName", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testAdvancedUsersGetByNameMultipleUsersRaisesRequestError() throws InterruptedException {
+        JSONArray usersJsonArray = new JSONArray();
+        usersJsonArray.put(userJsonResponse);
+        usersJsonArray.put("");
+
+        HttpClientMock httpClient = new HttpClientMock(200, usersJsonArray.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.users.getByName(userName);
+        } catch (RequestError e) {
+            assertEquals("More than one user with name userName", e.getMessage());
+        }
+    }
+
+    @Test
     public void testAdvancedUserTerminalsCreate() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, userTerminalJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);

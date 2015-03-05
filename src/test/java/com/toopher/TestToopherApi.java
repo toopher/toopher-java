@@ -465,4 +465,26 @@ public class TestToopherApi {
             assertEquals("User requires OTP authentication", e.getMessage());
         }
     }
+
+    @Test
+    public void testRequestErrorRaisedForNoErrorBody() throws InterruptedException {
+        HttpClientMock httpClient = new HttpClientMock(409, "");
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (RequestError e) {
+            assertEquals("Http protocol error", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRequestErrorRaisedWhenErrorInfoNotJson() throws InterruptedException {
+        HttpClientMock httpClient = new HttpClientMock(409, "error");
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+        } catch (RequestError e) {
+            assertEquals("Request error", e.getMessage());
+        }
+    }
 }

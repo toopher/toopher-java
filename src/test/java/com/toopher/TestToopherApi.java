@@ -496,4 +496,16 @@ public class TestToopherApi {
             assertEquals("Request error", e.getMessage());
         }
     }
+
+    @Test
+    public void testRequestErrorRaisedWhenResponseBodyEmpty() throws InterruptedException {
+        HttpClientMock httpClient = new HttpClientMock(200, "");
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        try {
+            toopherApi.advanced.raw.get("pairings/1");
+            fail();
+        } catch (RequestError e) {
+            assertEquals("Empty response body returned", e.getMessage());
+        }
+    }
 }

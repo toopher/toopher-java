@@ -197,13 +197,23 @@ public final class ToopherIframe {
      *
      * @param userName   Unique name that identifies this user.  This will be displayed to the user on
      *                   their mobile device when they pair or authenticate
+     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName) {
+        return getUserManagementUrl(userName, "None", new HashMap<String, String>());
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
      * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
      *                   access their mobile device, Toopher will send a reset email to this address
      * @return URL that can be used to retrieve the Pairing iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, String resetEmail) {
-        Map<String, String> extras = new HashMap<String, String>();
-        return getUserManagementUrl(userName, resetEmail, extras);
+        return getUserManagementUrl(userName, resetEmail, new HashMap<String, String>());
     }
 
     /**
@@ -228,7 +238,7 @@ public final class ToopherIframe {
 
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail == null ? "" : resetEmail));
+        params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
     }

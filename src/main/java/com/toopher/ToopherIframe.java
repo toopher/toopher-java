@@ -111,6 +111,14 @@ public final class ToopherIframe {
         this.baseUri = baseUri;
     }
 
+    public String getAuthenticationUrl(String username) {
+        return getAuthenticationUrl(username, "None", "None", "Log In", "None", new HashMap<String, String>());
+    }
+
+    public String getAuthenticationUrl(String username, Map<String, String> extras) {
+        return getAuthenticationUrl(username, "None", "None", "Log In", "None", extras);
+    }
+
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
@@ -123,8 +131,7 @@ public final class ToopherIframe {
      * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, String resetEmail, String requestToken) {
-        Map<String, String> extras = new HashMap<String, String>();
-        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
+        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", new HashMap<String, String>());
     }
 
     /**
@@ -173,7 +180,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("action_name", actionName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail == null ? "" : resetEmail));
+        params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));

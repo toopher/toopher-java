@@ -29,6 +29,14 @@ public class TestUser {
     }
 
     @Test
+    public void testUserToString() {
+        User user = new User(json, new ToopherApi("key", "secret"));
+        String userToString = user.toString();
+        String expectedString = String.format("[User: id=%s, name=userName, toopherAuthenticationEnabled=true]", id);
+        assertEquals(expectedString, userToString);
+    }
+
+    @Test
     public void testRefreshFromServer() throws InterruptedException, RequestError {
         JSONObject newJson = new JSONObject();
         newJson.put("name", "userNameChanged");

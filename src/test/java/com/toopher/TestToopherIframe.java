@@ -150,30 +150,18 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testValidateGoodSignatureIsSuccessful() {
-        try {
-            assertNotNull(iframeApi.processPostback(getPostbackData(), REQUEST_TOKEN, 5));
-        } catch (ToopherIframe.SignatureValidationError e) {
-            fail();
-        }
+    public void testValidateGoodSignatureIsSuccessful() throws ToopherIframe.SignatureValidationError {
+        assertNotNull(iframeApi.processPostback(getPostbackData(), REQUEST_TOKEN, 5));
     }
 
     @Test
-    public void testValidateGoodSignatureNoTTLIsSuccessful() {
-        try {
-            assertNotNull(iframeApi.validatePostback(getPostbackData(), REQUEST_TOKEN));
-        } catch (ToopherIframe.SignatureValidationError e) {
-            fail();
-        }
+    public void testValidateGoodSignatureNoTTLIsSuccessful() throws ToopherIframe.SignatureValidationError {
+        assertNotNull(iframeApi.validatePostback(getPostbackData(), REQUEST_TOKEN));
     }
 
     @Test
-    public void testValidateGoodSignatureNoRequestTokenIsSuccessful() {
-        try {
-            assertNotNull(iframeApi.validatePostback(getPostbackData()));
-        } catch (ToopherIframe.SignatureValidationError e) {
-            fail();
-        }
+    public void testValidateGoodSignatureNoRequestTokenIsSuccessful() throws ToopherIframe.SignatureValidationError {
+        assertNotNull(iframeApi.validatePostback(getPostbackData()));
     }
 
     @Test

@@ -31,6 +31,14 @@ public class TestToopherIframe {
         return result;
     }
 
+    private Map<String, String> getExtrasForUrl() {
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("allow_inline_pairing", "false");
+        extras.put("automation_allowed", "false");
+        extras.put("challenge_required", "true");
+        extras.put("ttl", Long.toString(REQUEST_TTL));
+        return extras;
+    }
     @Before
     public void setUp() {
         this.iframeApi = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET, DEFAULT_BASE_URL);
@@ -71,17 +79,10 @@ public class TestToopherIframe {
 
     @Test
     public void testGetAuthenticationUrlWithExtras() {
-        Map<String, String> extras = new HashMap<String, String>();
-        extras.put("allow_inline_pairing", "False");
-        extras.put("automation_allowed", "False");
-        extras.put("challenge_required", "True");
-        extras.put("ttl", Long.toString(REQUEST_TTL));
-
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", extras), Charset.forName("UTF-8")));
-        assertEquals("zdE78ucexk2Y9T5NVRDsf9NvcOI=", params.get("oauth_signature"));
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", getExtrasForUrl()), Charset.forName("UTF-8")));
+        assertEquals("jesSqRK9OisqeBNWNu69s8tCyRY=", params.get("oauth_signature"));
     }
 
     @Test
@@ -94,31 +95,17 @@ public class TestToopherIframe {
 
     @Test
     public void testGetAuthenticationUrlWithUsernameResetEmailRequestTokenAndExtras() {
-        Map<String, String> extras = new HashMap<String, String>();
-        extras.put("allow_inline_pairing", "false");
-        extras.put("automation_allowed", "false");
-        extras.put("challenge_required", "true");
-        extras.put("ttl", Long.toString(REQUEST_TTL));
-
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, extras), Charset.forName("UTF-8")));
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, getExtrasForUrl()), Charset.forName("UTF-8")));
         assertEquals("TUgywVd77mWpffzdwjjQJ7ooYPM=", params.get("oauth_signature"));
     }
 
     @Test
     public void testGetAuthenticationUrlWithOptionalArgsAndExtras() {
-        Map<String, String> extras = new HashMap<String, String>();
-        extras.put("allow_inline_pairing", "false");
-        extras.put("automation_allowed", "false");
-        extras.put("challenge_required", "true");
-        extras.put("ttl", Long.toString(REQUEST_TTL));
-
         ToopherIframe.setDateOverride(TEST_DATE);
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, "it is a test", "metadata", extras), Charset.forName("UTF-8")));
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, "it is a test", "metadata", getExtrasForUrl()), Charset.forName("UTF-8")));
         assertEquals("61dqeQNPFxNy8PyEFB9e5UfgN8s=", params.get("oauth_signature"));
     }
 

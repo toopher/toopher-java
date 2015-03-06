@@ -39,6 +39,16 @@ public class TestToopherIframe {
         extras.put("ttl", Long.toString(REQUEST_TTL));
         return extras;
     }
+
+    private Map<String, String[]> getPostbackData() {
+        Map<String, String[]> data = new HashMap<String, String[]>();
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
+        return data;
+    }
+
     @Before
     public void setUp() {
         this.iframeApi = new ToopherIframe(TOOPHER_CONSUMER_KEY, TOOPHER_CONSUMER_SECRET, DEFAULT_BASE_URL);
@@ -152,15 +162,9 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateGoodSignatureIsSuccessful() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
-
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            assertNotNull(iframeApi.processPostback(data, REQUEST_TOKEN, 5));
+            assertNotNull(iframeApi.processPostback(getPostbackData(), REQUEST_TOKEN, 5));
         } catch (ToopherIframe.SignatureValidationError e) {
             fail();
         }
@@ -168,14 +172,9 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateGoodSignatureNoTTLIsSuccessful() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            assertNotNull(iframeApi.validatePostback(data, REQUEST_TOKEN));
+            assertNotNull(iframeApi.validatePostback(getPostbackData(), REQUEST_TOKEN));
         } catch (ToopherIframe.SignatureValidationError e) {
             fail();
         }
@@ -183,14 +182,9 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateGoodSignatureNoRequestTokenIsSuccessful() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            assertNotNull(iframeApi.validatePostback(data));
+            assertNotNull(iframeApi.validatePostback(getPostbackData()));
         } catch (ToopherIframe.SignatureValidationError e) {
             fail();
         }
@@ -198,10 +192,7 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateBadSignatureFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
+        Map<String, String[]> data = getPostbackData();
         data.put("toopher_sig", new String[]{"invalid"});
 
         ToopherIframe.setDateOverride(TEST_DATE);
@@ -215,16 +206,10 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateExpiredSignatureFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
-
         // set ToopherIframe reference clock 6 seconds ahead
         ToopherIframe.setDateOverride(new Date(TEST_DATE.getTime() + (1000 * 6)));
         try {
-            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(getPostbackData(), REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("TTL Expired"));
@@ -233,10 +218,8 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateMissingTimestampFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
+        Map<String, String[]> data = getPostbackData();
+        data.remove("timestamp");
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -249,10 +232,8 @@ public class TestToopherIframe {
 
     @Test
     public void testValidateMissingSignatureFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("session_token", new String[]{REQUEST_TOKEN});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        Map<String, String[]> data = getPostbackData();
+        data.remove("toopher_sig");
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -265,11 +246,8 @@ public class TestToopherIframe {
 
     @Test
     public void testInvalidSessionTokenFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("session_token", new String[]{"invalid token"});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
+        Map<String, String[]> data = getPostbackData();
+        data.put("session_token", new String[]{"invalid"});
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
@@ -282,10 +260,8 @@ public class TestToopherIframe {
 
     @Test
     public void testMissingSessionTokenFails() {
-        Map<String, String[]> data = new HashMap<String, String[]>();
-        data.put("foo", new String[]{"bar"});
-        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
-        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
+        Map<String, String[]> data = getPostbackData();
+        data.remove("session_token");
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {

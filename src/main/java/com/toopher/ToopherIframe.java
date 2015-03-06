@@ -223,6 +223,19 @@ public final class ToopherIframe {
      *
      * @param userName   Unique name that identifies this user.  This will be displayed to the user on
      *                   their mobile device when they pair or authenticate
+     * @param extras     An optional Map of extra parameters to provide to the API
+     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName, Map<String, String> extras) {
+        return getUserManagementUrl(userName, "None", extras);
+    }
+
+
+    /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
      * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
      *                   access their mobile device, Toopher will send a reset email to this address
      * @return URL that can be used to retrieve the Pairing iframe by the user's browser

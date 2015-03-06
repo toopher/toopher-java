@@ -153,6 +153,17 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void getUserManagementUrlUsernameWithExtras() {
+        ToopherIframe.setDateOverride(TEST_DATE);
+        ToopherIframe.setNonceOverride(OAUTH_NONCE);
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("ttl", Long.toString(REQUEST_TTL));
+        String expectedUrl = "https://api.toopher.test/v1/web/manage_user?v=2&username=jdoe&reset_email=None&expires=1100&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=zaKqXft5sCDx4SGr%2BWI9MMlefS8%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
+        String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", extras);
+        assertEquals(expectedUrl, userManagementUrl);
+    }
+
+    @Test
     public void testValidateGoodSignatureIsSuccessful() {
         Map<String, String[]> data = new HashMap<String, String[]>();
         data.put("foo", new String[]{"bar"});

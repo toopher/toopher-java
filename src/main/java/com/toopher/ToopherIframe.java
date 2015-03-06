@@ -281,7 +281,7 @@ public final class ToopherIframe {
      *               between the Toopher API creating the signature and the signature being validated on your server
      * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validatePostback(Map<String, String[]> params, String requestToken, long ttl) throws SignatureValidationError {
+    public Map<String, String> processPostback(Map<String, String[]> params, String requestToken, long ttl) throws SignatureValidationError {
         Map<String, String> data = flattenParams(params);
 
         try {
@@ -351,7 +351,7 @@ public final class ToopherIframe {
      * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
     public Map<String, String> validatePostback(Map<String, String[]> params) throws SignatureValidationError {
-        return validatePostback(params, null, DEFAULT_TTL);
+        return processPostback(params, null, DEFAULT_TTL);
     }
 
     /**
@@ -363,7 +363,7 @@ public final class ToopherIframe {
      * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
     public Map<String, String> validatePostback(Map<String, String[]> params, String requestToken) throws SignatureValidationError {
-        return validatePostback(params, requestToken, DEFAULT_TTL);
+        return processPostback(params, requestToken, DEFAULT_TTL);
     }
 
     private static Map<String, String> flattenParams(Map<String, String[]> params) {

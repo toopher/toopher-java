@@ -173,7 +173,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            assertNotNull(iframeApi.validatePostback(data, REQUEST_TOKEN, 5));
+            assertNotNull(iframeApi.processPostback(data, REQUEST_TOKEN, 5));
         } catch (ToopherIframe.SignatureValidationError e) {
             fail();
         }
@@ -219,7 +219,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("Computed signature does not match"));
@@ -237,7 +237,7 @@ public class TestToopherIframe {
         // set ToopherIframe reference clock 6 seconds ahead
         ToopherIframe.setDateOverride(new Date(TEST_DATE.getTime() + (1000 * 6)));
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("TTL Expired"));
@@ -253,7 +253,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("Missing required keys: timestamp"));
@@ -269,7 +269,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("Missing required keys: toopher_sig"));
@@ -286,7 +286,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("Session token does not match expected value"));
@@ -302,7 +302,7 @@ public class TestToopherIframe {
 
         ToopherIframe.setDateOverride(TEST_DATE);
         try {
-            iframeApi.validatePostback(data, REQUEST_TOKEN, 5);
+            iframeApi.processPostback(data, REQUEST_TOKEN, 5);
             fail();
         } catch (ToopherIframe.SignatureValidationError e) {
             assertTrue(e.getMessage().contains("Missing required keys: session_token"));

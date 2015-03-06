@@ -275,11 +275,13 @@ public final class ToopherIframe {
      * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
      * @param params The data returned from the Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI and returned in
+     *                     the signed response from the Toopher Iframe
      * @param ttl    Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
      *               between the Toopher API creating the signature and the signature being validated on your server
      * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validatePostback(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
+    public Map<String, String> validatePostback(Map<String, String[]> params, String requestToken, long ttl) throws SignatureValidationError {
         Map<String, String> data = flattenParams(params);
 
         try {
@@ -305,9 +307,11 @@ public final class ToopherIframe {
                 throw new SignatureValidationError(errorMessage);
             }
 
-            boolean sessionTokenValid = data.get("session_token").equals(sessionToken);
-            if (!sessionTokenValid) {
-                throw new SignatureValidationError("Session token does not match expected value");
+            if (requestToken != null) {
+                boolean sessionTokenValid = data.get("session_token").equals(requestToken);
+                if (!sessionTokenValid) {
+                    throw new SignatureValidationError("Session token does not match expected value");
+                }
             }
 
             String maybeSig = data.get("toopher_sig");
@@ -341,13 +345,25 @@ public final class ToopherIframe {
     }
 
     /**
-     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
      * @param params The data returned from the Iframe
      * @return A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validatePostback(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
-        return validatePostback(params, sessionToken, DEFAULT_TTL);
+    public Map<String, String> validatePostback(Map<String, String[]> params) throws SignatureValidationError {
+        return validatePostback(params, null, DEFAULT_TTL);
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     *
+     * @param params The data returned from the Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI and returned in
+     *                     the signed response from the Toopher Iframe
+     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
+     */
+    public Map<String, String> validatePostback(Map<String, String[]> params, String requestToken) throws SignatureValidationError {
+        return validatePostback(params, requestToken, DEFAULT_TTL);
     }
 
     private static Map<String, String> flattenParams(Map<String, String[]> params) {

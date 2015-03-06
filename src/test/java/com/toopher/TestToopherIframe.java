@@ -195,6 +195,21 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testValidateGoodSignatureNoRequestTokenIsSuccessful() {
+        Map<String, String[]> data = new HashMap<String, String[]>();
+        data.put("foo", new String[]{"bar"});
+        data.put("timestamp", new String[]{String.valueOf(TEST_DATE.getTime() / 1000)});
+        data.put("session_token", new String[]{REQUEST_TOKEN});
+        data.put("toopher_sig", new String[]{"6d2c7GlQssGmeYYGpcf+V/kirOI="});
+        ToopherIframe.setDateOverride(TEST_DATE);
+        try {
+            assertNotNull(iframeApi.validatePostback(data));
+        } catch (ToopherIframe.SignatureValidationError e) {
+            fail();
+        }
+    }
+
+    @Test
     public void testValidateBadSignatureFails() {
         Map<String, String[]> data = new HashMap<String, String[]>();
         data.put("foo", new String[]{"bar"});

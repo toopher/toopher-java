@@ -115,13 +115,13 @@ public class TestToopherApi {
 
     @Test
     public void testCreateToopherApiWithUrl() throws URISyntaxException {
-        ToopherApi toopherApi = new ToopherApi("key", "secret", DEFAULT_BASE_URL);
+        Object toopherApi = new ToopherApi("key", "secret", DEFAULT_BASE_URL);
         assertTrue(toopherApi instanceof ToopherApi);
     }
 
     @Test
     public void testCreateToopherApiWithUriSchemeHostAndBase() throws URISyntaxException {
-        ToopherApi toopherApi = new ToopherApi("key", "secret", "https:", "api.toopher.test", "/v1/");
+        Object toopherApi = new ToopherApi("key", "secret", "https:", "api.toopher.test", "/v1/");
         assertTrue(toopherApi instanceof ToopherApi);
     }
 

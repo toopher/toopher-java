@@ -274,6 +274,39 @@ public final class ToopherIframe {
         return processPostback(params, null);
     }
 
+    /**
+     * Evaluate whether AuthenticationRequest has been granted
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
+     */
+    public boolean isAuthenticationGranted(String params, String requestToken) {
+        try {
+            Object postbackObject = processPostback(params, requestToken);
+            if (postbackObject instanceof AuthenticationRequest) {
+                AuthenticationRequest authenticationRequest = (AuthenticationRequest)postbackObject;
+                return !authenticationRequest.pending && authenticationRequest.granted;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            logger.debug(e);
+            return false;
+        }
+    }
+
+    /**
+     * Evaluate whether AuthenticationRequest has been granted
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
+     */
+    public boolean isAuthenticationGranted(String params) {
+        return isAuthenticationGranted(params, null);
+    }
+
     private Object getKeyOrDefaultAndDeleteKey(Map<String, String> extras, String key, Object defaultValue) {
         return extras.containsKey(key) ? extras.remove(key) : defaultValue;
     }

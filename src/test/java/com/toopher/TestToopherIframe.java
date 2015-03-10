@@ -353,4 +353,55 @@ public class TestToopherIframe {
             assertTrue(e.getMessage().contains("The specified user has disabled Toopher authentication."));
         }
     }
+
+    @Test
+    public void testIsAuthenticationGrantedWithAuthGrantedReturnsTrue() {
+        assertTrue(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()), REQUEST_TOKEN));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithAuthGrantedWithoutRequestTokenReturnsTrue() {
+        assertTrue(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData())));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithAuthNotGrantedReturnsFalse() {
+        Map<String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.put("granted", "false");
+        auth_data.put("toopher_sig", "nADNKdly9zA2IpczD6gvDumM48I=");
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data)));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithPairingReturnsFalse() {
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(getPairingPostbackData()), REQUEST_TOKEN));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithUserReturnsFalse() {
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(getUserPostbackData()), REQUEST_TOKEN));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithSignatureValidationErrorReturnsFalse() {
+        Map<String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.remove("timestamp");
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data), REQUEST_TOKEN));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithRequestErrorReturnsFalse() {
+        Map<String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.put("resource_type", "invalid");
+        auth_data.put("toopher_sig", "xEY+oOtJcdMsmTLp6eOy9isO/xQ=");
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data), REQUEST_TOKEN));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithUserDisabledErrorReturnsFalse() {
+        Map<String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.put("error_code", "704");
+
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data), REQUEST_TOKEN));
+    }
 }

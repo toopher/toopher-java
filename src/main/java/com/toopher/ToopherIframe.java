@@ -114,91 +114,32 @@ public final class ToopherIframe {
 
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
-     *
-     * @param username     Unique name that identifies this user.  This will be displayed to the user on
-     *                     their mobile device when they pair or authenticate
+     * @param userName          Unique name that identifies this user.  This will be displayed to the user on
+     *                          their mobile device when they pair or authenticate
      * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String getAuthenticationUrl(String username) {
-        return getAuthenticationUrl(username, "None", "None", "Log In", "None", new HashMap<String, String>());
+    public String getAuthenticationUrl(String userName) {
+        return getAuthenticationUrl(userName, new HashMap<String, String>());
     }
 
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
-     *
-     * @param username     Unique name that identifies this user.  This will be displayed to the user on
-     *                     their mobile device when they pair or authenticate
-     * @param extras       An optional Map of extra parameters to provide to the API
-     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
-     */
-    public String getAuthenticationUrl(String username, Map<String, String> extras) {
-        return getAuthenticationUrl(username, "None", "None", "Log In", "None", extras);
-    }
-
-    /**
-     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
-     *
-     * @param userName     Unique name that identifies this user.  This will be displayed to the user on
-     *                     their mobile device when they pair or authenticate
-     * @param resetEmail   Email address that the user has access to.  In case the user has lost or cannot
-     *                     access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken Optional, can be empty.  Toopher will include this token in the signed data returned
-     *                     with the iframe response.
-     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
-     */
-    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken) {
-        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", new HashMap<String, String>());
-    }
-
-    /**
-     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
-     *
-     * @param userName     Unique name that identifies this user.  This will be displayed to the user on
-     *                     their mobile device when they pair or authenticate
-     * @param resetEmail   Email address that the user has access to.  In case the user has lost or cannot
-     *                     access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken Optional, can be empty.  Toopher will include this token in the signed data returned
-     *                     with the iframe response.
-     * @param extras       An optional Map of extra parameters to provide to the API
-     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
-     */
-    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, Map<String, String> extras) {
-        return getAuthenticationUrl(userName, resetEmail, requestToken, "Log In", "None", extras);
-    }
-
-    /**
-     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user/action
      *
      * @param userName          Unique name that identifies this user.  This will be displayed to the user on
      *                          their mobile device when they pair or authenticate
-     * @param resetEmail        Email address that the user has access to.  In case the user has lost or cannot
-     *                          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken      Optional, can be empty.  Toopher will include this token in the signed data returned
-     *                          with the iframe response.
-     * @param actionName        The name of the action to authenticate; will be shown to the user.  If blank,
-     *                          the Toopher API will default the action to "Log In".
-     * @param requesterMetadata Optional, can be empty.  Toopher will include this value in the signed data returned
-     *                          with the iframe response
-     * @param extras            An optional Map of extra parameters to provide to the API
+     * @param extras            An optional Map of parameters to provide to the API
      * @return URL that can be used to retrieve the Authentication iframe by the user's browser
      */
-    public String getAuthenticationUrl(String userName, String resetEmail, String requestToken, String actionName, String requesterMetadata, Map<String, String> extras) {
-        final long ttl;
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(10);
-
-        if (!extras.containsKey("ttl")) {
-            ttl = DEFAULT_TTL;
-        } else {
-            ttl = Long.parseLong(extras.get("ttl"));
-            extras.remove("ttl");
-        }
+    public String getAuthenticationUrl(String userName, Map<String, String> extras) {
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        final Long ttl = Long.parseLong(getKeyOrDefaultAndDeleteKey(extras, "ttl", DEFAULT_TTL).toString());
 
         params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("action_name", actionName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("session_token", requestToken));
-        params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
+        params.add(new BasicNameValuePair("action_name", (String)getKeyOrDefaultAndDeleteKey(extras, "actionName", "Log In")));
+        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "None")));
+        params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "None")));
+        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "None")));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
@@ -270,6 +211,10 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
         return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
+    }
+
+    private Object getKeyOrDefaultAndDeleteKey(Map<String, String> extras, String key, Object defaultValue) {
+        return extras.containsKey(key) ? extras.remove(key) : defaultValue;
     }
 
     /**

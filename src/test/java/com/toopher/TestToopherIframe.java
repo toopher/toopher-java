@@ -79,13 +79,11 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testGetAuthenticationUrl() {
+    public void testGetAuthenticationUrlOnlyUsername() {
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        String expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&action_name=Log+In&reset_email=jdoe%40example.com&session_token=s9s7vsb&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=YN%2BkKNTaoypsB37fsjvMS8vsG5A%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
-        String url = iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN);
-        assertEquals(expectedUrl, url);
+        String expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&action_name=Log+In&reset_email=None&session_token=None&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=Udj%2BxFeLQgSKzKyntCIOq5mODSs%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
+        assertEquals(expectedUrl, iframeApi.getAuthenticationUrl("jdoe"));
     }
-
     @Test
     public void testGetAuthenticationUrlWithExtras() {
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
@@ -94,23 +92,26 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testGetAuthenticationUrlOnlyUsername() {
+    public void testGetAuthenticationUrlWithEmailTokenActionMetadata() {
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("resetEmail", "jdoe@example.com");
+        extras.put("requestToken", REQUEST_TOKEN);
+        extras.put("actionName", "it is a test");
+        extras.put("requesterMetadata", "metadata");
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        String expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&action_name=Log+In&reset_email=None&session_token=None&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=Udj%2BxFeLQgSKzKyntCIOq5mODSs%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
-        assertEquals(expectedUrl, iframeApi.getAuthenticationUrl("jdoe"));
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", extras), Charset.forName("UTF-8")));
+        assertEquals("2TydgMnUwWoiwfpljKpSaFg0Luo=", params.get("oauth_signature"));
     }
 
     @Test
-    public void testGetAuthenticationUrlWithUsernameResetEmailRequestTokenAndExtras() {
+    public void testGetAuthenticationUrlWithEmailTokenActionMetadataAndExtras() {
+        Map<String, String> extras = getExtrasForUrl();
+        extras.put("resetEmail", "jdoe@example.com");
+        extras.put("requestToken", REQUEST_TOKEN);
+        extras.put("actionName", "it is a test");
+        extras.put("requesterMetadata", "metadata");
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, getExtrasForUrl()), Charset.forName("UTF-8")));
-        assertEquals("TUgywVd77mWpffzdwjjQJ7ooYPM=", params.get("oauth_signature"));
-    }
-
-    @Test
-    public void testGetAuthenticationUrlWithOptionalArgsAndExtras() {
-        ToopherIframe.setNonceOverride(OAUTH_NONCE);
-        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", "jdoe@example.com", REQUEST_TOKEN, "it is a test", "metadata", getExtrasForUrl()), Charset.forName("UTF-8")));
+        Map<String, String> params = nvp2map(URLEncodedUtils.parse(iframeApi.getAuthenticationUrl("jdoe", extras), Charset.forName("UTF-8")));
         assertEquals("61dqeQNPFxNy8PyEFB9e5UfgN8s=", params.get("oauth_signature"));
     }
 

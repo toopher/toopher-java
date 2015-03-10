@@ -1,12 +1,7 @@
 package com.toopher;
 
 import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.util.*;
 import java.net.URLEncoder;
 
 import oauth.signpost.http.HttpParameters;
@@ -25,6 +20,7 @@ import java.security.InvalidKeyException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 
 /**
  * Java helper library to generate Toopher iframe requests and validate responses.
@@ -213,116 +209,198 @@ public final class ToopherIframe {
         return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
     }
 
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @param extras An optional Map of extra parameters used to validate the data
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws RequestError Thrown when postback resource type is invalid
+     */
+    public Object processPostback(String params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError {
+        Map<String, String> toopherData = urlDecodeIframeData(params);
+
+        if (toopherData.containsKey("error_code")) {
+            int errorCode = Integer.parseInt(toopherData.get("error_code"));
+            String errorMessage = toopherData.get("error_message");
+            if (errorCode == ToopherUserDisabledError.ERROR_CODE) {
+                throw new ToopherUserDisabledError(errorMessage);
+            } else {
+                throw new ToopherClientError(errorCode, errorMessage);
+            }
+        } else {
+            Map<String, String> validatedData = validateData(toopherData, requestToken, extras);
+
+            ToopherApi toopherApi = new ToopherApi(consumerKey, consumerSecret);
+            String resourceType = validatedData.get("resource_type");
+            if (resourceType.equals("authentication_request")) {
+                return new AuthenticationRequest(createAuthenticationRequestJson(validatedData), toopherApi);
+            } else if (resourceType.equals("pairing")) {
+                return new Pairing(createPairingJson(validatedData), toopherApi);
+            } else if (resourceType.equals("requester_user")) {
+                return new User(createUserJson(validatedData), toopherApi);
+            } else {
+                throw new RequestError(String.format("The postback resource type is not valid: %s", resourceType));
+            }
+        }
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws RequestError Thrown when postback resource type is invalid
+     */
+    public Object processPostback(String params, String requestToken) throws SignatureValidationError, RequestError {
+        return processPostback(params, requestToken, new HashMap<String, String>());
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws RequestError Thrown when postback resource type is invalid
+     */
+    public Object processPostback(String params) throws SignatureValidationError, RequestError {
+        return processPostback(params, null);
+    }
+
     private Object getKeyOrDefaultAndDeleteKey(Map<String, String> extras, String key, Object defaultValue) {
         return extras.containsKey(key) ? extras.remove(key) : defaultValue;
     }
 
-    /**
-     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
-     *
-     * @param params The data returned from the Iframe
-     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI and returned in
-     *                     the signed response from the Toopher Iframe
-     * @param ttl    Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
-     *               between the Toopher API creating the signature and the signature being validated on your server
-     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
-     */
-    public Map<String, String> processPostback(Map<String, String[]> params, String requestToken, long ttl) throws SignatureValidationError {
-        Map<String, String> data = flattenParams(params);
-
-        try {
-            List<String> missingKeys = new ArrayList<String>();
-            if (!data.containsKey("toopher_sig")) {
-                missingKeys.add("toopher_sig");
-            }
-            if (!data.containsKey("timestamp")) {
-                missingKeys.add("timestamp");
-            }
-            if (!data.containsKey("session_token")) {
-                missingKeys.add("session_token");
-            }
-            if (missingKeys.size() > 0) {
-                StringBuilder errorMessageBuilder = new StringBuilder("Missing required keys: ");
-                String separator = "";
-                for (String missingKey : missingKeys) {
-                    errorMessageBuilder.append(separator).append(missingKey);
-                    separator = ",";
-                }
-                String errorMessage = errorMessageBuilder.toString();
-                logger.debug(errorMessage);
-                throw new SignatureValidationError(errorMessage);
-            }
-
-            if (requestToken != null) {
-                boolean sessionTokenValid = data.get("session_token").equals(requestToken);
-                if (!sessionTokenValid) {
-                    throw new SignatureValidationError("Session token does not match expected value");
-                }
-            }
-
-            String maybeSig = data.get("toopher_sig");
-            data.remove("toopher_sig");
-            boolean signatureValid;
-            try {
-                String computedSig = signature(consumerSecret, data);
-                signatureValid = computedSig.equals(maybeSig);
-                logger.debug("submitted = " + maybeSig);
-                logger.debug("computed  = " + computedSig);
-            } catch (Exception e) {
-                logger.debug("error while calculating signature", e);
-                signatureValid = false;
-            }
-            if (!signatureValid) {
-                throw new SignatureValidationError("Computed signature does not match");
-            }
-
-            boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(data.get("timestamp"));
-            if (!ttlValid) {
-                throw new SignatureValidationError("TTL Expired");
-            }
-
-            return data;
-        } catch (SignatureValidationError s) {
-            throw s;
-        } catch (Exception e) {
-            logger.debug("Exception while validating toopher signature", e);
-            throw new SignatureValidationError("Exception while validating toopher signature", e);
-        }
-    }
-
-    /**
-     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
-     *
-     * @param params The data returned from the Iframe
-     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
-     */
-    public Map<String, String> validatePostback(Map<String, String[]> params) throws SignatureValidationError {
-        return processPostback(params, null, DEFAULT_TTL);
-    }
-
-    /**
-     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
-     *
-     * @param params The data returned from the Iframe
-     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI and returned in
-     *                     the signed response from the Toopher Iframe
-     * @return A map of the validated data if the signature is valid, or null if the signature is invalid
-     */
-    public Map<String, String> validatePostback(Map<String, String[]> params, String requestToken) throws SignatureValidationError {
-        return processPostback(params, requestToken, DEFAULT_TTL);
-    }
-
-    private static Map<String, String> flattenParams(Map<String, String[]> params) {
-        Map<String, String> result = new HashMap<String, String>();
-        for (String key : params.keySet()) {
-            String[] val = params.get(key);
-            if (val.length > 0) {
-                result.put(key, val[0]);
-            }
+    private Map<String, String> urlDecodeIframeData(String params) {
+        List<NameValuePair> decodedParams = URLEncodedUtils.parse(params, Charset.forName("UTF-8"));
+        HashMap<String, String> result = new HashMap<String, String>();
+        for (NameValuePair nvp : decodedParams) {
+            result.put(nvp.getName(), nvp.getValue());
         }
         return result;
     }
 
+    private JSONObject createAuthenticationRequestJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("pairing_user_id"));
+        user.put("name", data.get("user_name"));
+        user.put("toopher_authentication_enabled", data.get("user_toopher_authentication_enabled").equals("true"));
+
+        JSONObject terminal = new JSONObject();
+        terminal.put("id", data.get("terminal_id"));
+        terminal.put("name", data.get("terminal_name"));
+        terminal.put("requester_specified_id", data.get("terminal_requester_specified_id"));
+        terminal.put("user", user);
+
+        JSONObject action = new JSONObject();
+        action.put("id", data.get("action_id"));
+        action.put("name", data.get("action_name"));
+
+        JSONObject authenticationRequest = new JSONObject();
+        authenticationRequest.put("id", data.get("id"));
+        authenticationRequest.put("pending", data.get("pending").equals("true"));
+        authenticationRequest.put("granted", data.get("granted").equals("true"));
+        authenticationRequest.put("automated", data.get("automated").equals("true"));
+        authenticationRequest.put("reason", data.get("reason"));
+        authenticationRequest.put("reason_code", data.get("reason_code"));
+        authenticationRequest.put("user", user);
+        authenticationRequest.put("terminal", terminal);
+        authenticationRequest.put("action", action);
+        return authenticationRequest;
+    }
+
+    private JSONObject createPairingJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("pairing_user_id"));
+        user.put("name", data.get("user_name"));
+        user.put("toopher_authentication_enabled", data.get("user_toopher_authentication_enabled").equals("true"));
+
+        JSONObject terminal = new JSONObject();
+        terminal.put("id", data.get("id"));
+        terminal.put("enabled", data.get("enabled").equals("true"));
+        terminal.put("pending", data.get("pending").equals("true"));
+        terminal.put("user", user);
+        return terminal;
+    }
+
+    private JSONObject createUserJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("id"));
+        user.put("name", data.get("name"));
+        user.put("toopher_authentication_enabled", data.get("toopher_authentication_enabled").equals("true"));
+        return user;
+    }
+
+    private Map<String, String> validateData(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError {
+        checkForMissingKeys(params);
+        verifySessionToken(params.get("session_token"), requestToken);
+        checkIfSignatureIsExpired(params.get("timestamp"), extras);
+        validateSignature(params);
+        return params;
+    }
+
+    private void checkForMissingKeys(Map<String, String> data) throws SignatureValidationError {
+        List<String> missingKeys = new ArrayList<String>();
+
+        List<String> keys = Arrays.asList("toopher_sig", "timestamp", "session_token");
+        for (String key : keys) {
+            if (!data.containsKey(key)) {
+                missingKeys.add(key);
+            }
+        }
+        if (missingKeys.size() > 0) {
+            StringBuilder errorMessageBuilder = new StringBuilder("Missing required keys: ");
+            String separator = "";
+            for (String missingKey : missingKeys) {
+                errorMessageBuilder.append(separator).append(missingKey);
+                separator = ",";
+            }
+            String errorMessage = errorMessageBuilder.toString();
+            logger.debug(errorMessage);
+            throw new SignatureValidationError(errorMessage);
+        }
+    }
+
+    private void verifySessionToken(String sessionToken, String requestToken) throws SignatureValidationError {
+        if (requestToken != null) {
+            boolean sessionTokenValid = sessionToken.equals(requestToken);
+            if (!sessionTokenValid) {
+                throw new SignatureValidationError("Session token does not match expected value");
+            }
+        }
+    }
+
+    private void checkIfSignatureIsExpired(String timestamp, Map<String, String> extras) throws SignatureValidationError {
+        long ttl = extras.containsKey("ttl") ? Long.parseLong(extras.remove("ttl")) : DEFAULT_TTL;
+        boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(timestamp);
+        if (!ttlValid) {
+            throw new SignatureValidationError("TTL Expired");
+        }
+    }
+
+    private void validateSignature(Map<String, String> data) throws SignatureValidationError {
+        String maybeSig = data.remove("toopher_sig");
+        boolean signatureValid;
+        try {
+            String computedSig = signature(consumerSecret, data);
+            signatureValid = computedSig.equals(maybeSig);
+            logger.debug("Submitted signature = " + maybeSig);
+            logger.debug("Computed signature = " + computedSig);
+        } catch (Exception e) {
+            logger.debug("Error while calculating signature", e);
+            signatureValid = false;
+        }
+        if (!signatureValid) {
+            throw new SignatureValidationError("Computed signature does not match");
+        }
+    }
 
     private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
         TreeSet<String> sortedKeys = new TreeSet<String>(data.keySet());

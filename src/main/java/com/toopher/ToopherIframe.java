@@ -41,7 +41,7 @@ public final class ToopherIframe {
     private static final String IFRAME_VERSION = "2";
 
     /**
-     * Default amount of time that iframe requests are valid (seconds)
+     * Default amount of time that Iframe requests are valid (seconds)
      */
     private static final long DEFAULT_TTL = 300L;
 
@@ -112,7 +112,7 @@ public final class ToopherIframe {
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
      * @param userName          Unique name that identifies this user.  This will be displayed to the user on
      *                          their mobile device when they pair or authenticate
-     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
+     * @return URL that can be used to retrieve the Authentication Iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName) {
         return getAuthenticationUrl(userName, new HashMap<String, String>());
@@ -124,7 +124,7 @@ public final class ToopherIframe {
      * @param userName          Unique name that identifies this user.  This will be displayed to the user on
      *                          their mobile device when they pair or authenticate
      * @param extras            An optional Map of parameters to provide to the API
-     * @return URL that can be used to retrieve the Authentication iframe by the user's browser
+     * @return URL that can be used to retrieve the Authentication Iframe by the user's browser
      */
     public String getAuthenticationUrl(String userName, Map<String, String> extras) {
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -150,7 +150,7 @@ public final class ToopherIframe {
      *
      * @param userName   Unique name that identifies this user.  This will be displayed to the user on
      *                   their mobile device when they pair or authenticate
-     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName) {
         return getUserManagementUrl(userName, "None", new HashMap<String, String>());
@@ -162,7 +162,7 @@ public final class ToopherIframe {
      * @param userName   Unique name that identifies this user.  This will be displayed to the user on
      *                   their mobile device when they pair or authenticate
      * @param extras     An optional Map of extra parameters to provide to the API
-     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, Map<String, String> extras) {
         return getUserManagementUrl(userName, "None", extras);
@@ -176,7 +176,7 @@ public final class ToopherIframe {
      *                   their mobile device when they pair or authenticate
      * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
      *                   access their mobile device, Toopher will send a reset email to this address
-     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, String resetEmail) {
         return getUserManagementUrl(userName, resetEmail, new HashMap<String, String>());
@@ -190,7 +190,7 @@ public final class ToopherIframe {
      * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
      *                   access their mobile device, Toopher will send a reset email to this address
      * @param extras     An optional Map of extra parameters to provide to the API
-     * @return URL that can be used to retrieve the Pairing iframe by the user's browser
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras) {
         final long ttl;

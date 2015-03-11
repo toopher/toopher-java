@@ -166,9 +166,11 @@ public class TestToopherIframe {
 
     @Test
     public void testGetUserManagementUrlWithEmail() {
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("resetEmail", "jdoe@example.com");
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
         String expected = "https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=jdoe%40example.com&expires=1300&v=2&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=NjwH5yWPE2CCJL8v%2FMNknL%2BeTpE%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
-        String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", "jdoe@example.com");
+        String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", extras);
         assertEquals(expected, userManagementUrl);
     }
 
@@ -176,9 +178,10 @@ public class TestToopherIframe {
     public void testGetUserManagementUrlWithEmailAndExtras() {
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
         Map<String, String> extras = new HashMap<String, String>();
+        extras.put("resetEmail", "jdoe@example.com");
         extras.put("ttl", Long.toString(REQUEST_TTL));
         String expected = "https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=jdoe%40example.com&expires=1100&v=2&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=sV8qoKnxJ3fxfP6AHNa0eNFxzJs%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
-        String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", "jdoe@example.com", extras);
+        String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", extras);
         assertEquals(expected, userManagementUrl);
     }
 

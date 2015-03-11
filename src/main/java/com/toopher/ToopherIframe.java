@@ -151,7 +151,7 @@ public final class ToopherIframe {
      * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName) {
-        return getUserManagementUrl(userName, "", new HashMap<String, String>());
+        return getUserManagementUrl(userName, new HashMap<String, String>());
     }
 
     /**
@@ -163,45 +163,16 @@ public final class ToopherIframe {
      * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, Map<String, String> extras) {
-        return getUserManagementUrl(userName, "", extras);
-    }
-
-
-    /**
-     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
-     *
-     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
-     *                   their mobile device when they pair or authenticate
-     * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
-     *                   access their mobile device, Toopher will send a reset email to this address
-     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
-     */
-    public String getUserManagementUrl(String userName, String resetEmail) {
-        return getUserManagementUrl(userName, resetEmail, new HashMap<String, String>());
-    }
-
-    /**
-     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
-     *
-     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
-     *                   their mobile device when they pair or authenticate
-     * @param resetEmail Email address that the user has access to.  In case the user has lost or cannot
-     *                   access their mobile device, Toopher will send a reset email to this address
-     * @param extras     An optional Map of extra parameters to provide to the API
-     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
-     */
-    public String getUserManagementUrl(String userName, String resetEmail, Map<String, String> extras) {
-        final long ttl;
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
-
-        if (!extras.containsKey("ttl")) {
-            ttl = DEFAULT_TTL;
-        } else {
-            ttl = Long.parseLong(extras.get("ttl"));
-        }
+        final Long ttl = Long.parseLong(getKeyOrDefaultAndDeleteKey(extras, "ttl", DEFAULT_TTL).toString());
 
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("reset_email", resetEmail));
+        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "")));
+
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
         return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret, ttl);
     }
 

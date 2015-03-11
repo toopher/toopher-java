@@ -130,19 +130,17 @@ public final class ToopherIframe {
         final List<NameValuePair> params = new ArrayList<NameValuePair>();
         final Long ttl = Long.parseLong(getKeyOrDefaultAndDeleteKey(extras, "ttl", DEFAULT_TTL).toString());
 
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("action_name", (String)getKeyOrDefaultAndDeleteKey(extras, "actionName", "Log In")));
         params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "None")));
         params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "None")));
         params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "None")));
-        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
             params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
 
-        return getOAuthUrl(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
+        return getOAuthUrl(baseUri + "web/authenticate", params, consumerKey, consumerSecret, ttl);
     }
 
     /**
@@ -202,11 +200,9 @@ public final class ToopherIframe {
             ttl = Long.parseLong(extras.get("ttl"));
         }
 
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
+        return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret, ttl);
     }
 
     /**
@@ -450,9 +446,11 @@ public final class ToopherIframe {
         return org.apache.commons.codec.binary.Base64.encodeBase64String(mac.doFinal(toSign.getBytes())).trim();
     }
 
-    private static final String getOAuthUrl(String uri, List<NameValuePair> params, String key, String secret) {
-        final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
+    private static final String getOAuthUrl(String uri, List<NameValuePair> params, String key, String secret, long ttl) {
+        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
+        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
 
+        final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
         HttpParameters additionalParameters = new HttpParameters();
         additionalParameters.put("oauth_timestamp", String.valueOf(getDate().getTime() / 1000));
         if (ToopherIframe.getNonce() != null) {

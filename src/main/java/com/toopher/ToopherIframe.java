@@ -132,9 +132,9 @@ public final class ToopherIframe {
 
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("action_name", (String)getKeyOrDefaultAndDeleteKey(extras, "actionName", "Log In")));
-        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "None")));
-        params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "None")));
-        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "None")));
+        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "")));
+        params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "")));
+        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "")));//        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
             params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -151,7 +151,7 @@ public final class ToopherIframe {
      * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName) {
-        return getUserManagementUrl(userName, "None", new HashMap<String, String>());
+        return getUserManagementUrl(userName, "", new HashMap<String, String>());
     }
 
     /**
@@ -163,7 +163,7 @@ public final class ToopherIframe {
      * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
      */
     public String getUserManagementUrl(String userName, Map<String, String> extras) {
-        return getUserManagementUrl(userName, "None", extras);
+        return getUserManagementUrl(userName, "", extras);
     }
 
 

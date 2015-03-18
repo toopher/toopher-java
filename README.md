@@ -31,7 +31,7 @@ This library makes it super simple to do the Toopher two-step.  Check it out:
 import com.toopher.*;
 
 // Create an API object using your credentials
-ToopherApi api = new ToopherApi("<your consumer key>", "<your consumer secret>");
+ToopherAPI api = new ToopherAPI("<your consumer key>", "<your consumer secret>");
 
 // Step 1 - Pair with their phone's Toopher app
 PairingStatus pairing = api.pair("pairing phrase", "username@yourservice.com");

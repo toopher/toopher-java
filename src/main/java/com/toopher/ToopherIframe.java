@@ -187,7 +187,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(String params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError {
         Map<String, String> toopherData = urlDecodeIframeData(params);
 
         if (toopherData.containsKey("error_code")) {
@@ -225,7 +225,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(String params, String requestToken) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError {
         return processPostback(params, requestToken, new HashMap<String, String>());
     }
 
@@ -237,7 +237,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(String params) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError {
         return processPostback(params, null);
     }
 
@@ -249,7 +249,7 @@ public final class ToopherIframe {
      *                     and returned in the signed response from the Toopher Iframe
      * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
      */
-    public boolean isAuthenticationGranted(String params, String requestToken) {
+    public boolean isAuthenticationGranted(Map<String, String> params, String requestToken) {
         try {
             Object postbackObject = processPostback(params, requestToken);
             if (postbackObject instanceof AuthenticationRequest) {
@@ -270,7 +270,7 @@ public final class ToopherIframe {
      * @param params The postback data returned from the Toopher Iframe
      * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
      */
-    public boolean isAuthenticationGranted(String params) {
+    public boolean isAuthenticationGranted(Map<String, String> params) {
         return isAuthenticationGranted(params, null);
     }
 
@@ -278,8 +278,8 @@ public final class ToopherIframe {
         return extras.containsKey(key) ? extras.remove(key) : defaultValue;
     }
 
-    private Map<String, String> urlDecodeIframeData(String params) {
-        List<NameValuePair> decodedParams = URLEncodedUtils.parse(params, Charset.forName("UTF-8"));
+    private Map<String, String> urlDecodeIframeData(Map<String, String> params) {
+        List<NameValuePair> decodedParams = URLEncodedUtils.parse(params.get("toopher_iframe_data"), Charset.forName("UTF-8"));
         HashMap<String, String> result = new HashMap<String, String>();
         for (NameValuePair nvp : decodedParams) {
             result.put(nvp.getName(), nvp.getValue());

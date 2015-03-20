@@ -88,13 +88,16 @@ public class TestToopherIframe {
         return data;
     }
 
-    private String getUrlEncodedPostbackData(Map<String, String> postbackData) {
+    private Map<String, String> getUrlEncodedPostbackData(Map<String, String> postbackData) {
         TreeSet<String> sortedKeys = new TreeSet<String>(postbackData.keySet());
         List<NameValuePair> sortedData = new ArrayList<NameValuePair>(postbackData.size());
         for (String key: sortedKeys) {
             sortedData.add(new BasicNameValuePair(key, postbackData.get(key)));
         }
-        return URLEncodedUtils.format(sortedData, "UTF-8");
+
+        Map<String, String> data =  new HashMap<String, String>();
+        data.put("toopher_iframe_data", URLEncodedUtils.format(sortedData, "UTF-8"));
+        return data;
     }
 
     @Before

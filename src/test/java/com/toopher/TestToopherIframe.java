@@ -200,7 +200,8 @@ public class TestToopherIframe {
         ToopherIframe.setNonceOverride(OAUTH_NONCE);
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("ttl", Long.toString(REQUEST_TTL));
-        String expectedUrl = "https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=&expires=1100&v=2&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=CtakenrFTqmVw%2BwPxvrgIM%2BDiwk%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
+        extras.put("foo", "bar");
+        String expectedUrl = "https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=&foo=bar&expires=1100&v=2&oauth_consumer_key=abcdefg&oauth_nonce=12345678&oauth_signature=5DE7uRWNHNb0%2B76yqUuzoDpdjVg%3D&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1000&oauth_version=1.0";
         String userManagementUrl = iframeApi.getUserManagementUrl("jdoe", extras);
         assertEquals(expectedUrl, userManagementUrl);
     }
@@ -362,6 +363,19 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testProcessPostbackWith707Fails() throws ToopherIframe.SignatureValidationError, RequestError {
+        Map<String, String> data = getAuthenticationRequestPostbackData();
+        data.put("error_code", "707");
+        data.put("error_message", "Not allowed: This pairing has been deactivated.");
+        try {
+            iframeApi.processPostback(getUrlEncodedPostbackData(data), REQUEST_TOKEN);
+            fail("ToopherUserDisabledError was not thrown for error code 704");
+        } catch (ToopherClientError e) {
+            assertTrue(e.getMessage().contains("Not allowed: This pairing has been deactivated."));
+        }
+    }
+
+    @Test
     public void testIsAuthenticationGrantedWithAuthGrantedReturnsTrue() {
         assertTrue(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()), REQUEST_TOKEN));
     }
@@ -372,10 +386,19 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testIsAuthenticationGrantedWithAuthNotGrantedReturnsFalse() {
+    public void testIsAuthenticationGrantedWithAuthNotGrantedNotPendingReturnsFalse() {
         Map<String, String> auth_data = getAuthenticationRequestPostbackData();
         auth_data.put("granted", "false");
         auth_data.put("toopher_sig", "nADNKdly9zA2IpczD6gvDumM48I=");
+        assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data)));
+    }
+
+    @Test
+    public void testIsAuthenticationGrantedWithAuthGrantedAndPendingTrueReturnsFalse() {
+        Map<String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.put("granted", "true");
+        auth_data.put("pending", "true");
+        auth_data.put("toopher_sig", "vmWBQCy8Py5PVkMZRppbCG7cm0w=");
         assertFalse(iframeApi.isAuthenticationGranted(getUrlEncodedPostbackData(auth_data)));
     }
 

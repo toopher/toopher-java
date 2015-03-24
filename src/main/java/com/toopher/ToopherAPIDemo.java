@@ -17,7 +17,7 @@ public class ToopherAPIDemo {
 
         Scanner in = new Scanner(System.in);
 
-        System.out.println("======================================");
+        System.out.println();
         System.out.println("Toopher Library Demo");
         System.out.println("======================================");
 
@@ -26,7 +26,6 @@ public class ToopherAPIDemo {
             try {
                 base_uri = new URI(env.get("TOOPHER_BASE_URL"));
             } catch (URISyntaxException e) {
-                System.out.println("Error parsing environment arg TOOPHER_BASE_URL!  Using default (https://api.toopher.com/v1/)");
                 base_uri = null;
             }
         }
@@ -38,17 +37,16 @@ public class ToopherAPIDemo {
             System.out.println("");
             System.out.println("Setup Credentials");
             System.out.println("--------------------------------------");
-            System.out.println("Enter your requester credential details (from https://dev.toopher.com)");
-            System.out.print("Toopher Consumer Key: ");
+            System.out.println("Enter your requester credential details (from https://dev.toopher.com).");
+            System.out.print("TOOPHER_CONSUMER_KEY: ");
             String consumerKey = in.nextLine();
-            System.out.print("Toopher Consumer Secret: ");
+            System.out.print("TOOPHER_CONSUMER_SECRET: ");
             String consumerSecret = in.nextLine();
 
             api = new ToopherApi(consumerKey, consumerSecret, base_uri);
         }
 
         Pairing pairing;
-        String pairingId;
         while (true) {
             String pairingPhrase;
             while (true) {
@@ -76,10 +74,9 @@ public class ToopherAPIDemo {
 
             try {
                 pairing = api.pair(userName, pairingPhrase);
-                pairingId = pairing.id;
                 break;
             } catch (RequestError err) {
-                System.out.println(String.format("The pairing phrase was not accepted (Reason:%s)", err.getMessage()));
+                System.out.println(String.format("The pairing phrase was not accepted (Reason: %s)", err.getMessage()));
             } catch (JSONException je) {
                 System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
             }
@@ -103,7 +100,7 @@ public class ToopherAPIDemo {
                     System.exit(0);
                 }
             } catch (RequestError err) {
-                System.out.println(String.format("Could not check pairing status (Reason:%s)", err.getMessage()));
+                System.out.println(String.format("Could not check pairing status (Reason: %s)", err.getMessage()));
             } catch (JSONException je) {
                 System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
             }
@@ -124,7 +121,7 @@ public class ToopherAPIDemo {
             try {
                 authenticationRequest = api.authenticate(pairing.id, terminalName);
             } catch (RequestError err) {
-                System.out.println(String.format("Error initiating authentication (Reason:%s)", err.getMessage()));
+                System.out.println(String.format("Error initiating authentication (Reason: %s)", err.getMessage()));
                 continue;
             } catch (JSONException je) {
                 System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));
@@ -132,14 +129,14 @@ public class ToopherAPIDemo {
             }
 
             while (true) {
-                System.out.println("Respond to authentication request on phone (if prompted) and then press return to continue.");
+                System.out.println("Respond to authentication request on phone and then press return to continue.");
                 in.nextLine();
                 System.out.println("Checking status of authentication request...");
 
                 try {
                     authenticationRequest.refreshFromServer();
                 } catch (RequestError err) {
-                    System.out.println(String.format("Could not check authentication status (Reason:%s)", err.getMessage()));
+                    System.out.println(String.format("Could not check authentication status (Reason: %s)", err.getMessage()));
                     continue;
                 } catch (JSONException je) {
                     System.out.println(String.format("The JSON response could not be processed (Reason: %s)", je.getMessage()));

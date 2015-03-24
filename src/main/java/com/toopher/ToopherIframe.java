@@ -1,5 +1,6 @@
 package com.toopher;
 
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.net.URLEncoder;
@@ -187,7 +188,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> toopherData = urlDecodeIframeData(params);
 
         if (toopherData.containsKey("error_code")) {
@@ -201,7 +202,7 @@ public final class ToopherIframe {
         } else {
             Map<String, String> validatedData = validateData(toopherData, requestToken, extras);
 
-            ToopherApi toopherApi = new ToopherApi(consumerKey, consumerSecret);
+            ToopherApi toopherApi = new ToopherApi(consumerKey, consumerSecret, baseUri);
             String resourceType = validatedData.get("resource_type");
             if (resourceType.equals("authentication_request")) {
                 return new AuthenticationRequest(createAuthenticationRequestJson(validatedData), toopherApi);
@@ -225,7 +226,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError, URISyntaxException {
         return processPostback(params, requestToken, new HashMap<String, String>());
     }
 
@@ -237,7 +238,7 @@ public final class ToopherIframe {
      * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
      * @throws RequestError Thrown when postback resource type is invalid
      */
-    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError {
+    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError, URISyntaxException {
         return processPostback(params, null);
     }
 

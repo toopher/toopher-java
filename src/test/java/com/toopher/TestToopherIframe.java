@@ -1,5 +1,6 @@
 package com.toopher;
 
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -207,7 +208,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackGoodSignatureReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackGoodSignatureReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> auth_data = getAuthenticationRequestPostbackData();
         AuthenticationRequest authenticationRequest = (AuthenticationRequest)iframeApi.processPostback(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()), REQUEST_TOKEN);
         assertTrue(authenticationRequest != null);
@@ -228,7 +229,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackGoodSignatureReturnsPairing() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackGoodSignatureReturnsPairing() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> pairing_data = getPairingPostbackData();
         Pairing pairing = (Pairing)iframeApi.processPostback(getUrlEncodedPostbackData(pairing_data), REQUEST_TOKEN);
         assertTrue(pairing != null);
@@ -241,7 +242,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackGoodSignatureReturnsUser() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackGoodSignatureReturnsUser() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map <String, String> user_data = getUserPostbackData();
         User user = (User)iframeApi.processPostback(getUrlEncodedPostbackData(user_data), REQUEST_TOKEN);
         assertTrue(user != null);
@@ -251,7 +252,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackGoodSignatureWithExtrasReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackGoodSignatureWithExtrasReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> extras = new HashMap<String, String>();
         extras.put("ttl", "100");
         Object authenticationRequest = iframeApi.processPostback(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()), REQUEST_TOKEN, extras);
@@ -259,13 +260,13 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackGoodSignatureNoRequestTokenReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackGoodSignatureNoRequestTokenReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Object authenticationRequest = iframeApi.processPostback(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()));
         assertTrue(authenticationRequest instanceof AuthenticationRequest);
     }
 
     @Test
-    public void testProcessPostbackBadSignatureFails() throws RequestError {
+    public void testProcessPostbackBadSignatureFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("toopher_sig", "invalid");
 
@@ -278,7 +279,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackExpiredSignatureFails() throws RequestError {
+    public void testProcessPostbackExpiredSignatureFails() throws RequestError, URISyntaxException {
         ToopherIframe.setDateOverride(new Date(2000000));
         try {
             iframeApi.processPostback(getUrlEncodedPostbackData(getAuthenticationRequestPostbackData()), REQUEST_TOKEN);
@@ -289,7 +290,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackMissingSignatureFails() throws RequestError {
+    public void testProcessPostbackMissingSignatureFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.remove("toopher_sig");
         try {
@@ -301,7 +302,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackMissingTimestampFails() throws RequestError {
+    public void testProcessPostbackMissingTimestampFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.remove("timestamp");
         try {
@@ -313,7 +314,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackMissingSessionTokenFails() throws RequestError {
+    public void testProcessPostbackMissingSessionTokenFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.remove("session_token");
         try {
@@ -325,7 +326,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackInvalidSessionTokenFails() throws RequestError {
+    public void testProcessPostbackInvalidSessionTokenFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("session_token", "invalid");
         try {
@@ -337,7 +338,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackBadResourceTypeFails() throws ToopherIframe.SignatureValidationError, RequestError{
+    public void testProcessPostbackBadResourceTypeFails() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("resource_type", "invalid");
         data.put("toopher_sig", "xEY+oOtJcdMsmTLp6eOy9isO/xQ=");
@@ -350,7 +351,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackWith704Fails() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackWith704Fails() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("error_code", "704");
         data.put("error_message", "The specified user has disabled Toopher authentication.");
@@ -363,7 +364,7 @@ public class TestToopherIframe {
     }
 
     @Test
-    public void testProcessPostbackWith707Fails() throws ToopherIframe.SignatureValidationError, RequestError {
+    public void testProcessPostbackWith707Fails() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("error_code", "707");
         data.put("error_message", "Not allowed: This pairing has been deactivated.");

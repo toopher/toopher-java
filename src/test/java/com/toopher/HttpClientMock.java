@@ -19,8 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Semaphore;
 
 @Ignore

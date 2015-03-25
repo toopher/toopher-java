@@ -134,7 +134,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("action_name", (String)getKeyOrDefaultAndDeleteKey(extras, "actionName", "Log In")));
         params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "")));
         params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "")));
-        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "")));//        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
+        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "")));
 
         for (Map.Entry<String, String> entry : extras.entrySet()) {
             params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
@@ -180,12 +180,41 @@ public final class ToopherIframe {
      * Verify the authenticity of data returned from the Toopher Iframe
      *
      * @param params The postback data returned from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
+     */
+    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError, URISyntaxException {
+        return processPostback(params, null);
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws com.toopher.ToopherIframe.SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws com.toopher.RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
+     */
+    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError, URISyntaxException {
+        return processPostback(params, requestToken, new HashMap<String, String>());
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
      * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
      *                     and returned in the signed response from the Toopher Iframe
      * @param extras An optional Map of extra parameters used to validate the data
      * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
-     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
-     * @throws RequestError Thrown when postback resource type is invalid
+     * @throws com.toopher.ToopherIframe.SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws com.toopher.RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
      */
     public Object processPostback(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError, URISyntaxException {
         Map<String, String> toopherData = urlDecodeIframeData(params);
@@ -216,29 +245,13 @@ public final class ToopherIframe {
     }
 
     /**
-     * Verify the authenticity of data returned from the Toopher Iframe
+     * Evaluate whether AuthenticationRequest has been granted
      *
      * @param params The postback data returned from the Toopher Iframe
-     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
-     *                     and returned in the signed response from the Toopher Iframe
-     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
-     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
-     * @throws RequestError Thrown when postback resource type is invalid
+     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
      */
-    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError, URISyntaxException {
-        return processPostback(params, requestToken, new HashMap<String, String>());
-    }
-
-    /**
-     * Verify the authenticity of data returned from the Toopher Iframe
-     *
-     * @param params The postback data returned from the Toopher Iframe
-     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
-     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
-     * @throws RequestError Thrown when postback resource type is invalid
-     */
-    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError, URISyntaxException {
-        return processPostback(params, null);
+    public boolean isAuthenticationGranted(Map<String, String> params) {
+        return isAuthenticationGranted(params, null);
     }
 
     /**
@@ -262,16 +275,6 @@ public final class ToopherIframe {
             logger.debug(e);
             return false;
         }
-    }
-
-    /**
-     * Evaluate whether AuthenticationRequest has been granted
-     *
-     * @param params The postback data returned from the Toopher Iframe
-     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
-     */
-    public boolean isAuthenticationGranted(Map<String, String> params) {
-        return isAuthenticationGranted(params, null);
     }
 
     private Object getKeyOrDefaultAndDeleteKey(Map<String, String> extras, String key, Object defaultValue) {

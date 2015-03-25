@@ -180,16 +180,13 @@ public class TestToopherApi {
     }
 
     @Test
-    public void testCreateAuthenticationRequestWithPairingIdAndActionName() throws InterruptedException, RequestError {
+    public void testCreateAuthenticationRequestWithPairingId() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
-        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, terminalName, null, actionName);
-
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id);
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
         assertEquals(id, httpClient.getLastCalledData("pairing_id"));
-        assertEquals(terminalName, httpClient.getLastCalledData("terminal_name"));
-        assertEquals(actionName, httpClient.getLastCalledData("action_name"));
         assertEquals(id, authenticationRequest.id);
         assertEquals(terminalId, authenticationRequest.terminal.id);
         assertEquals(actionId, authenticationRequest.action.id);
@@ -197,26 +194,53 @@ public class TestToopherApi {
     }
 
     @Test
-    public void testCreateAuthenticationRequestWithPairingIdAndTerminalName() throws InterruptedException, RequestError {
+    public void testCreateAuthenticationRequestWithPairingIdAndExtras() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
-        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, terminalName);
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("actionName", actionName);
+        extras.put("terminalName", terminalName);
+        extras.put("requesterSpecifiedId", terminalNameExtra);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(id, extras);
+
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
         assertEquals(id, httpClient.getLastCalledData("pairing_id"));
+        assertEquals(actionName, httpClient.getLastCalledData("action_name"));
         assertEquals(terminalName, httpClient.getLastCalledData("terminal_name"));
+        assertEquals(terminalNameExtra, httpClient.getLastCalledData("requester_specified_terminal_id"));
+        assertEquals(id, authenticationRequest.id);
+        assertEquals(terminalId, authenticationRequest.terminal.id);
+        assertEquals(actionId, authenticationRequest.action.id);
+        assertEquals(userId, authenticationRequest.user.id);
     }
 
     @Test
     public void testCreateAuthenticationRequestWithUsername() throws InterruptedException, RequestError {
         HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
         ToopherApi toopherApi = getToopherApi(httpClient);
-        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName, null, terminalNameExtra, actionName);
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName);
 
         assertEquals("POST", httpClient.getLastCalledMethod());
         assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
         assertEquals(userName, httpClient.getLastCalledData("user_name"));
-        assertEquals(terminalNameExtra, httpClient.getLastCalledData("requester_specified_terminal_id"));
+        assertEquals(id, authenticationRequest.id);
+        assertEquals(terminalId, authenticationRequest.terminal.id);
+        assertEquals(actionId, authenticationRequest.action.id);
+        assertEquals(userId, authenticationRequest.user.id);
+    }
+
+    @Test
+    public void testCreateAuthenticationRequestWithUsernameAndExtras() throws InterruptedException, RequestError {
+        HttpClientMock httpClient = new HttpClientMock(200, authenticationJsonResponse.toString());
+        ToopherApi toopherApi = getToopherApi(httpClient);
+        Map<String, String> extras = new HashMap<String, String>();
+        extras.put("foo", "bar");
+        AuthenticationRequest authenticationRequest = toopherApi.authenticate(userName, extras);
+
+        assertEquals("POST", httpClient.getLastCalledMethod());
+        assertEquals("authentication_requests/initiate", httpClient.getLastCalledEndpoint());
+        assertEquals(userName, httpClient.getLastCalledData("user_name"));
         assertEquals(id, authenticationRequest.id);
         assertEquals(terminalId, authenticationRequest.terminal.id);
         assertEquals(actionId, authenticationRequest.action.id);

@@ -4,6 +4,7 @@ import org.json.JSONException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -119,7 +120,9 @@ public class ToopherAPIDemo {
 
             AuthenticationRequest authenticationRequest;
             try {
-                authenticationRequest = api.authenticate(pairing.id, terminalName);
+                Map<String, String> extras = new HashMap<String, String>();
+                extras.put("terminalName", terminalName);
+                authenticationRequest = api.authenticate(pairing.id, extras);
             } catch (RequestError err) {
                 System.out.println(String.format("Error initiating authentication (Reason: %s)", err.getMessage()));
                 continue;

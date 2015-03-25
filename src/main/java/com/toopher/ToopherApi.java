@@ -244,7 +244,7 @@ public class ToopherApi {
     private static ResponseHandler<Object> jsonHandler = new ResponseHandler<Object>() {
 
         @Override
-        public Object handleResponse(HttpResponse response) throws IOException, ClientProtocolException {
+        public Object handleResponse(HttpResponse response) throws IOException {
             StatusLine statusLine = response.getStatusLine();
             if (statusLine.getStatusCode() >= 300) {
                 parseRequestError(statusLine, response);
@@ -272,7 +272,7 @@ public class ToopherApi {
     private static ResponseHandler<Object> qrResponseHandler = new ResponseHandler<Object>() {
 
         @Override
-        public Object handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+        public Object handleResponse(HttpResponse response) throws IOException {
             StatusLine statusLine = response.getStatusLine();
             if (statusLine.getStatusCode() >= 300) {
                 parseRequestError(statusLine, response);

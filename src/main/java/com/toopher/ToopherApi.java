@@ -83,7 +83,7 @@ public class ToopherApi {
      * @param consumerSecret The consumer secret for a requester (obtained from the developer portal)
      * @param uriScheme      The uri scheme ( http or https )
      * @param uriHost        The uri host ( api.toopher.com )
-     * @param uriScheme      The uri base ( /v1/ )
+     * @param uriBase        The uri base ( /v1/ )
      * @throws java.net.URISyntaxException
      */
     public ToopherApi(String consumerKey, String consumerSecret, String uriScheme, String uriHost, String uriBase) throws URISyntaxException {
@@ -136,8 +136,9 @@ public class ToopherApi {
      * Create a QR pairing
      *
      * @param userName A user-facing descriptive name for the user (displayed in requests)
-     * @return An {@link com.toopher.Pairing} object
-     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @return A {@link com.toopher.Pairing} object
+     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public Pairing pair(String userName) throws RequestError, JSONException {
         return this.pair(userName, null, null);
@@ -146,10 +147,11 @@ public class ToopherApi {
     /**
      * Create an SMS pairing or regular pairing
      *
-     * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
      * @param userName           A user-facing descriptive name for the user (displayed in requests)
+     * @param pairingPhraseOrNum The pairing phrase or phone number supplied by the user
      * @return A {@link com.toopher.Pairing} object
-     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public Pairing pair(String userName, String pairingPhraseOrNum) throws RequestError, JSONException {
         return this.pair(userName, pairingPhraseOrNum, null);
@@ -162,7 +164,8 @@ public class ToopherApi {
      * @param userName           A user-facing descriptive name for the user (displayed in requests)
      * @param extras             An optional Map of extra parameters to provide to the API
      * @return A {@link com.toopher.Pairing} object
-     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public Pairing pair(String userName, String pairingPhraseOrNum, Map<String, String> extras) throws RequestError, JSONException {
         String endpoint;
@@ -193,6 +196,7 @@ public class ToopherApi {
      * @param terminalName                    The user-facing descriptive name for the terminal from which the request originates
      * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalName) throws RequestError, JSONException {
         return authenticate(pairingIdOrUsername, terminalName, null, null, null);
@@ -221,6 +225,7 @@ public class ToopherApi {
      * @param extras                          An optional Map of extra parameters to provide to the API
      * @return An {@link com.toopher.AuthenticationRequest} object
      * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public AuthenticationRequest authenticate(String pairingIdOrUsername, String terminalName, String requesterSpecifiedId, String actionName, Map<String, String> extras) throws RequestError, JSONException {
         final String endpoint = "authentication_requests/initiate";
@@ -254,7 +259,7 @@ public class ToopherApi {
     }
 
     /**
-     * Extracts JSON response object from API response
+     * Extract JSON response object from API response
      */
     private static ResponseHandler<Object> jsonHandler = new ResponseHandler<Object>() {
 
@@ -282,7 +287,7 @@ public class ToopherApi {
     };
 
     /**
-     * Extracts QR image byte[] from API response
+     * Extract QR image byte[] from API response
      */
     private static ResponseHandler<Object> qrResponseHandler = new ResponseHandler<Object>() {
 
@@ -308,7 +313,7 @@ public class ToopherApi {
     };
 
     /**
-     * Throws new error message based on status code provided in API response
+     * Throw new error message based on status code provided in API response
      *
      * @param statusLine StatusLine object from API response
      * @param response   API response
@@ -382,6 +387,7 @@ public class ToopherApi {
              * @param pairingId The unique id for a pairing
              * @return A {@link com.toopher.Pairing} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public Pairing getById(String pairingId) throws RequestError, JSONException {
                 final String endpoint = String.format("pairings/%s", pairingId);
@@ -403,6 +409,7 @@ public class ToopherApi {
              * @param authenticationRequestId The unique id for an authentication request
              * @return An {@link com.toopher.AuthenticationRequest} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public AuthenticationRequest getById(String authenticationRequestId) throws RequestError, JSONException {
                 final String endpoint = String.format("authentication_requests/%s", authenticationRequestId);
@@ -424,6 +431,7 @@ public class ToopherApi {
              * @param userName The name of the user
              * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public User create(String userName) throws RequestError, JSONException {
                 return create(userName, null);
@@ -436,6 +444,7 @@ public class ToopherApi {
              * @param extras   An optional Map of extra parameters to provide to the API
              * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public User create(String userName, Map<String, String> extras) throws RequestError, JSONException {
                 final String endpoint = "users/create";
@@ -452,6 +461,7 @@ public class ToopherApi {
              * @param userId The unique id for a user
              * @return A {@link com.toopher.User} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public User getById(String userId) throws RequestError, JSONException {
                 final String endpoint = String.format("users/%s", userId);
@@ -534,6 +544,7 @@ public class ToopherApi {
              * @param terminalId The unique id for a user terminal
              * @return A {@link com.toopher.UserTerminal} object
              * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+             * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
              */
             public UserTerminal getById(String terminalId) throws RequestError, JSONException {
                 final String endpoint = String.format("user_terminals/%s", terminalId);

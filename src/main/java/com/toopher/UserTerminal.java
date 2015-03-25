@@ -4,11 +4,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Provides information about the status of a user terminal
+ * Provide information about the status of a user terminal
  */
 public class UserTerminal extends ApiResponseObject {
     /**
-     * The {@link com.toopher.ToopherApi} associated with this user terminal
+     * The {@link com.toopher.ToopherApi} associated with the user terminal
      */
     public ToopherApi api;
 
@@ -23,7 +23,7 @@ public class UserTerminal extends ApiResponseObject {
     public String name;
 
     /**
-     * The unique id specified by the requester
+     * The unique id for the user terminal specified by the requester
      */
     public String requesterSpecifiedId;
 
@@ -52,6 +52,7 @@ public class UserTerminal extends ApiResponseObject {
      * Update the UserTerminal object with JSON response from the server
      *
      * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("user_terminals/%s", id);
@@ -63,6 +64,7 @@ public class UserTerminal extends ApiResponseObject {
      * Update the UserTerminal object with JSON response
      *
      * @param jsonResponse The JSON response received from the server
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");

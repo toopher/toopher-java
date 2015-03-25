@@ -4,11 +4,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by graceyim on 1/26/15.
+ * Provide information about the status of an action
  */
 public class Action extends ApiResponseObject {
     /**
-     * The unique id for the authentication request
+     * The unique id for the action
      */
     public String id;
 
@@ -24,6 +24,12 @@ public class Action extends ApiResponseObject {
         this.name = json.getString("name");
     }
 
+    /**
+     * Update the Action object with JSON response
+     *
+     * @param jsonResponse The JSON response from the API
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
+     */
     public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");
         this.updateRawResponse(jsonResponse);

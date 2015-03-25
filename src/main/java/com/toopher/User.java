@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Provides information about the status of a user
+ * Provide information about the status of a user
  */
 public class User extends ApiResponseObject {
     /**
-     * The {@link com.toopher.ToopherApi} associated with this user
+     * The {@link com.toopher.ToopherApi} associated with the user
      */
     public ToopherApi api;
 
@@ -50,7 +50,8 @@ public class User extends ApiResponseObject {
     /**
      * Update the User object with JSON response from the API
      *
-     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void refreshFromServer() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
@@ -61,7 +62,8 @@ public class User extends ApiResponseObject {
     /**
      * Enable Toopher authentication for the user
      *
-     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void enableToopherAuthentication() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
@@ -74,7 +76,8 @@ public class User extends ApiResponseObject {
     /**
      * Disable Toopher authentication for the user
      *
-     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void disableToopherAuthentication() throws RequestError, JSONException {
         String endpoint = String.format("users/%s", id);
@@ -87,7 +90,8 @@ public class User extends ApiResponseObject {
     /**
      * Remove all pairings for the user
      *
-     * @throws RequestError Thrown when an exceptional condition is encountered
+     * @throws com.toopher.RequestError Thrown when an exceptional condition is encountered
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void reset() throws RequestError, JSONException {
         String endpoint = "users/reset";
@@ -100,6 +104,7 @@ public class User extends ApiResponseObject {
      * Update the User object with JSON response
      *
      * @param jsonResponse The JSON response from the API
+     * @throws org.json.JSONException Thrown by the JSON.org classes when an exceptional condition is encountered
      */
     public void update(JSONObject jsonResponse) throws JSONException {
         this.name = jsonResponse.getString("name");

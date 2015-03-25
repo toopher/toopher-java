@@ -25,8 +25,6 @@ import org.json.JSONObject;
 
 /**
  * Java helper library to generate Toopher iframe requests and validate responses.
- * <p/>
- * Register at https://dev.toopher.com to get your Toopher Developer API Credentials.
  */
 public final class ToopherIframe {
     public class SignatureValidationError extends Exception {
@@ -87,7 +85,7 @@ public final class ToopherIframe {
     private String consumerSecret;
 
     /**
-     * Creates an instance of the ToopherIframe helper for the default API (https://api.toopher.com/v1)
+     * Create an instance of the ToopherIframe helper for the default API (https://api.toopher.com/v1)
      *
      * @param consumerKey    Your Toopher API OAuth Consumer Key
      * @param consumerSecret Your Toopher API OAuth Consumer Secret
@@ -97,7 +95,7 @@ public final class ToopherIframe {
     }
 
     /**
-     * Creates an instance of the ToopherIframe helper for the specified API url
+     * Create an instance of the ToopherIframe helper for the specified API url
      *
      * @param consumerKey    Your Toopher API OAuth Consumer Key
      * @param consumerSecret Your Toopher API OAuth Consumer Secret
@@ -111,6 +109,7 @@ public final class ToopherIframe {
 
     /**
      * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
+     *
      * @param userName          Unique name that identifies this user.  This will be displayed to the user on
      *                          their mobile device when they pair or authenticate
      * @return URL that can be used to retrieve the Authentication Iframe by the user's browser

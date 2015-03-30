@@ -266,6 +266,15 @@ public class TestToopherIframe {
     }
 
     @Test
+    public void testProcessPostbackKeyWithEmptyValueReturnsAuthenticationRequest() throws ToopherIframe.SignatureValidationError, RequestError, URISyntaxException {
+        Map <String, String> auth_data = getAuthenticationRequestPostbackData();
+        auth_data.put("requester_metadata", "");
+        auth_data.put("toopher_sig", "2CQouLu8dL3OA8N/mgHK6eeYHm4=");
+        Object authenticationRequest = iframeApi.processPostback(getUrlEncodedPostbackData(auth_data));
+        assertTrue(authenticationRequest instanceof AuthenticationRequest);
+    }
+
+    @Test
     public void testProcessPostbackBadSignatureFails() throws RequestError, URISyntaxException {
         Map<String, String> data = getAuthenticationRequestPostbackData();
         data.put("toopher_sig", "invalid");

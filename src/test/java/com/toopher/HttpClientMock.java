@@ -18,16 +18,20 @@ import org.junit.Ignore;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.util.concurrent.Semaphore;
 
 @Ignore
 public class HttpClientMock extends DefaultHttpClient {
+    private static final String DEFAULT_BASE_URL = "https://api.toopher.test/v1/";
+
     public HttpParams lastParams;
     public Semaphore done;
 
     private HttpUriRequest lastRequest;
     private int expectedResponseStatus;
     private String expectedResponseBody;
+    private URI lastURI;
 
     public HttpClientMock(int responseStatus, String responseBody) throws InterruptedException {
         this.expectedResponseStatus = responseStatus;
@@ -50,13 +54,31 @@ public class HttpClientMock extends DefaultHttpClient {
         return null;
     }
 
+    public String getLastCalledEndpoint() {
+        String fullUri = lastURI.toString();
+        int param = lastURI.toString().lastIndexOf('?');
+        if (param != -1) {
+            fullUri = fullUri.substring(0, param);
+        }
+        return fullUri.replace(DEFAULT_BASE_URL, "");
+
+    }
+
+    public String getExpectedResponse() {
+        return expectedResponseBody;
+    }
+
+    public int getExpectedResponseStatus() {
+        return expectedResponseStatus;
+    }
+
     @Override
-    public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) {
+    public <T> T execute(HttpUriRequest req, ResponseHandler<? extends T> responseHandler) throws IOException {
         lastRequest = req;
-        if (req instanceof HttpPost){
+        if (req instanceof HttpPost) {
             try {
                 lastParams = new BasicHttpParams();
-                for(NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())){
+                for (NameValuePair nvp : URLEncodedUtils.parse(((HttpPost) req).getEntity())) {
                     lastParams.setParameter(nvp.getName(), nvp.getValue());
                 }
             } catch (IOException e) {
@@ -65,22 +87,17 @@ public class HttpClientMock extends DefaultHttpClient {
         } else {
             lastParams = req.getParams();
         }
-        HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         BasicHttpEntity entity = new BasicHttpEntity();
         try {
             entity.setContent(new ByteArrayInputStream(expectedResponseBody.getBytes("UTF-8")));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        HttpResponse resp = new BasicHttpResponse(new BasicStatusLine(HttpVersion.HTTP_1_1, expectedResponseStatus, null));
         resp.setEntity(entity);
+        lastURI = req.getURI();
+        T result = responseHandler.handleResponse(resp);
 
-        T result;
-        try {
-            result = responseHandler.handleResponse(resp);
-        } catch (IOException e) {
-            result = null;
-            e.printStackTrace();
-        }
         done.release();
         return result;
     }

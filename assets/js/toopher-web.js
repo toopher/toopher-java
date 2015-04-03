@@ -23,13 +23,15 @@
         frameworkPostArgs = $.parseJSON(frameworkPostArgsJSON);
       }
       var postData = $.extend({}, msgData.payload, frameworkPostArgs);
+      var toopherData = {'toopher_iframe_data': $.param(postData)};
+
       if(iframe.attr('use_ajax_postback')){
-      $.post(iframe.attr('toopher_postback'), postData)
+      $.post(iframe.attr('toopher_postback'), toopherData)
         .done(function(data){
           data = $.parseJSON(data);
         });
       } else {
-        postToUrl(iframe.attr('toopher_postback'), postData, 'POST');
+        postToUrl(iframe.attr('toopher_postback'), toopherData, 'POST');
       }
     }
   }

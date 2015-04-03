@@ -1,11 +1,8 @@
 package com.toopher;
 
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.TreeSet;
+import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.util.*;
 import java.net.URLEncoder;
 
 import oauth.signpost.http.HttpParameters;
@@ -15,6 +12,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthException;
+
 import java.io.UnsupportedEncodingException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -23,18 +21,17 @@ import java.security.InvalidKeyException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.json.JSONObject;
 
 /**
  * Java helper library to generate Toopher iframe requests and validate responses.
- *
- * Register at https://dev.toopher.com to get your Toopher Developer API Credentials.
- *
  */
 public final class ToopherIframe {
     public class SignatureValidationError extends Exception {
         public SignatureValidationError(String message) {
             super(message);
         }
+
         public SignatureValidationError(String message, Exception cause) {
             super(message, cause);
         }
@@ -43,9 +40,9 @@ public final class ToopherIframe {
     private static final String IFRAME_VERSION = "2";
 
     /**
-     * Default amount of time that iframe requests are valid (seconds)
+     * Default amount of time that Iframe requests are valid (seconds)
      */
-    private static final long DEFAULT_TTL = 10L;
+    private static final long DEFAULT_TTL = 300L;
 
     private static final String DEFAULT_BASE_URI = "https://api.toopher.com/v1/";
 
@@ -62,10 +59,12 @@ public final class ToopherIframe {
      * testability: injection point for Date() object used to validate signatures
      */
     private static Date dateOverride = null;
-    public static void setDateOverride(Date dateOverride){
+
+    public static void setDateOverride(Date dateOverride) {
         ToopherIframe.dateOverride = dateOverride;
     }
-    private static Date getDate() {
+
+    public static Date getDate() {
         if (dateOverride == null) {
             return new Date();
         } else {
@@ -74,33 +73,33 @@ public final class ToopherIframe {
     }
 
     private static String nonceOverride = null;
+
     public static void setNonceOverride(String nonceOverride) {
         ToopherIframe.nonceOverride = nonceOverride;
     }
+
+    public static String getNonce() { return nonceOverride; }
 
     private String baseUri;
     private String consumerKey;
     private String consumerSecret;
 
     /**
-     * Creates an instance of the ToopherIframe helper for the default API (https://api.toopher.com/v1)
-     * @param consumerKey
-     *          Your Toopher API OAuth Consumer Key
-     * @param consumerSecret
-     *          Your Toopher API OAuth Consumer Secret
+     * Create an instance of the ToopherIframe helper for the default API (https://api.toopher.com/v1)
+     *
+     * @param consumerKey    Your Toopher API OAuth Consumer Key
+     * @param consumerSecret Your Toopher API OAuth Consumer Secret
      */
     public ToopherIframe(String consumerKey, String consumerSecret) {
         this(consumerKey, consumerSecret, DEFAULT_BASE_URI);
     }
 
     /**
-     * Creates an instance of the ToopherIframe helper for the specified API url
-     * @param consumerKey
-     *          Your Toopher API OAuth Consumer Key
-     * @param consumerSecret
-     *          Your Toopher API OAuth Consumer Secret
-     * @param baseUri
-     *          The base uri of the Toopher API to target
+     * Create an instance of the ToopherIframe helper for the specified API url
+     *
+     * @param consumerKey    Your Toopher API OAuth Consumer Key
+     * @param consumerSecret Your Toopher API OAuth Consumer Secret
+     * @param baseUri        The base uri of the Toopher API to target
      */
     public ToopherIframe(String consumerKey, String consumerSecret, String baseUri) {
         this.consumerKey = consumerKey;
@@ -109,215 +108,307 @@ public final class ToopherIframe {
     }
 
     /**
-     * Return a URL to retrieve a Toopher Device Pairing iframe for the given user
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail (optional)
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param ttl
-     *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *          API will no longer allow the iframe to be fetched by the browser
-     * @return
-     *          URI that can be used to retrieve the Pairing Iframe by the user's browser
+     * @param userName          Unique name that identifies this user.  This will be displayed to the user on
+     *                          their mobile device when they pair or authenticate
+     * @return URL that can be used to retrieve the Authentication Iframe by the user's browser
      */
-    public String pairUri(String userName, String resetEmail, long ttl) {
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(4);
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
+    public String getAuthenticationUrl(String userName) {
+        return getAuthenticationUrl(userName, new HashMap<String, String>());
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Authentication Iframe for a given user
+     *
+     * @param userName          Unique name that identifies this user.  This will be displayed to the user on
+     *                          their mobile device when they pair or authenticate
+     * @param extras            An optional Map of parameters to provide to the API
+     * @return URL that can be used to retrieve the Authentication Iframe by the user's browser
+     */
+    public String getAuthenticationUrl(String userName, Map<String, String> extras) {
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        final Long ttl = Long.parseLong(getKeyOrDefaultAndDeleteKey(extras, "ttl", DEFAULT_TTL).toString());
+
         params.add(new BasicNameValuePair("username", userName));
-        if (resetEmail != null) {
-            params.add(new BasicNameValuePair("reset_email", resetEmail));
-        }
-        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
-    }
+        params.add(new BasicNameValuePair("action_name", (String)getKeyOrDefaultAndDeleteKey(extras, "actionName", "Log In")));
+        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "")));
+        params.add(new BasicNameValuePair("session_token", (String)getKeyOrDefaultAndDeleteKey(extras, "requestToken", "")));
+        params.add(new BasicNameValuePair("requester_metadata", (String)getKeyOrDefaultAndDeleteKey(extras, "requesterMetadata", "")));
 
-    /**
-     * Return a URL to retrieve a Toopher Device Pairing iframe for the given user
-     *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @return
-     *          URI that can be used to retrieve the Pairing iframe by the user's browser
-     */
-    public String pairUri(String userName, String resetEmail) {
-        return this.pairUri(userName, resetEmail, DEFAULT_TTL);
-    }
-
-    /**
-     * Generate a URL to retrieve a Toopher Authentication iframe for a given user/action
-     *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param actionName
-     *          The name of the action to authenticate; will be shown to the user.  If blank,
-     *          the Toopher API will default the action to "Log In".
-     * @param automationAllowed
-     *          Determines whether Toopher's Automated Location-Based Authentication is permitted
-     *          to grant the authentication without prompting the user
-     * @param challengeRequired
-     *          If set to true, the user must correctly respond to a challenge on their device
-     *          before the response will be sent
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @param requesterMetadata
-     *          Optional, can be empty.  Toopher will include this value in the signed data returned
-     *          with the iframe response
-     * @param ttl
-     *          IFrame URL Time-To-Live in seconds.  After TTL has expired, the Toopher
-     *          API will no longer allow the iframe to be fetched by the browser
-     * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
-     */
-    public String authUri(String userName, String resetEmail, String actionName, boolean automationAllowed, boolean challengeRequired, String requestToken, String requesterMetadata, long ttl) {
-        final List<NameValuePair> params = new ArrayList<NameValuePair>(9);
-
-        if (requesterMetadata == null) {
-            requesterMetadata = "None";
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
 
-        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
+        return getOAuthUrl(baseUri + "web/authenticate", params, consumerKey, consumerSecret, ttl);
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName) {
+        return getUserManagementUrl(userName, new HashMap<String, String>());
+    }
+
+    /**
+     * Generate a URL to retrieve a Toopher Pairing Iframe for a given user
+     *
+     * @param userName   Unique name that identifies this user.  This will be displayed to the user on
+     *                   their mobile device when they pair or authenticate
+     * @param extras     An optional Map of extra parameters to provide to the API
+     * @return URL that can be used to retrieve the Pairing Iframe by the user's browser
+     */
+    public String getUserManagementUrl(String userName, Map<String, String> extras) {
+        final List<NameValuePair> params = new ArrayList<NameValuePair>();
+        final Long ttl = Long.parseLong(getKeyOrDefaultAndDeleteKey(extras, "ttl", DEFAULT_TTL).toString());
+
         params.add(new BasicNameValuePair("username", userName));
-        params.add(new BasicNameValuePair("action_name", actionName));
-        params.add(new BasicNameValuePair("automation_allowed", automationAllowed ? "True" : "False"));
-        params.add(new BasicNameValuePair("challenge_required", challengeRequired ? "True" : "False"));
-        params.add(new BasicNameValuePair("reset_email", resetEmail));
-        params.add(new BasicNameValuePair("session_token", requestToken));
-        params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
-        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
+        params.add(new BasicNameValuePair("reset_email", (String)getKeyOrDefaultAndDeleteKey(extras, "resetEmail", "")));
+
+        for (Map.Entry<String, String> entry : extras.entrySet()) {
+            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+        }
+
+        return getOAuthUrl(baseUri + "web/manage_user", params, consumerKey, consumerSecret, ttl);
     }
 
     /**
-     * Simplified interface to generate a "Log In" iframe uri, with sensible defaults
+     * Verify the authenticity of data returned from the Toopher Iframe
      *
-     * @param userName
-     *          Unique name that identifies this user.  This will be displayed to the user on
-     *          their mobile device when they pair or authenticate
-     * @param resetEmail
-     *          Email address that the user has access to.  In case the user has lost or cannot
-     *          access their mobile device, Toopher will send a reset email to this address
-     * @param requestToken
-     *          Optional, can be empty.  Toopher will include this token in the signed data returned
-     *          with the iframe response.
-     * @return
-     *          URI that can be used to retrieve the Authentication iframe by the user's browser
+     * @param params The postback data returned from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
      */
-    public String loginUri(String userName, String resetEmail, String requestToken) {
-        return authUri(userName, resetEmail, "Log In", true, false, requestToken, null, DEFAULT_TTL);
+    public Object processPostback(Map<String, String> params) throws SignatureValidationError, RequestError, URISyntaxException {
+        return processPostback(params, null);
     }
 
     /**
-     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
+     * Verify the authenticity of data returned from the Toopher Iframe
      *
-     * @param params
-     *          The data returned from the Iframe
-     * @param ttl
-     *          Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
-     *          between the Toopher API creating the signature and the signature being validated on your server
-     * @return
-     *          A map of the validated data if the signature is valid, or null if the signature is invalid
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws com.toopher.ToopherIframe.SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws com.toopher.RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
      */
-    public Map<String, String> validate(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
-        Map<String, String> data = flattenParams(params);
+    public Object processPostback(Map<String, String> params, String requestToken) throws SignatureValidationError, RequestError, URISyntaxException {
+        return processPostback(params, requestToken, new HashMap<String, String>());
+    }
 
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @param extras An optional Map of extra parameters used to validate the data
+     * @return A {@link com.toopher.AuthenticationRequest}, {@link com.toopher.Pairing} or {@link com.toopher.User} object
+     * @throws com.toopher.ToopherIframe.SignatureValidationError Thrown when exceptional condition is encountered while validating data
+     * @throws com.toopher.RequestError Thrown when postback resource type is invalid
+     * @throws java.net.URISyntaxException
+     */
+    public Object processPostback(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError, RequestError, URISyntaxException {
+        Map<String, String> toopherData = urlDecodeIframeData(params);
+
+        if (toopherData.containsKey("error_code")) {
+            int errorCode = Integer.parseInt(toopherData.get("error_code"));
+            String errorMessage = toopherData.get("error_message");
+            if (errorCode == ToopherUserDisabledError.ERROR_CODE) {
+                throw new ToopherUserDisabledError(errorMessage);
+            } else {
+                throw new ToopherClientError(errorCode, errorMessage);
+            }
+        } else {
+            Map<String, String> validatedData = validateData(toopherData, requestToken, extras);
+
+            ToopherApi toopherApi = new ToopherApi(consumerKey, consumerSecret, baseUri);
+            String resourceType = validatedData.get("resource_type");
+            if (resourceType.equals("authentication_request")) {
+                return new AuthenticationRequest(createAuthenticationRequestJson(validatedData), toopherApi);
+            } else if (resourceType.equals("pairing")) {
+                return new Pairing(createPairingJson(validatedData), toopherApi);
+            } else if (resourceType.equals("requester_user")) {
+                return new User(createUserJson(validatedData), toopherApi);
+            } else {
+                throw new RequestError(String.format("The postback resource type is not valid: %s", resourceType));
+            }
+        }
+    }
+
+    /**
+     * Evaluate whether AuthenticationRequest has been granted
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
+     */
+    public boolean isAuthenticationGranted(Map<String, String> params) {
+        return isAuthenticationGranted(params, null);
+    }
+
+    /**
+     * Evaluate whether AuthenticationRequest has been granted
+     *
+     * @param params The postback data returned from the Toopher Iframe
+     * @param requestToken A randomized string that is included in the signed request to the ToopherAPI
+     *                     and returned in the signed response from the Toopher Iframe
+     * @return boolean indicating whether AuthenticationRequest has been granted and is not pending
+     */
+    public boolean isAuthenticationGranted(Map<String, String> params, String requestToken) {
         try {
-            List<String> missingKeys = new ArrayList<String>();
-            if (!data.containsKey("toopher_sig")) {
-                missingKeys.add("toopher_sig");
+            Object postbackObject = processPostback(params, requestToken);
+            if (postbackObject instanceof AuthenticationRequest) {
+                AuthenticationRequest authenticationRequest = (AuthenticationRequest)postbackObject;
+                return !authenticationRequest.pending && authenticationRequest.granted;
+            } else {
+                return false;
             }
-            if (!data.containsKey("timestamp")) {
-                missingKeys.add("timestamp");
-            }
-            if (!data.containsKey("session_token")) {
-                missingKeys.add("session_token");
-            }
-            if (missingKeys.size() > 0) {
-                StringBuilder errorMessageBuilder = new StringBuilder("Missing required keys: ");
-                String separator = "";
-                for (String missingKey : missingKeys) {
-                    errorMessageBuilder.append(separator).append(missingKey);
-                    separator = ",";
-                }
-                String errorMessage = errorMessageBuilder.toString();
-                logger.debug(errorMessage);
-                throw new SignatureValidationError(errorMessage);
-            }
-
-            boolean sessionTokenValid = data.get("session_token").equals(sessionToken);
-            if (!sessionTokenValid) {
-                throw new SignatureValidationError("Session token does not match expected value");
-            }
-
-            String maybeSig = data.get("toopher_sig");
-            data.remove("toopher_sig");
-            boolean signatureValid;
-            try {
-                String computedSig = signature(consumerSecret, data);
-                signatureValid = computedSig.equals(maybeSig);
-                logger.debug("submitted = " + maybeSig);
-                logger.debug("computed  = " + computedSig);
-            } catch (Exception e) {
-                logger.debug("error while calculating signature", e);
-                signatureValid = false;
-            }
-            if (!signatureValid) {
-                throw new SignatureValidationError("Computed signature does not match");
-            }
-
-            boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(data.get("timestamp"));
-            if (!ttlValid) {
-                throw new SignatureValidationError("TTL Expired");
-            }
-
-            return data;
-        } catch (SignatureValidationError s) {
-            throw s;
         } catch (Exception e) {
-            logger.debug("Exception while validating toopher signature", e);
-            throw new SignatureValidationError("Exception while validating toopher signature", e);
+            logger.debug(e);
+            return false;
         }
     }
 
-    /**
-     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
-     *
-     * @param params
-     *          The data returned from the Iframe
-     * @return
-     *          A map of the validated data if the signature is valid, or null if the signature is invalid
-     */
-    public Map<String, String> validate(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
-        return validate(params, sessionToken, DEFAULT_TTL);
+    private Object getKeyOrDefaultAndDeleteKey(Map<String, String> extras, String key, Object defaultValue) {
+        return extras.containsKey(key) ? extras.remove(key) : defaultValue;
     }
 
-    private static Map<String, String> flattenParams(Map<String, String[]> params) {
-        Map<String, String> result = new HashMap<String, String>();
-        for(String key : params.keySet()) {
-            String[] val = params.get(key);
-            if (val.length > 0) {
-                result.put(key, val[0]);
-            }
+    private Map<String, String> urlDecodeIframeData(Map<String, String> params) {
+        List<NameValuePair> decodedParams = URLEncodedUtils.parse(params.get("toopher_iframe_data"), Charset.forName("UTF-8"));
+        HashMap<String, String> result = new HashMap<String, String>();
+        for (NameValuePair nvp : decodedParams) {
+            result.put(nvp.getName(), nvp.getValue());
         }
         return result;
     }
 
+    private JSONObject createAuthenticationRequestJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("pairing_user_id"));
+        user.put("name", data.get("user_name"));
+        user.put("toopher_authentication_enabled", data.get("user_toopher_authentication_enabled").equals("true"));
+
+        JSONObject terminal = new JSONObject();
+        terminal.put("id", data.get("terminal_id"));
+        terminal.put("name", data.get("terminal_name"));
+        terminal.put("requester_specified_id", data.get("terminal_requester_specified_id"));
+        terminal.put("user", user);
+
+        JSONObject action = new JSONObject();
+        action.put("id", data.get("action_id"));
+        action.put("name", data.get("action_name"));
+
+        JSONObject authenticationRequest = new JSONObject();
+        authenticationRequest.put("id", data.get("id"));
+        authenticationRequest.put("pending", data.get("pending").equals("true"));
+        authenticationRequest.put("granted", data.get("granted").equals("true"));
+        authenticationRequest.put("automated", data.get("automated").equals("true"));
+        authenticationRequest.put("reason", data.get("reason"));
+        authenticationRequest.put("reason_code", data.get("reason_code"));
+        authenticationRequest.put("user", user);
+        authenticationRequest.put("terminal", terminal);
+        authenticationRequest.put("action", action);
+        return authenticationRequest;
+    }
+
+    private JSONObject createPairingJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("pairing_user_id"));
+        user.put("name", data.get("user_name"));
+        user.put("toopher_authentication_enabled", data.get("user_toopher_authentication_enabled").equals("true"));
+
+        JSONObject terminal = new JSONObject();
+        terminal.put("id", data.get("id"));
+        terminal.put("enabled", data.get("enabled").equals("true"));
+        terminal.put("pending", data.get("pending").equals("true"));
+        terminal.put("user", user);
+        return terminal;
+    }
+
+    private JSONObject createUserJson(Map<String, String> data) {
+        JSONObject user = new JSONObject();
+        user.put("id", data.get("id"));
+        user.put("name", data.get("name"));
+        user.put("toopher_authentication_enabled", data.get("toopher_authentication_enabled").equals("true"));
+        return user;
+    }
+
+    private Map<String, String> validateData(Map<String, String> params, String requestToken, Map<String, String> extras) throws SignatureValidationError {
+        checkForMissingKeys(params);
+        verifySessionToken(params.get("session_token"), requestToken);
+        checkIfSignatureIsExpired(params.get("timestamp"), extras);
+        validateSignature(params);
+        return params;
+    }
+
+    private void checkForMissingKeys(Map<String, String> data) throws SignatureValidationError {
+        List<String> missingKeys = new ArrayList<String>();
+
+        List<String> keys = Arrays.asList("toopher_sig", "timestamp", "session_token");
+        for (String key : keys) {
+            if (!data.containsKey(key)) {
+                missingKeys.add(key);
+            }
+        }
+        if (missingKeys.size() > 0) {
+            StringBuilder errorMessageBuilder = new StringBuilder("Missing required keys: ");
+            String separator = "";
+            for (String missingKey : missingKeys) {
+                errorMessageBuilder.append(separator).append(missingKey);
+                separator = ",";
+            }
+            String errorMessage = errorMessageBuilder.toString();
+            logger.debug(errorMessage);
+            throw new SignatureValidationError(errorMessage);
+        }
+    }
+
+    private void verifySessionToken(String sessionToken, String requestToken) throws SignatureValidationError {
+        if (requestToken != null) {
+            boolean sessionTokenValid = sessionToken.equals(requestToken);
+            if (!sessionTokenValid) {
+                throw new SignatureValidationError("Session token does not match expected value");
+            }
+        }
+    }
+
+    private void checkIfSignatureIsExpired(String timestamp, Map<String, String> extras) throws SignatureValidationError {
+        long ttl = extras.containsKey("ttl") ? Long.parseLong(extras.remove("ttl")) : DEFAULT_TTL;
+        boolean ttlValid = (getDate().getTime() / 1000) - ttl < Long.parseLong(timestamp);
+        if (!ttlValid) {
+            throw new SignatureValidationError("TTL Expired");
+        }
+    }
+
+    private void validateSignature(Map<String, String> data) throws SignatureValidationError {
+        String maybeSig = data.remove("toopher_sig");
+        boolean signatureValid;
+        try {
+            String computedSig = signature(consumerSecret, data);
+            signatureValid = computedSig.equals(maybeSig);
+            logger.debug("Submitted signature = " + maybeSig);
+            logger.debug("Computed signature = " + computedSig);
+        } catch (Exception e) {
+            logger.debug("Error while calculating signature", e);
+            signatureValid = false;
+        }
+        if (!signatureValid) {
+            throw new SignatureValidationError("Computed signature does not match");
+        }
+    }
 
     private static String signature(String secret, Map<String, String> data) throws NoSuchAlgorithmException, InvalidKeyException {
         TreeSet<String> sortedKeys = new TreeSet<String>(data.keySet());
         List<NameValuePair> sortedParams = new ArrayList<NameValuePair>(data.size());
-        for(String key : sortedKeys) {
+        for (String key : sortedKeys) {
             sortedParams.add(new BasicNameValuePair(key, data.get(key)));
         }
         String toSign = URLEncodedUtils.format(sortedParams, "UTF-8");
@@ -329,12 +420,14 @@ public final class ToopherIframe {
         return org.apache.commons.codec.binary.Base64.encodeBase64String(mac.doFinal(toSign.getBytes())).trim();
     }
 
-    private static final String getOAuthUri(String uri, List<NameValuePair> params, String key, String secret) {
-        final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
+    private static final String getOAuthUrl(String uri, List<NameValuePair> params, String key, String secret, long ttl) {
+        params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
+        params.add(new BasicNameValuePair("v", IFRAME_VERSION));
 
+        final OAuthConsumer consumer = new DefaultOAuthConsumer(key, secret);
         HttpParameters additionalParameters = new HttpParameters();
         additionalParameters.put("oauth_timestamp", String.valueOf(getDate().getTime() / 1000));
-        if (ToopherIframe.nonceOverride != null) {
+        if (ToopherIframe.getNonce() != null) {
             additionalParameters.put("oauth_nonce", ToopherIframe.nonceOverride);
         }
         consumer.setAdditionalParameters(additionalParameters);

@@ -11,22 +11,27 @@ public class ApiResponseObject {
     /**
      * A map of the raw API response data
      */
-    public Map raw;
-    
+    public Map<String, Object> rawResponse;
+
     public ApiResponseObject(JSONObject json) throws JSONException {
-    	this.raw = jsonToMap(json);
+        this.rawResponse = jsonToMap(json);
     }
 
-    private Map<String, Object> jsonToMap(JSONObject json) throws JSONException{
-    	Map<String,Object> result = new HashMap<String,Object>();
-    	
-    	for (Iterator<String> i = json.keys(); i.hasNext(); ) {
-    		String key = i.next();
-    		Object o = json.get(key);
-    		result.put(key, o);
-    	}
-    	
-    	return result;
+    public void updateRawResponse(JSONObject json) throws JSONException {
+        this.rawResponse = jsonToMap(json);
+    }
+
+    private Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
+        Map<String, Object> result = new HashMap<String, Object>();
+
+        Iterator<?> i = json.keys();
+        while(i.hasNext()){
+            String key = (String) i.next();
+            Object o = json.get(key);
+            result.put(key, o);
+        }
+
+        return result;
     }
 
 }

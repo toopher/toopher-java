@@ -4,10 +4,10 @@ import org.apache.http.client.ClientProtocolException;
 
 /**
  * Wrapper for Toopher extended API error data
- * 
  */
 public class ToopherClientError extends RequestError {
     final int toopherErrorCode;
+
     public int getToopherErrorCode() {
         return toopherErrorCode;
     }

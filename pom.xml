@@ -6,7 +6,7 @@
 
     <groupId>com.toopher</groupId>
     <artifactId>toopher-java</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>2.0.0-PREVIEW</version>
     <packaging>jar</packaging>
 
     <name>Toopher Java</name>
@@ -86,7 +86,7 @@
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                     <excludes>
-                        <exclude>**/ToopherAPIDemo.java</exclude>
+                        <exclude>**/ToopherAPIDemo.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
@@ -125,7 +125,7 @@
                         <version>0.7.1.201405082137 </version>
                         <configuration>
                             <excludes>
-                                <exclude>**/ToopherAPIDemo.java</exclude>
+                                <exclude>**/ToopherAPIDemo.class</exclude>
                             </excludes>
                         </configuration>
                         <executions>
@@ -145,6 +145,22 @@
                             <sourceDirectories>
                                 <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
                             </sourceDirectories>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
                         </configuration>
                     </plugin>
                 </plugins>

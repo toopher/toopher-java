@@ -129,7 +129,7 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("username", userName));
         params.add(new BasicNameValuePair("reset_email", resetEmail));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/pair", params, consumerKey, consumerSecret);
+        return getOAuthUri(baseUri + "web/manage_user", params, consumerKey, consumerSecret);
     }
 
     /**
@@ -194,7 +194,8 @@ public final class ToopherIframe {
         params.add(new BasicNameValuePair("session_token", requestToken));
         params.add(new BasicNameValuePair("requester_metadata", requesterMetadata));
         params.add(new BasicNameValuePair("expires", String.valueOf((getDate().getTime() / 1000) + ttl)));
-        return getOAuthUri(baseUri + "web/auth", params, consumerKey, consumerSecret);
+        params.add(new BasicNameValuePair("allow_inline_pairing", "False")); 
+        return getOAuthUri(baseUri + "web/authenticate", params, consumerKey, consumerSecret);
     }
 
     /**

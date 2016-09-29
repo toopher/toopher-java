@@ -36,6 +36,18 @@ import org.json.JSONTokener;
  * 
  */
 public class ToopherAPI {
+    private static final String DEFAULT_URI_SCHEME = "https";
+    private static final String DEFAULT_URI_HOST = "api.toopher.com";
+    private static final String DEFAULT_URI_BASE = "/v1/";
+    private static final int DEFAULT_URI_PORT = 443;
+
+    private final HttpClient httpClient;
+    private final OAuthConsumer consumer;
+    private final String uriScheme;
+    private final String uriHost;
+    private final int uriPort;
+    private final String uriBase;
+
     /**
      * The ToopherJava binding library version
      */
@@ -84,9 +96,31 @@ public class ToopherAPI {
      *            The alternate URI
      */
     public ToopherAPI(String consumerKey, String consumerSecret, URI uri) {
-    	httpClient = new DefaultHttpClient();
-        HttpProtocolParams.setUserAgent(httpClient.getParams(),
-                                        String.format("ToopherJava/%s", VERSION));
+        this(consumerKey, consumerSecret, uri, null);
+    }
+
+
+    /**
+     * Create an API object with the supplied credentials and API URI,
+     * overriding the default HTTP client.
+     *
+     * @param consumerKey
+     *     The consumer key for a requester (obtained from the developer portal)
+     * @param consumerSecret
+     *     The consumer secret for a requester (obtained from the developer portal)
+     * @param uri
+     *     The alternate URI
+     * @param httpClient
+     *     The alternate HTTP client
+     */
+    public ToopherAPI(String consumerKey, String consumerSecret, URI uri, HttpClient httpClient) {
+        if (httpClient == null) {
+            this.httpClient = new DefaultHttpClient();
+            HttpProtocolParams.setUserAgent(this.httpClient.getParams(),
+                                            String.format("Toopher-Java/%s", VERSION));
+        } else {
+            this.httpClient = httpClient;
+        }
 
         consumer = new CommonsHttpOAuthConsumer(consumerKey, consumerSecret);
         if (uri == null){
@@ -271,6 +305,9 @@ public class ToopherAPI {
     }
     
     private JSONObject request(HttpRequestBase httpRequest, String endpoint) throws Exception {
+        httpRequest.addHeader("User-Agent", String.format("Toopher-Java/%s (Java %s)",
+                ToopherAPI.VERSION, System.getProperty("java.version")));
+
     	httpRequest.setURI(new URIBuilder().setScheme(this.uriScheme).setHost(this.uriHost)
     			.setPort(this.uriPort)
                 .setPath(this.uriBase + endpoint).build());
@@ -300,15 +337,9 @@ public class ToopherAPI {
         }
     };
 
-    private static final String DEFAULT_URI_SCHEME = "https";
-    private static final String DEFAULT_URI_HOST = "api.toopher.com";
-    private static final String DEFAULT_URI_BASE = "/v1/";
-    private static final int DEFAULT_URI_PORT = 443;
+    public static String getBaseURL() {
+        return String.format("%s://%s%s", DEFAULT_URI_SCHEME,
+                             DEFAULT_URI_HOST, DEFAULT_URI_BASE);
+    }
 
-    private final HttpClient httpClient;
-    private final OAuthConsumer consumer;
-    private final String uriScheme;
-    private final String uriHost;
-    private final int uriPort;
-    private final String uriBase;
 }

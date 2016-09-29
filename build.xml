@@ -1,51 +1,110 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project ToopherJava">
-    <property name="src" location="src"/>
-    <property name="build" location="bin"/>
+<?xml version="1.0"?>
+<project name="Toopher" default="jar"
+  xmlns:ivy="antlib:org.apache.ivy.ant">
 
-    <property name="demo_jar" value="ToopherJavaDemo.jar"/>
+  <!---->
+  <property name="ivy.install.version" value="2.1.0-rc2" />
+  <condition property="ivy.home" value="${env.IVY_HOME}">
+    <isset property="env.IVY_HOME" />
+  </condition>
+  <property name="ivy.home" value="${user.home}/.ant" />
+  <property name="ivy.jar.dir" value="${ivy.home}/lib" />
+  <property name="ivy.jar.file" value="${ivy.jar.dir}/ivy.jar" />
 
-    <path id="build-classpath">
-        <fileset dir="lib">
-            <include name="*.jar"/>
-        </fileset>
+  <target name="download-ivy" unless="offline">
+    <mkdir dir="${ivy.jar.dir}"/>
+    <get src="http://repo2.maven.org/maven2/org/apache/ivy/ivy/${ivy.install.version}/ivy-${ivy.install.version}.jar"
+        dest="${ivy.jar.file}" usetimestamp="true"/>
+  </target>
+
+  <target name="init-ivy" depends="download-ivy">
+    <path id="ivy.lib.path">
+      <fileset dir="${ivy.jar.dir}" includes="*.jar"/>
     </path>
+    <taskdef resource="org/apache/ivy/ant/antlib.xml"
+        uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"/>
+  </target>
 
-    <target name="init">
-        <mkdir dir="${build}"/>
-    </target>
+  <!-- Project-specific configuration -->
+  <property name="main.class" value="com.toopher.ToopherAPIDemo"/>
+  <property name="base.name" value="toopher-1.0.0"/>
 
-    <target name="compile" depends="init">
-        <javac srcdir="${src}" destdir="${build}" classpathref="build-classpath" includeantruntime="false"/>
-    </target>
+  <!-- Standard Directory Layout -->
+  <property name="src.dir" value="src"/>
+  <property name="test.dir" value="test"/>
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
 
-    <target name="create_run_jar" depends="compile">
-        <jar jarfile="${demo_jar}" filesetmanifest="mergewithoutmain">
-            <manifest>
-                <attribute name="Main-Class" value="com.toopher.ToopherAPIDemo"/>
-                <attribute name="Class-Path" value="."/>
-            </manifest>
-            <fileset dir="bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpclient-4.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpcore-4.2.2.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/signpost-commonshttp4-1.2.1.2.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/signpost-core-1.2.1.2.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/commons-codec-1.6.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/commons-logging-1.1.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/fluent-hc-4.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpclient-cache-4.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpcore-4.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpcore-ab-4.2.2.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpcore-nio-4.2.2.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/httpmime-4.2.1.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/json.org.jar"/>
-        </jar>
-    </target>
+  <!-- Targets -->
+  <target name="resolve" description="Retrieve dependencies with Ivy.">
+    <ivy:resolve log="download-only"/>
+    <ivy:cachepath conf="build" pathid="build.classpath"/>
+    <ivy:cachepath conf="default" pathid="runtime.classpath"/>
+    <ivy:cachefileset conf="default" setid="runtime.fileset"/>
+    <ivy:cachepath conf="test" pathid="test.classpath"/>
+  </target>
 
-    <target name="clean">
-        <delete dir="${build}" />
-    </target>
+  <target name="compile" depends="resolve" description="Compile all sources.">
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${build.dir}/classes"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}/classes"
+           optimize="on" debug="on" deprecation="on" includeantruntime="no">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="build.classpath"/>
+    </javac>
+    <copy todir="${build.dir}/classes">
+      <fileset dir="${src.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
 
-    <target name="test" depends="compile">
-    </target>
+  <target name="jar" depends="compile"
+          description="Generate the jarfile distributable.">
+    <jar destfile="${dist.dir}/${base.name}.jar"
+         basedir="${build.dir}/classes">
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
+    <jar destfile="${dist.dir}/${base.name}-all.jar"
+         basedir="${build.dir}/classes">
+      <zipgroupfileset refid="runtime.fileset"/>
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="clean" description="Delete all generated files.">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+  </target>
+
+  <target name="test-compile" depends="compile">
+    <mkdir dir="${build.dir}/test"/>
+    <javac srcdir="${test.dir}" destdir="${build.dir}/test"
+           optimize="on" debug="on" deprecation="on"
+           classpath="${build.dir}/classes" includeantruntime="no">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="build.classpath"/>
+      <classpath refid="test.classpath"/>
+    </javac>
+    <copy todir="${build.dir}/test">
+      <fileset dir="${test.dir}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="test" depends="test-compile" description="Run the unit tests.">
+    <junit fork="yes">
+      <classpath>
+        <pathelement path="${build.dir}/instrumented"/>
+        <pathelement path="${build.dir}/classes"/>
+        <pathelement path="${build.dir}/test"/>
+        <path refid="test.classpath"/>
+      </classpath>
+      <batchtest>
+        <formatter type="brief" usefile="false"/>
+        <fileset dir="${build.dir}/test"/>
+      </batchtest>
+    </junit>
+  </target>
 </project>

@@ -27,7 +27,7 @@
 
   <!-- Project-specific configuration -->
   <property name="main.class" value="com.toopher.ToopherAPIDemo"/>
-  <property name="base.name" value="toopher-1.0.0"/>
+  <property name="base.name" value="toopher-1.2.0"/>
 
   <!-- Standard Directory Layout -->
   <property name="src.dir" value="src/main/java"/>

@@ -229,8 +229,7 @@ public final class ToopherIframe {
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
-    public Map<String, String> validate(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
-        Map<String, String> data = flattenParams(params);
+    public Map<String, String> validate(Map<String, String> data, String sessionToken, long ttl) throws SignatureValidationError {
 
         try {
             List<String> missingKeys = new ArrayList<String>();
@@ -291,15 +290,42 @@ public final class ToopherIframe {
     }
 
     /**
-     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     * Verify the authenticity of data returned from the Toopher iframe by validating the cryptographic signature
      *
      * @param params
+     *          The request parameters returned from the Iframe
+     * @param ttl
+     *          Time-To-Live (seconds) to enforce on the Toopher API signature.  This value sets the maximum duration
+     *          between the Toopher API creating the signature and the signature being validated on your server
+     * @return
+     *          A map of the validated data if the signature is valid, or null if the signature is invalid
+     */
+    public Map<String, String> validate(Map<String, String[]> params, String sessionToken, long ttl) throws SignatureValidationError {
+        return validate(flattenParams(params), sessionToken, ttl);
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     *
+     * @param data
      *          The data returned from the Iframe
      * @return
      *          A map of the validated data if the signature is valid, or null if the signature is invalid
      */
+    public Map<String, String> validate(Map<String, String> data, String sessionToken) throws SignatureValidationError {
+        return validate(data, sessionToken, DEFAULT_TTL);
+    }
+
+    /**
+     * Verify the authenticity of data returned from the Toopher Iframe by validating the cryptographic signature
+     *
+     * @param params
+     *          The request parameters returned from the Iframe
+     * @return
+     *          A map of the validated data if the signature is valid, or null if the signature is invalid
+     */
     public Map<String, String> validate(Map<String, String[]> params, String sessionToken) throws SignatureValidationError {
-        return validate(params, sessionToken, DEFAULT_TTL);
+        return validate(flattenParams(params), sessionToken, DEFAULT_TTL);
     }
 
     private static Map<String, String> flattenParams(Map<String, String[]> params) {
